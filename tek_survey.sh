@@ -151,7 +151,6 @@ echo "======================"
 # (What? Baroque? Nah - just normal nerds:-)
 # so https://www.pt.bfs.admin.ch/v1/gaen/exposed/1592611200000 works for
 # june 20
-set -x
 CH_BASE="https://www.pt.bfs.admin.ch/v1/gaen/exposed"
 now=`date +%s`
 midnight="`date -d "00:00:00Z" +%s`000"
