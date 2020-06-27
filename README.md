@@ -14,3 +14,7 @@ We also collect configuration information for those apps that
 helps understand how public health authorities may try to 
 vary the sensitivity of proximity detection.
 
+This is part of the [Testing Apps for COVID-19 Tracing (TACT)](https://down.dsg.cs.tcd.ie/tact/)
+project. We wrote up an introductory description of this
+[here](https://down.dsg.cs.tcd.ie/tact/transp.pdf).
+
