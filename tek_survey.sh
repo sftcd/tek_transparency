@@ -8,6 +8,7 @@ CURL=/usr/bin/curl
 UNZIP=/usr/bin/unzip
 TEK_DECODE=/home/stephen/code/tek_transparency/tek_file_decode.py
 TEK_TIMES=/home/stephen/code/tek_transparency/tek_times.sh
+TEK_REPORT=/home/stephen/code/tek_transparency/tek_report.sh
 DOCROOT=/var/www/tact/tek-counts/
 DE_CFG_DECODE=/home/stephen/code/tek_transparency/de_tek_cfg_decode.py
 DATADIR=/home/stephen/code/tek_transparency
@@ -192,6 +193,7 @@ if [ -d  $DOCROOT ]
 then
     cp *.csv $DOCROOT
 fi
+$TEK_REPORT
 
 END=$(whenisitagain)
 echo "Finished $0 at $END, got $chunks_down chunks, totalling $total_keys"
