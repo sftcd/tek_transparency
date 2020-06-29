@@ -43,7 +43,8 @@ cases declared is either based on a manually downloaded file from the WHO
 <a href="https://opendata.ecdc.europa.eu/covid19/casedistribution/csv">here</a>.
 </p>
 
-<p>This file is updated every 6 hours. This update is from $NOW UTC.</p>
+<p>This file is updated every 6 hours. This update is from $NOW UTC. For
+an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
 
 EOF
 
