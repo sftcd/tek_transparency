@@ -73,8 +73,7 @@ then
         now=`date +%s`
         if [ "$((now-mtime))" -gt "86400" ]
         then
-            echo "Too old: $now, $mtime"
-            exit
+            echo "ECDC cases file Too old, getting a new one: $now, $mtime"
             curl -L $CASES_URL --output $WORLD_CASES
         fi
     else

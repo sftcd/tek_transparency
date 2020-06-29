@@ -194,7 +194,7 @@ then
 fi
 
 END=$(whenisitagain)
-echo "Finished IT at $END, got $chunks_down chunks, totalling $total_keys"
+echo "Finished $0 at $END, got $chunks_down chunks, totalling $total_keys"
 echo "======================"
 echo "======================"
 echo "======================"
