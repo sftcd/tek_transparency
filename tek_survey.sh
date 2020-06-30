@@ -193,6 +193,46 @@ curl -L $CH_CONFIG --output ch-cfg.json
 echo ".ch config:"
 cat ch-cfg.json
 
+# Poland
+
+# yes - we end up with two slashes between hostname and path for some reason!
+PL_BASE="https://exp.safesafe.app/" 
+PL_CONFIG="dunno; get later"
+
+plzips=`curl -L "$PL_BASE/index.txt" | sed -e 's/\///g'`
+
+for plzip in $plzips
+do
+    echo "Getting $plzip"
+    curl -L "$PL_BASE/$plzip" --output pl-$plzip
+    if [[ $? == 0 ]]
+    then
+	    if [ ! -s pl-$plzip ]
+	    then
+		    echo "Empty or non-existent Polish file: pl-$plzip"
+	    else
+    	    if [ ! -f $ARCHIVE/pl-$plzip ]
+    	    then
+        	    cp pl-$plzip $ARCHIVE
+    	    fi
+    	    # try unzip and decode
+    	    $UNZIP "pl-$plzip" >/dev/null 2>&1
+    	    if [[ $? == 0 ]]
+    	    then
+        	    echo "======================"
+        	    echo ".pl TEKs"
+        	    $TEK_DECODE
+        	    new_keys=$?
+        	    total_keys=$((total_keys+new_keys))
+    	    fi
+    	    rm -f export.bin export.sig
+    	    chunks_down=$((chunks_down+1))
+	    fi
+    else
+        echo "Error downloading pl-$plzip"
+    fi
+done
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."

@@ -10,7 +10,7 @@
 TEK_COUNT="/home/stephen/code/tek_transparency/tek_count.sh"
 
 # countries to do
-COUNTRY_LIST="it de ch"
+COUNTRY_LIST="it de ch pl"
 
 # list of cases for all countries
 

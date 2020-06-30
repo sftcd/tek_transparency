@@ -2,8 +2,9 @@
 
 # turn the CSVs into a HTML page to be nicer to readers
 
-TARGET="/var/www/tact/tek-counts/index.html"
-COUNTRY_LIST="it de ch"
+TARGET_DIR="/var/www/tact/tek-counts"
+TARGET="$TARGET_DIR/index.html"
+COUNTRY_LIST="it de ch pl"
 DATADIR=/home/stephen/code/tek_transparency
 ARCHIVE=$DATADIR/all-zips
 
@@ -12,6 +13,12 @@ function whenisitagain()
 	date -u +%Y%m%d-%H%M%S
 }
 NOW=$(whenisitagain)
+
+if [ ! -d $TARGET_DIR ]
+then
+    TARGET="tek-index.html"
+    echo "Can't see $TARGET_DIR, writing to $TARGET"
+fi
 
 # do the file header
 cat >$TARGET <<EOF
@@ -29,7 +36,7 @@ vlink="#000080" alink="#FF0000">
 
 <p>
 This page displays the current counts of Temporary Exposure Keys (TEKs)
-that are visible on the Internet for the Italian, German and Swiss apps.
+that are visible on the Internet for the Italian, German, Swiss and Polish apps.
 We hope to expand this list over time (help welcome!). The code that
 produces this is <a href="https://github.com/sftcd/tek_transparency/">here</a>.
 This is produced as part of our <a href="https://down.dsg.cs.tcd.ie/tact/">TACT</a>
