@@ -159,24 +159,33 @@ midnight="`date -d "00:00:00Z" +%s`000"
 $CURL -L "$CH_BASE/$midnight" --output ch-$midnight.zip
 if [[ $? == 0 ]]
 then
-    if [ ! -f $ARCHIVE/ch-$midnight.zip ]
-    then
-        cp ch-$midnight.zip $ARCHIVE
-    fi
-    # try unzip and decode
-    $UNZIP "ch-$midnight.zip" >/dev/null 2>&1
-    if [[ $? == 0 ]]
-    then
-        echo "======================"
-        echo ".ch TEKs"
-        $TEK_DECODE
-        new_keys=$?
-        total_keys=$((total_keys+new_keys))
-    fi
-    rm -f export.bin export.sig
-    chunks_down=$((chunks_down+1))
+	# we do see zero sized files from .ch sometimes
+	# which is odd but whatever (could be their f/w
+	# doing that but what'd be the effect on the 
+	# app?)
+	if [ ! -s ch-$midnight.zip ]
+	then
+		echo "Empty or non-existent Swiss file: ch-$midnight.zip"
+	else
+    	if [ ! -f $ARCHIVE/ch-$midnight.zip ]
+    	then
+        	cp ch-$midnight.zip $ARCHIVE
+    	fi
+    	# try unzip and decode
+    	$UNZIP "ch-$midnight.zip" >/dev/null 2>&1
+    	if [[ $? == 0 ]]
+    	then
+        	echo "======================"
+        	echo ".ch TEKs"
+        	$TEK_DECODE
+        	new_keys=$?
+        	total_keys=$((total_keys+new_keys))
+    	fi
+    	rm -f export.bin export.sig
+    	chunks_down=$((chunks_down+1))
+	fi
 else
-    echo "Error decoding ch-$midnight.zip"
+    echo "Error downloading ch-$midnight.zip"
 fi
 
 CH_CONFIG="https://www.pt-a.bfs.admin.ch/v1/config?appversion=1&osversion=ios&buildnr=1"
