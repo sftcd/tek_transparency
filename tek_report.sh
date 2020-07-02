@@ -68,11 +68,13 @@ explanation for those numbers is required. We are trying to find
 good answers for that. (And welcome inputs!). 
 
 <ul>
-	<li>On 20200702 we learned (via personal communication) that the Swiss app does emit 10 TEKs per
+	<li>On 20200702 we learned (via personal communication) that the Swiss 
+key server does emit 10 TEKs per
 day as a method of exercising the client code (fine idea), so the number
 of "real" uploads is what is shown less 10. We also learned that the
 Swiss server-side can update the numbers post-facto, so each time our
-script is run we download the last two weeks worth of information.</li>
+script is run we download the last two weeks worth of information. It
+may take a while to get a full picture of what's going on there.</li>
 
 </ul>
 
