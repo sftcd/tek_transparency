@@ -36,19 +36,36 @@ vlink="#000080" alink="#FF0000">
 
 <p>
 This page displays the current counts of Temporary Exposure Keys (TEKs)
-that are visible on the Internet for the Italian, German, Swiss and Polish apps.
-We hope to expand this list over time (help welcome!). The code that
+that are visible on the Internet, for each day, for the Italian, German, Swiss and Polish apps.
+We hope to expand that list over time (help welcome!) as more
+public health authorities adopt the Google/Apple Exposure Notification (GAEN) API (if they do!). The code that
 produces this is <a href="https://github.com/sftcd/tek_transparency/">here</a>.
 This is produced as part of our <a href="https://down.dsg.cs.tcd.ie/tact/">TACT</a>
 project.
 </p>
 
 <p>The tables below show the counts of TEK for each of the days listed. Where
-there were no TEKs for a given day, there is no row in the file. The count of
+there were no TEKs for a given day, there is no row in the file. The TEK
+column reports the number of TEKs that were published, being considered useful for contact
+tracing on that day, so do not represent the number of positive cases
+seen on that day (except perhaps for the most recent day).
+In other words, on the latest day reported, the number of TEKs should
+(in theory) match the number of people using the app that test positive
+and subsequently upload their TEKs. Each such person will upload usually
+14 TEKs (one for each day in the previous two weeks), though the 
+public health authority might decide not to publish the full set for
+medical reasons (e.g. not being infectious for some days).
+</p>
+
+<p> The count of
 cases declared is either based on a manually downloaded file from the WHO
 (rarely) or else on a file from the ECDC that can be downloaded from 
 <a href="https://opendata.ecdc.europa.eu/covid19/casedistribution/csv">here</a>.
 </p>
+
+<p>Comparing the TEKs and Cases columns, it is clear that some more
+explanation for those numbers is required. We are trying to find
+good answers for that. (And welcome inputs!). </p>
 
 <p>This file is updated every 6 hours. This update is from $NOW UTC. For
 an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
