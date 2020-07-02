@@ -156,37 +156,58 @@ CH_BASE="https://www.pt.bfs.admin.ch/v1/gaen/exposed"
 now=`date +%s`
 midnight="`date -d "00:00:00Z" +%s`000"
 
-$CURL -L "$CH_BASE/$midnight" --output ch-$midnight.zip
-if [[ $? == 0 ]]
-then
-	# we do see zero sized files from .ch sometimes
-	# which is odd but whatever (could be their f/w
-	# doing that but what'd be the effect on the 
-	# app?)
-	if [ ! -s ch-$midnight.zip ]
+# it turns out (personal communication) that the .ch scheme is to change
+# the content of files but re-use the file name. I think that means that
+# files that are less than 14 days old may be updated, with newly uploaded
+# TEKs, so for each run, we'll download all 14 files. 
+# (Feck it, we'll go for 15:-)
+
+# one day in milliseconds
+day=$((60*60*24*1000))
+
+echo "======================"
+echo ".ch TEKs"
+for fno in {0..14}
+do
+	echo "Doing .ch file $fno" 
+	midnight=$((midnight-fno*day))
+	$CURL -L "$CH_BASE/$midnight" --output ch-$midnight.zip
+	if [[ $? == 0 ]]
 	then
-		echo "Empty or non-existent Swiss file: ch-$midnight.zip"
+		# we do see zero sized files from .ch sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s ch-$midnight.zip ]
+		then
+			echo "Empty or non-existent downloaded Swiss file: ch-$midnight.zip ($fno)"
+		else
+    		if [ ! -f $ARCHIVE/ch-$midnight.zip ]
+    		then
+				echo "New .ch file $fno ch-$midnight" 
+        		cp ch-$midnight.zip $ARCHIVE
+			elif ((`stat -c%s "ch-$midnight.zip"`>`stat -c%s "$ARCHIVE/ch-$midnight.zip"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .ch file $fno ch-$midnight" 
+        		cp ch-$midnight.zip $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "ch-$midnight.zip" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE
+        		new_keys=$?
+        			total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
 	else
-    	if [ ! -f $ARCHIVE/ch-$midnight.zip ]
-    	then
-        	cp ch-$midnight.zip $ARCHIVE
-    	fi
-    	# try unzip and decode
-    	$UNZIP "ch-$midnight.zip" >/dev/null 2>&1
-    	if [[ $? == 0 ]]
-    	then
-        	echo "======================"
-        	echo ".ch TEKs"
-        	$TEK_DECODE
-        	new_keys=$?
-        	total_keys=$((total_keys+new_keys))
-    	fi
-    	rm -f export.bin export.sig
-    	chunks_down=$((chunks_down+1))
+    	echo "curl - error downloading ch-$midnight.zip (file $fno)"
 	fi
-else
-    echo "Error downloading ch-$midnight.zip"
-fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
 
 CH_CONFIG="https://www.pt-a.bfs.admin.ch/v1/config?appversion=1&osversion=ios&buildnr=1"
 curl -L $CH_CONFIG --output ch-cfg.json

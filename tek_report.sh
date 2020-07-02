@@ -65,7 +65,21 @@ cases declared is either based on a manually downloaded file from the WHO
 
 <p>Comparing the TEKs and Cases columns, it is clear that some more
 explanation for those numbers is required. We are trying to find
-good answers for that. (And welcome inputs!). </p>
+good answers for that. (And welcome inputs!). 
+
+<ul>
+	<li>On 20200702 we learned (via personal communication) that the Swiss app does emit 10 TEKs per
+day as a method of exercising the client code (fine idea), so the number
+of "real" uploads is what is shown less 10. We also learned that the
+Swiss server-side can update the numbers post-facto, so each time our
+script is run we download the last two weeks worth of information.</li>
+
+</ul>
+
+</p>
+
+
+
 
 <p>This file is updated every 6 hours. This update is from $NOW UTC. For
 an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
