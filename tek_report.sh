@@ -34,47 +34,51 @@ cat >$TARGET <<EOF
 vlink="#000080" alink="#FF0000">
 <h1>Testing Apps for COVID-19 Tracing (TACT) - TEK Survey </h1>
 
-<p>
-This page displays the current counts of Temporary Exposure Keys (TEKs)
-that are visible on the Internet, for each day, for the Italian, German, Swiss and Polish apps.
-We hope to expand that list over time (help welcome!) as more
-public health authorities adopt the Google/Apple Exposure Notification (GAEN) API (if they do!). The code that
-produces this is <a href="https://github.com/sftcd/tek_transparency/">here</a>.
-This is produced as part of our <a href="https://down.dsg.cs.tcd.ie/tact/">TACT</a>
-project.
-</p>
+<p>This page displays the current counts of Temporary Exposure Keys (TEKs)
+that are visible on the Internet, to allow for comparisons for each day, for
+the Italian, German, Swiss and Polish apps.  We hope to expand that list over
+time (help welcome!) as more public health authorities adopt the Google/Apple
+Exposure Notification (GAEN) API (if they do!). The code that produces this is
+<a href="https://github.com/sftcd/tek_transparency/">here</a>.  This is
+produced as part of our <a href="https://down.dsg.cs.tcd.ie/tact/">TACT</a>
+project.</p>
 
 <p>The tables below show the counts of TEK for each of the days listed. Where
-there were no TEKs for a given day, there is no row in the file. The TEK
-column reports the number of TEKs that were published, being considered useful for contact
-tracing on that day, so do not represent the number of positive cases
-seen on that day (except perhaps for the most recent day).
-In other words, on the latest day reported, the number of TEKs should
-(in theory) match the number of people using the app that test positive
-and subsequently upload their TEKs. Each such person will upload usually
-14 TEKs (one for each day in the previous two weeks), though the 
-public health authority might decide not to publish the full set for
-medical reasons (e.g. not being infectious for some days).
+there were no TEKs for a given day, there is no row in the file. The TEK column
+reports the number of TEKs that were published, being considered useful for
+contact tracing on that day, so do not represent the number of positive cases
+seen on that day (except perhaps for the most recent day).  In other words, on
+the latest day reported, the number of TEKs should (in theory) match the number
+of people using the app that test positive and subsequently upload their TEKs.
+Each such person will upload usually 14 TEKs (one for each day in the previous
+two weeks), though the public health authority might decide not to publish the
+full set for medical reasons (e.g. not being infectious for some days). That
+means that for example the number of TEKs on the 2nd most recent day may
+be the sum of the number of people who uploaded on that and the most recent
+day. </p>
+
+<p>The count of cases declared is the number of COVID-19 cases declared by that
+country to the WHO, either based on a manually downloaded file from the WHO
+(rarely) or else on a file from the ECDC that can be downloaded from <a
+href="https://opendata.ecdc.europa.eu/covid19/casedistribution/csv">here</a>.
 </p>
 
-<p> The count of
-cases declared is either based on a manually downloaded file from the WHO
-(rarely) or else on a file from the ECDC that can be downloaded from 
-<a href="https://opendata.ecdc.europa.eu/covid19/casedistribution/csv">here</a>.
-</p>
-
-<p>Comparing the TEKs and Cases columns, it is clear that some more
-explanation for those numbers is required. We are trying to find
-good answers for that. (And welcome inputs!). 
+<p>Comparing the TEKs and Cases columns, it is clear that some more explanation
+for those numbers is required. We are trying to find good answers for that.
+(And welcome inputs!)
 
 <ul>
 	<li>On 20200702 we learned (via personal communication) that the Swiss 
-key server does emit 10 TEKs per
-day as a method of exercising the client code (fine idea), so the number
+key server always emits 10 "synthetic" TEKs per
+day as a method of exercising the client code (a fine idea), so the number
 of "real" uploads is what is shown less 10. We also learned that the
 Swiss server-side can update the numbers post-facto, so each time our
 script is run we download the last two weeks worth of information. It
 may take a while to get a full picture of what's going on there.</li>
+	<li>We're not at all clear what the German numbers mean. Given there
+are days where the number of TEKs are more than double the number of
+cases declared to the WHO, our current (20200703) guess is that represents some
+form of ongoing testing, but we await confirmation of that.</li>
 
 </ul>
 
