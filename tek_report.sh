@@ -84,11 +84,11 @@ form of ongoing testing, but we await confirmation of that.</li>
 
 </p>
 
+<p>This file is updated every hour while we figure out the behaviour. This update is from $NOW UTC. If
+you manage one of these systems and would prefer we query less often please feel free to get in
+touch.</p> 
 
-
-
-<p>This file is updated every 6 hours. This update is from $NOW UTC. For
-an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
+<p>For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
 
 EOF
 
