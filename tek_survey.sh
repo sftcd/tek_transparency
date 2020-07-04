@@ -167,7 +167,53 @@ do
             echo "Error decoding de-$dedate-$dehour.zip"
         fi
     done
+
 done
+# lastly, check for today in case there are hourlies already
+# that are not in the date index
+# when is today? that's in UTC, so I may be a TZ off for an hour 
+# or two
+today=`date -u +%Y-%m-%d`
+echo "today: Checking .de for today's hourlies $today"
+# Now check for hourly zips - it's ok that we have dups as we 
+# will use "sort|uniq" before counting and it's nice to have
+# all the zips even if we have >1 copy
+hours_str=`$CURL -L "$DE_BASE/date/$today/hour"`
+dehours=`echo $hours_str \
+                | sed -e 's/\[//' \
+                | sed -e 's/]//' \
+                | sed -e 's/"//g' \
+                | sed -e 's/,/ /g' `
+echo "today: Checking .de for today's hourlies dehours: $dehours"
+if [[ "$dehours" != "" ]]
+then
+    echo ".de on $today has hours: $dehours"
+fi
+for dehour in $dehours
+do
+    $CURL -L "$DE_BASE/date/$today/hour/$dehour" --output de-$today-$dehour.zip
+    if [[ $? == 0 ]]
+    then
+        echo "Got de-$today-$dehour.zip"
+        if [ ! -f $ARCHIVE/de-$today-$dehour.zip ]
+        then
+            cp de-$today-$dehour.zip $ARCHIVE
+        fi
+        # try unzip and decode
+        $UNZIP "de-$today-$dehour.zip" >/dev/null 2>&1
+        if [[ $? == 0 ]]
+        then
+            $TEK_DECODE
+            new_keys=$?
+            total_keys=$((total_keys+new_keys))
+        fi
+        rm -f export.bin export.sig
+        chunks_down=$((chunks_down+1))
+    else
+        echo "Error decoding de-$today-$dehour.zip"
+    fi
+done
+
 
 DE_CONFIG="https://svc90.main.px.t-online.de/version/v1/configuration/country/DE/app_config"
 curl -L $DE_CONFIG --output de-cfg.zip
