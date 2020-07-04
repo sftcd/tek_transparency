@@ -88,7 +88,7 @@ do
     echo "Doing $country"
     $TEK_COUNT $country-[0-9]*.zip >$T2
 
-    grep period $T2 | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n >$T3
+    grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n >$T3
     rm -f $T2
 
     rm -f $T1 $country-$WORLD_CASES

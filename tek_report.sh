@@ -79,6 +79,8 @@ may take a while to get a full picture of what's going on there.</li>
 are days where the number of TEKs are more than double the number of
 cases declared to the WHO, our current (20200703) guess is that represents some
 form of ongoing testing, but we await confirmation of that.</li>
+    <li>On 20200704 we found out about the .de hourly API endpoint so we've
+added grabbing those zips where they're available.</li> 
 
 </ul>
 

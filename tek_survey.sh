@@ -96,6 +96,8 @@ DE_BASE="https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE"
 DE_INDEX="$DE_BASE/date"
 # .de index format so far: ["2020-06-23"]
 # let's home tomorrow will be ["2020-06-23","2020-06-24"]
+echo "======================"
+echo ".de TEKs"
 index_str=`$CURL -L $DE_INDEX` 
 echo "German index string: $index_str"
 dedates=`echo $index_str \
@@ -105,9 +107,11 @@ dedates=`echo $index_str \
                 | sed -e 's/,/ /g' `
 for dedate in $dedates
 do
+
     $CURL -L "$DE_BASE/date/$dedate" --output de-$dedate.zip
     if [[ $? == 0 ]]
     then
+        echo "Got de-$dedate.zip"
         if [ ! -f $ARCHIVE/de-$dedate.zip ]
         then
             cp de-$dedate.zip $ARCHIVE
@@ -116,17 +120,53 @@ do
         $UNZIP "de-$dedate.zip" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            echo "======================"
-            echo ".de TEKs"
             $TEK_DECODE
             new_keys=$?
             total_keys=$((total_keys+new_keys))
         fi
         rm -f export.bin export.sig
+        chunks_down=$((chunks_down+1))
     else
         echo "Error decoding de-$dedate.zip"
     fi
-    chunks_down=$((chunks_down+1))
+
+    # Now check for hourly zips - it's ok that we have dups as we 
+    # will use "sort|uniq" before counting and it's nice to have
+    # all the zips even if we have >1 copy
+    hours_str=`$CURL -L "$DE_BASE/date/$dedate/hour"`
+    dehours=`echo $hours_str \
+                    | sed -e 's/\[//' \
+                    | sed -e 's/]//' \
+                    | sed -e 's/"//g' \
+                    | sed -e 's/,/ /g' `
+    if [[ "$dehours" != "" ]]
+    then
+        echo ".de on $dedate has hours: $dehours"
+    fi
+    for dehour in $dehours
+    do
+        $CURL -L "$DE_BASE/date/$dedate/hour/$dehour" --output de-$dedate-$dehour.zip
+        if [[ $? == 0 ]]
+        then
+            echo "Got de-$dedate-$dehour.zip"
+            if [ ! -f $ARCHIVE/de-$dedate-$dehour.zip ]
+            then
+                cp de-$dedate-$dehour.zip $ARCHIVE
+            fi
+            # try unzip and decode
+            $UNZIP "de-$dedate-$dehour.zip" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
+        else
+            echo "Error decoding de-$dedate-$dehour.zip"
+        fi
+    done
 done
 
 DE_CONFIG="https://svc90.main.px.t-online.de/version/v1/configuration/country/DE/app_config"
