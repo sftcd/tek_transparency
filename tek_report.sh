@@ -75,10 +75,11 @@ of "real" uploads is what is shown less 10. We also learned that the
 Swiss server-side can update the numbers post-facto, so each time our
 script is run we download the last two weeks worth of information. It
 may take a while to get a full picture of what's going on there.</li>
-	<li>We're not at all clear what the German numbers mean. Given there
-are days where the number of TEKs are more than double the number of
-cases declared to the WHO, our current (20200703) guess is that represents some
-form of ongoing testing, but we await confirmation of that.</li>
+	<li>For some reason the German server publishes 10 keys for every
+one really uploaded. (See this <a href="https://github.com/corona-warn-app/cwa-server/pull/609">github issue</a>.)
+I don't really buy that as a privacy win TBH - just rounding up to a 
+multiple of 10 would be fine, but at least I think I now understand
+the numbers.</li>
     <li>On 20200704 we found out about the .de hourly API endpoint so we've
 added grabbing those zips where they're available.</li> 
 
