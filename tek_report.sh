@@ -4,7 +4,7 @@
 
 TARGET_DIR="/var/www/tact/tek-counts"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="it de ch pl"
+COUNTRY_LIST="it de ch pl dk"
 DATADIR=/home/stephen/code/tek_transparency
 ARCHIVE=$DATADIR/all-zips
 
@@ -36,7 +36,7 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Italian, German, Swiss and Polish apps.  We hope to expand that list over
+the Italian, German, Swiss, Polish and Danish apps.  We hope to expand that list over
 time (help welcome!) as more public health authorities adopt the Google/Apple
 Exposure Notification (GAEN) API (if they do!). The code that produces this is
 <a href="https://github.com/sftcd/tek_transparency/">here</a>.  This is
@@ -81,7 +81,9 @@ I don't really buy that as a privacy win TBH - just rounding up to a
 multiple of 10 would be fine, but at least I think I now understand
 the numbers.</li>
     <li>On 20200704 we found out about the .de hourly API endpoint so we've
-added grabbing those zips where they're available.</li> 
+added grabbing those zips where they're available. Not clear if that's
+using the same random-key-padding-multiplier or not, or maybe they
+changed it down to 5 or something.</li> 
 
 </ul>
 

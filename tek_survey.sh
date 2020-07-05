@@ -51,6 +51,8 @@ top_chunk_no=`echo $index_str | awk '{print $4}' | sed -e 's/}//'`
 
 echo "Bottom: $bottom_chunk_no, Top: $top_chunk_no"
 
+echo "======================"
+echo ".it TEKs"
 total_keys=0
 chunks_down=0
 chunk_no=$bottom_chunk_no
@@ -67,8 +69,6 @@ do
         $UNZIP "it-$chunk_no.zip" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            echo "======================"
-            echo ".it TEKs"
             $TEK_DECODE
             new_keys=$?
             total_keys=$((total_keys+new_keys))
@@ -306,8 +306,10 @@ cat ch-cfg.json
 PL_BASE="https://exp.safesafe.app/" 
 PL_CONFIG="dunno; get later"
 
-plzips=`curl -L "$PL_BASE/index.txt" | sed -e 's/\///g'`
 
+echo "======================"
+echo ".pl TEKs"
+plzips=`curl -L "$PL_BASE/index.txt" | sed -e 's/\///g'`
 for plzip in $plzips
 do
     echo "Getting $plzip"
@@ -326,8 +328,6 @@ do
     	    $UNZIP "pl-$plzip" >/dev/null 2>&1
     	    if [[ $? == 0 ]]
     	    then
-        	    echo "======================"
-        	    echo ".pl TEKs"
         	    $TEK_DECODE
         	    new_keys=$?
         	    total_keys=$((total_keys+new_keys))
@@ -338,6 +338,113 @@ do
     else
         echo "Error downloading pl-$plzip"
     fi
+done
+
+# PL config, still don't have a good URL but...
+# to get config needs a post to firebaseremoteconfig.googleapis.com with a ton of ids/authentication.  response is 
+#   {
+#       "appName": "pl.gov.mc.protegosafe",
+#       "entries": {
+#           "diagnosisKeyDownloadConfiguration": "{\"timeoutMobileSeconds\":120,\"timeoutWifiSeconds\":60,\"retryCount\":2}",
+#           "exposureConfiguration": "{\"minimumRiskScore\":4,\"attenuationScores\":[2,5,6,7,8,8,8,8],\"attenuationWeigh\":50,\"daysSinceLastExposureScores\":[7,8,8,8,8,8,8,8],\"daysSinceLastExposureWeight\":50,\"durationScores\":[0,5,6,7,8,8,8,8],\"durationWeight\":50,\"transmissionRiskScores\":[8,8,8,8,8,8,8,8],\"transmissionRiskWeight\":50,\"durationAtAttenuationThresholds\":[48,58]}",
+#           "provideDiagnosisKeysWorkerConfiguration": "{\"repeatIntervalInMinutes\":360,\"backoffDelayInMinutes\":10}",
+#           "riskLevelConfiguration": "{\"maxNoRiskScore\":0,\"maxLowRiskScore\":1499,\"maxMiddleRiskScore\":2999}"
+#       },
+#       "state": "UPDATE"
+#   }
+
+
+# Denmark
+
+DK_BASE="https://app.smittestop.dk/API/v1/diagnostickeys"
+DK_CONFIG="$DK_BASE/exposureconfiguration"
+
+# the DK config needs a weird authorization header
+curl -s -o dk-cfg.json -D - -L $DK_CONFIG -H "Authorization_Mobile: 68iXQyxZOy"
+dkcfg_res=$?
+if [[ "$dkcfg_res" != "0" ]]
+then
+    # since there's a version number in the DK_BASE that'll
+    # presumably change sometime so check to see if that or
+    # some other failure happened
+    # my guess is I might notice this easier than the
+    # absence of the config file
+    echo "Failed to get DK config - curl returned $dkcfg_res"
+fi
+
+echo "======================"
+echo ".dk TEKs"
+
+# For DK, we grab $DK_Base/<date>.0.zip and there's an HTTP header
+# ("FinalForTheDay: False") in the response to us if we still need 
+# to get $DK_BASE/<date>.1.zip
+# we'll do that for the last 14 days then archive any zips that are
+# new or bigger than before
+oneday=$((60*60*24))
+end_time_t=`date -d 00:00 +%s`
+start_time_t=$((`date -d 00:00 +%s`-14*oneday))
+the_time_t=$start_time_t
+while [ $the_time_t -lt $end_time_t ]
+do
+    the_time_t=$((the_time_t+oneday))
+    the_day=`date -d @$the_time_t +%Y-%m-%d`
+    echo "Doing $the_day"
+    more_to_come="True"
+    dk_chunk=0
+    while [[ "$more_to_come" != "" ]]
+    do
+        the_zip_name="$the_day:$dk_chunk.zip"
+        # colons in file names is a bad plan for some OSes
+        the_local_zip_name="dk-$the_day.$dk_chunk.zip"
+        echo "Fetching $the_zip_name" 
+        response_headers=`curl -s -o $the_local_zip_name -D - -L "$DK_BASE/$the_zip_name" -H "Authorization_Mobile: 68iXQyxZOy"`
+        dkzip_res=$?
+        if [[ "$dkzip_res" == "0" ]]
+        then
+            if [ ! -s $the_local_zip_name ]
+            then
+                # for june 28th we seem to get an endless stream of zero-sized non-final files
+                echo "Got empty file for $the_zip_name" 
+                more_to_come=""
+            else
+                echo "Got $the_zip_name" 
+                echo "RH: $response_headers"
+                more_to_come=`echo $response_headers | grep "FinalForTheDay: False"`
+                if [[ "$more_to_come" != "" ]]
+                then
+                    # check in case of a 404 - for today's :0 file we do get FinalForTheDay: False
+                    # but then a 404 for chunk :1 - I guess they're not sure that the :0 is is
+                    # final 'till the day's over, but that's a bit iccky
+                    more_to_come=`echo $response_headers | grep "HTTP/1.1 404 Not Found"`
+                fi
+                dk_chunk=$((dk_chunk+1))
+                if [ ! -f $ARCHIVE/$the_local_zip_name ]
+                then
+                    echo "New .dk file $the_local_zip_name"
+                    cp $the_local_zip_name $ARCHIVE
+                elif ((`stat -c%s "$the_local_zip_name"`>`stat -c%s "$ARCHIVE/$the_local_zip_name"`));then
+                    # if the new one is bigger than archived, then archive new one
+                    echo "Updated/bigger .dk file $the_local_zip_name"
+                    cp $the_local_zip_name $ARCHIVE
+                fi
+                # try unzip and decode
+                $UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE
+                    new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+    	        chunks_down=$((chunks_down+1))
+            fi
+        else
+            echo "Didn't get a $the_zip_name" 
+            more_to_come=""
+        fi
+        # let's not be too insistent
+        sleep 1
+    done    
 done
 
 ## now count 'em and push to web DocRoot
