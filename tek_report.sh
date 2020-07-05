@@ -36,7 +36,10 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Italian, German, Swiss, Polish and Danish apps.  We hope to expand that list over
+the Italian, German, Swiss, Polish and Danish apps. We also check if the
+Latvian server has published any TEKs (so far it has not).</p>  
+
+<p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
 Exposure Notification (GAEN) API (if they do!). The code that produces this is
 <a href="https://github.com/sftcd/tek_transparency/">here</a>.  This is
@@ -96,6 +99,11 @@ touch.</p>
 <p>For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
 
 EOF
+
+if [ -f $ARCHIVE/lv-canary ]
+then
+    cat $ARCHIVE/lv-canary >>$TARGET
+fi
 
 # table of tables with 1 row only 
 echo '<table ><tr>' >>$TARGET

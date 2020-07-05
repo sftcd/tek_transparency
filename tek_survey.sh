@@ -447,6 +447,37 @@ do
     done    
 done
 
+# Latvia
+
+# They seem to have no TEKs published yet so we just check to see if that's
+# changed for now (after grabbing a config)
+
+
+LV_BASE="https://apturicovid-files.spkc.gov.lv"
+LV_CONFIG="$LV_BASE/exposure_configurations/v1/android.json"
+LV_INDEX="$LV_BASE/dkfs/v1/index.txt"
+
+# this seems to work but to produce nothing yet
+
+curl -s -o lv-cfg.json -L "$LV_CONFIG"
+
+response_headers=`curl -s -D - -o lv-index.txt -L "$LV_INDEX" -i`
+
+clzero=`echo $response_headers | grep -c "Content-Length: 0"`
+if [[ "$clzero" == "1" ]]
+then
+    echo "======================"
+    echo ".lv Teks"
+    echo "Still no .lv TEKs at $NOW"
+    echo "======================"
+else
+    if [ ! -f $ARCHIVE/lv-canary ]
+    then
+        echo "<p>Detected something from Latvia at $NOW - please check it out!</p>" >$ARCHIVE/lv-canary
+    fi
+fi
+
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."
