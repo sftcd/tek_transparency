@@ -458,24 +458,34 @@ LV_CONFIG="$LV_BASE/exposure_configurations/v1/android.json"
 LV_INDEX="$LV_BASE/dkfs/v1/index.txt"
 
 # this seems to work but to produce nothing yet
+# started to see connetion/TLS errors on 20200706-120000 UTC
+
+echo "======================"
+echo ".lv Teks"
 
 curl -s -o lv-cfg.json -L "$LV_CONFIG"
+if [[ "$?" != 0 ]]
+then
+	echo "Error grabbing .lv config: $LV_CONFIG"
+fi
 
 response_headers=`curl -s -D - -o lv-index.txt -L "$LV_INDEX" -i`
-
-clzero=`echo $response_headers | grep -c "Content-Length: 0"`
-if [[ "$clzero" == "1" ]]
+if [[ "$?" == 0 ]]
 then
-    echo "======================"
-    echo ".lv Teks"
-    echo "Still no .lv TEKs at $NOW"
-    echo "======================"
+	clzero=`echo $response_headers | grep -c "Content-Length: 0"`
+	if [[ "$clzero" == "1" ]]
+	then
+    	echo "Still no .lv TEKs at $NOW"
+	else
+    	if [ ! -f $ARCHIVE/lv-canary ]
+		then
+        	echo "<p>Detected something from Latvia at $NOW - please check it out!</p>" >$ARCHIVE/lv-canary
+    	fi
+	fi
 else
-    if [ ! -f $ARCHIVE/lv-canary ]
-    then
-        echo "<p>Detected something from Latvia at $NOW - please check it out!</p>" >$ARCHIVE/lv-canary
-    fi
+	echo "Error grabbing .lv index: $LV_INDEX"
 fi
+echo "======================"
 
 
 ## now count 'em and push to web DocRoot
