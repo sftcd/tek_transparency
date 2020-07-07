@@ -100,10 +100,19 @@ touch.</p>
 
 EOF
 
+# Check for Latvian TEKs - there are none yet and we'll need to check
+# how to parse the index
 if [ -f $ARCHIVE/lv-canary ]
 then
     cat $ARCHIVE/lv-canary >>$TARGET
 fi
+
+# Check for Irish TEKs - there are none yet and we'll need to check
+# how to parse the index
+if [ -f $ARCHIVE/ie-canary ]
+then
+    cat $ARCHIVE/ie-canary >>$TARGET
+fi 
 
 # table of tables with 1 row only 
 echo '<table ><tr>' >>$TARGET
