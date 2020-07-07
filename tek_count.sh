@@ -36,4 +36,4 @@ do
 done
 
 END=$(whenisitagain)
-echo "Finished IT at $END, got $total_keys (mod 256 - thanks to bash's 1 octet return)"
+echo "Finished at $END, got $total_keys (mod 256 - thanks to bash's 1 octet return)"
