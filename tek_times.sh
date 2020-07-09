@@ -91,7 +91,7 @@ do
     # upper case variant
     ucountry=${country^^}
     echo "Doing $country"
-    $TEK_COUNT $country-[0-9]*.zip >$T2
+    $TEK_COUNT $country-*.zip >$T2
 
     grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n >$T3
     rm -f $T2
