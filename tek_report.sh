@@ -4,7 +4,7 @@
 
 TARGET_DIR="/var/www/tact/tek-counts"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="it de ch pl dk"
+COUNTRY_LIST="it de ch pl dk at"
 DATADIR=/home/stephen/code/tek_transparency
 ARCHIVE=$DATADIR/all-zips
 
@@ -36,7 +36,7 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Italian, German, Swiss, Polish and Danish apps. We also check if the
+the Italian, German, Swiss, Polish, Danish and Austrian apps. We also check if the
 Irish or Latvian servers have published any TEKs (so far neither has that
 we can see).</p>  
 

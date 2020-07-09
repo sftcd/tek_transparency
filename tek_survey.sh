@@ -398,6 +398,7 @@ do
         the_local_zip_name="dk-$the_day.$dk_chunk.zip"
         echo "Fetching $the_zip_name" 
         response_headers=`curl -s -o $the_local_zip_name -D - -L "$DK_BASE/$the_zip_name" -H "Authorization_Mobile: 68iXQyxZOy"`
+
         dkzip_res=$?
         if [[ "$dkzip_res" == "0" ]]
         then
@@ -444,6 +445,7 @@ do
         fi
         # let's not be too insistent
         sleep 1
+
     done    
 done
 
@@ -487,6 +489,77 @@ else
 fi
 echo "======================"
 
+echo "======================"
+echo ".at Teks"
+
+AT_SOURCE="https://github.com/austrianredcross/stopp-corona-android"
+AT_CONFIG="https://app.prod-rca-coronaapp-fd.net/Rest/v8/configuration"
+AT_BASE="https://cdn.prod-rca-coronaapp-fd.net/"
+AT_INDEX="$AT_BASE/exposures/at/index.json"
+
+curl -s -L $AT_CONFIG \
+    -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
+    -H "x-appid: at.roteskreuz.stopcorona" \
+    -o at.config.json
+curl -s -L $AT_INDEX \
+    -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
+    -H "x-appid: at.roteskreuz.stopcorona" \
+    -o at.index.json
+
+zipnames=`cat at.index.json | sed -e 's/\["/\n/g' | sed -e 's/"\].*//g' | grep exposure`
+
+for zipname in $zipnames
+do
+    echo $zipname
+    zipurl=https://cdn.prod-rca-coronaapp-fd.net/$zipname
+    the_zip_name=`basename $zipname`
+    the_local_zip_name="at-$the_zip_name"
+    curl -s -L $zipurl \
+        -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
+        -H "x-appid: at.roteskreuz.stopcorona" \
+        -o $the_local_zip_name
+
+    atzip_res=$?
+    if [[ "$atzip_res" == "0" ]]
+    then
+        if [ ! -s $the_local_zip_name ]
+        then
+            echo "Got empty file for $the_zip_name" 
+            more_to_come=""
+        else
+            echo "Got $the_zip_name" 
+            at_chunk=$((at_chunk+1))
+            if [ ! -f $ARCHIVE/$the_local_zip_name ]
+            then
+                echo "New .at file $the_local_zip_name"
+                cp $the_local_zip_name $ARCHIVE
+            elif ((`stat -c%s "$the_local_zip_name"`>`stat -c%s "$ARCHIVE/$the_local_zip_name"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .at file $the_local_zip_name"
+                cp $the_local_zip_name $ARCHIVE
+            fi
+            # try unzip and decode
+            $UNZIP "$the_local_zip_name" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
+        fi
+    else
+        echo "Didn't get a $the_zip_name" 
+        more_to_come=""
+    fi
+    # let's not be too insistent
+    sleep 1
+
+done
+
+
+echo "======================"
 
 ## now count 'em and push to web DocRoot
 

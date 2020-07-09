@@ -10,7 +10,7 @@
 TEK_COUNT="/home/stephen/code/tek_transparency/tek_count.sh"
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="it de ch pl dk"
+COUNTRY_LIST="it de ch pl dk at"
 
 if [[ "$#" != "0" ]]
 then
