@@ -88,6 +88,9 @@ the numbers.</li>
 added grabbing those zips where they're available. Not clear if that's
 using the same random-key-padding-multiplier or not, or maybe they
 changed it down to 5 or something.</li> 
+	<li>On 20200709 we added Austria. I'm currently unclear what those
+numbers mean but did check 'em and they do seem to relate to unique
+TEK values.</li>
 
 </ul>
 
