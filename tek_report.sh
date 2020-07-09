@@ -4,7 +4,7 @@
 
 TARGET_DIR="/var/www/tact/tek-counts"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="it de ch pl dk at"
+COUNTRY_LIST="it de ch pl dk at lv"
 DATADIR=/home/stephen/code/tek_transparency
 ARCHIVE=$DATADIR/all-zips
 
@@ -36,8 +36,8 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Italian, German, Swiss, Polish, Danish and Austrian apps. We also check if the
-Irish or Latvian servers have published any TEKs (so far neither has that
+the Italian, German, Swiss, Polish, Danish, Austrian and Latvian apps. We also check if the
+Irish servers have published any TEKs (so far none that
 we can see).</p>  
 
 <p>We hope to expand the list of countries over
@@ -88,9 +88,10 @@ the numbers.</li>
 added grabbing those zips where they're available. Not clear if that's
 using the same random-key-padding-multiplier or not, or maybe they
 changed it down to 5 or something.</li> 
-	<li>On 20200709 we added Austria. I'm currently unclear what those
+	<li>On 20200709 added Austria. I'm currently unclear what those
 numbers mean but did check 'em and they do seem to relate to unique
-TEK values.</li>
+TEK values. We'll see how it goes for a day or two before worrying.</li>
+    <li>On 20200709 added Latvia as there are now a few TEKs.</li>
 
 </ul>
 
@@ -103,13 +104,6 @@ touch.</p>
 <p>For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
 
 EOF
-
-# Check for Latvian TEKs - there are none yet and we'll need to check
-# how to parse the index
-if [ -f $ARCHIVE/lv-canary ]
-then
-    cat $ARCHIVE/lv-canary >>$TARGET
-fi
 
 # Check for Irish TEKs - there are none yet and we'll need to check
 # how to parse the index

@@ -448,45 +448,6 @@ do
 
     done    
 done
-
-# Latvia
-
-# They seem to have no TEKs published yet so we just check to see if that's
-# changed for now (after grabbing a config)
-
-
-LV_BASE="https://apturicovid-files.spkc.gov.lv"
-LV_CONFIG="$LV_BASE/exposure_configurations/v1/android.json"
-LV_INDEX="$LV_BASE/dkfs/v1/index.txt"
-
-# this seems to work but to produce nothing yet
-# started to see connetion/TLS errors on 20200706-120000 UTC
-
-echo "======================"
-echo ".lv Teks"
-
-curl -s -o lv-cfg.json -L "$LV_CONFIG"
-if [[ "$?" != 0 ]]
-then
-	echo "Error grabbing .lv config: $LV_CONFIG"
-fi
-
-response_headers=`curl -s -D - -o lv-index.txt -L "$LV_INDEX" -i`
-if [[ "$?" == 0 ]]
-then
-	clzero=`echo $response_headers | grep -c "Content-Length: 0"`
-	if [[ "$clzero" == "1" ]]
-	then
-    	echo "Still no .lv TEKs at $NOW"
-	else
-    	if [ ! -f $ARCHIVE/lv-canary ]
-		then
-        	echo "<p>Detected something from Latvia at $NOW - please check it out!</p>" >$ARCHIVE/lv-canary
-    	fi
-	fi
-else
-	echo "Error grabbing .lv index: $LV_INDEX"
-fi
 echo "======================"
 
 echo "======================"
@@ -558,7 +519,70 @@ do
 
 done
 
+echo "======================"
 
+# Latvia
+echo "======================"
+echo ".lv Teks"
+LV_BASE="https://apturicovid-files.spkc.gov.lv"
+LV_CONFIG="$LV_BASE/exposure_configurations/v1/android.json"
+LV_INDEX="$LV_BASE/dkfs/v1/index.txt"
+curl -s -o lv-cfg.json -L "$LV_CONFIG"
+if [[ "$?" != 0 ]]
+then
+	echo "Error grabbing .lv config: $LV_CONFIG"
+fi
+response_headers=`curl -s -D - -o lv-index.txt -L "$LV_INDEX" -i`
+if [[ "$?" == 0 ]]
+then
+	clzero=`echo $response_headers | grep -c "Content-Length: 0"`
+	if [[ "$clzero" == "1" ]]
+	then
+    	echo "no .lv TEKs at $NOW"
+	else
+        urls2get=`cat lv-index.txt | grep https`
+        for theurl in $urls2get
+        do
+            the_zip_name=$theurl
+            the_local_zip_name="lv-`basename $theurl`"
+            curl -s -L $theurl -o $the_local_zip_name
+            lvzip_res=$?
+            if [[ "$lvzip_res" == "0" ]]
+            then
+                if [ ! -s $the_local_zip_name ]
+                then
+                    echo "Got empty file for $the_zip_name" 
+                else
+                    echo "Got $the_zip_name" 
+                    lv_chunk=$((lv_chunk+1))
+                    if [ ! -f $ARCHIVE/$the_local_zip_name ]
+                    then
+                        echo "New .lv file $the_local_zip_name"
+                        cp $the_local_zip_name $ARCHIVE
+                    elif ((`stlv -c%s "$the_local_zip_name"`>`stlv -c%s "$ARCHIVE/$the_local_zip_name"`));then
+                        # if the new one is bigger than archived, then archive new one
+                        echo "Updated/bigger .lv file $the_local_zip_name"
+                        cp $the_local_zip_name $ARCHIVE
+                    fi
+                    # try unzip and decode
+                    $UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
+                fi
+            else
+                echo "Didn't get a $the_zip_name" 
+            fi
+            # let's not be too insistent
+            sleep 1
+        done
+    fi
+fi
 echo "======================"
 
 ## now count 'em and push to web DocRoot
