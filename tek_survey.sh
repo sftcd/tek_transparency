@@ -4,7 +4,7 @@
 
 # script to grab TEKs for various places, and stash 'em
 
-CURL=/usr/bin/curl -s
+CURL="/usr/bin/curl -s"
 UNZIP=/usr/bin/unzip
 TEK_DECODE=/home/stephen/code/tek_transparency/tek_file_decode.py
 TEK_TIMES=/home/stephen/code/tek_transparency/tek_times.sh
