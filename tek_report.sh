@@ -4,7 +4,7 @@
 
 TARGET_DIR="/var/www/tact/tek-counts"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="it de ch pl dk at lv"
+COUNTRY_LIST="ie it de ch pl dk at lv"
 DATADIR=/home/stephen/code/tek_transparency
 ARCHIVE=$DATADIR/all-zips
 
@@ -36,7 +36,7 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Italian, German, Swiss, Polish, Danish, Austrian and Latvian apps. We also check if the
+the Irish, Italian, German, Swiss, Polish, Danish, Austrian and Latvian apps. We also check if the
 Irish servers have published any TEKs (so far none that
 we can see).</p>  
 
@@ -92,6 +92,7 @@ changed it down to 5 or something.</li>
 numbers mean but did check 'em and they do seem to relate to unique
 TEK values. We'll see how it goes for a day or two before worrying.</li>
     <li>On 20200709 added Latvia as there are now a few TEKs.</li>
+    <li>Added Ireland on 20200710</li>
 
 </ul>
 

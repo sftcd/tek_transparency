@@ -4,7 +4,7 @@
 
 # script to grab TEKs for various places, and stash 'em
 
-CURL=/usr/bin/curl
+CURL=/usr/bin/curl -s
 UNZIP=/usr/bin/unzip
 TEK_DECODE=/home/stephen/code/tek_transparency/tek_file_decode.py
 TEK_TIMES=/home/stephen/code/tek_transparency/tek_times.sh
@@ -37,6 +37,87 @@ then
     cd /tmp
 else
     cd $DATADIR/$NOW
+fi
+
+# Ireland
+
+# used to notify us that something went wrong
+CANARY="$ARCHIVE/ie-canary"
+IE_BASE="https://app.covidtracker.ie/api"
+IE_CONFIG="$IE_BASE/settings/"
+IE_RTFILE="/home/stephen/ie-refreshToken.txt"
+
+$CURL -o ie-cfg.json -L $IE_CONFIG
+
+echo "======================"
+echo ".ie TEKs"
+
+if [ ! -f $IE_RTFILE ]
+then
+    if [ ! -f $CANARY ]
+    then
+        echo "<p>Skipping .ie because refreshToken access failed at $NOW.</p>" >$CANARY
+    fi
+    echo "Skipping .ie because refreshToken access failed at $NOW.</p>" 
+else 
+
+	refreshToken=`cat $IE_RTFILE`
+	tok_json=`$CURL -s -L https://app.covidtracker.ie/api/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
+	if [[ "$?" != 0 ]]
+	then
+	    if [ ! -f $CANARY ]
+	    then
+	        echo "<p>Skipping .ie because refreshToken use failed at $NOW.</p>" >$CANARY
+	    fi
+	    echo "Skipping .ie because refreshToken use failed at $NOW."
+    else
+	
+		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+		if [[ "$newtoken" == "" ]]
+		then
+		    echo "No sign of an authToken, sorry - Skipping .ie"
+        else
+			index_str=`$CURL -s -L "$IE_BASE/exposures/?since=0&limit=1" -H "Authorization: Bearer $newtoken"` 
+			echo "Irish index string: $index_str"
+			iefiles=""
+			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+			do
+			    _jq() {
+			             echo ${row} | base64 --decode | jq -r ${1}
+			    }
+			    iefiles="$iefiles $(_jq '.path')"
+			done
+			for iefile in $iefiles
+			do
+			    echo "Getting $iefile"
+			    iebname=`basename $iefile`
+			    $CURL -s -L "$IE_BASE/data/$iefile" --output ie-$iebname -H "Authorization: Bearer $newtoken"
+			    if [[ $? == 0 ]]
+			    then
+                    # we should be good now, so remove canary
+                    rm -f $CANARY
+			        echo "Got ie-$iebname"
+			        if [ ! -f $ARCHIVE/ie-$iebname ]
+			        then
+			            cp ie-$iebname $ARCHIVE
+			        fi
+			        # try unzip and decode
+			        $UNZIP "ie-$iebname" >/dev/null 2>&1
+			        if [[ $? == 0 ]]
+			        then
+			            $TEK_DECODE
+			            new_keys=$?
+			            total_keys=$((total_keys+new_keys))
+			        fi
+			        rm -f export.bin export.sig
+			        chunks_down=$((chunks_down+1))
+			    else
+			        echo "Error decoding ie-$iebname"
+			    fi
+			done
+	
+		fi
+	fi
 fi
 
 # italy
@@ -80,7 +161,7 @@ do
     chunk_no=$((chunk_no+1))
     chunks_down=$((chunks_down+1))
 done
-curl -L $IT_CONFIG --output it-cfg.json
+$CURL -L $IT_CONFIG --output it-cfg.json
 echo "======================"
 echo ".it config:"
 cat it-cfg.json
@@ -90,7 +171,7 @@ echo "======================"
 # Germany 
 
 # not yet but, do stuff once this is non-empty 
-# curl -L https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE/date -i
+# $CURL -L https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE/date -i
 
 DE_BASE="https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE"
 DE_INDEX="$DE_BASE/date"
@@ -216,7 +297,7 @@ done
 
 
 DE_CONFIG="https://svc90.main.px.t-online.de/version/v1/configuration/country/DE/app_config"
-curl -L $DE_CONFIG --output de-cfg.zip
+$CURL -L $DE_CONFIG --output de-cfg.zip
 if [ -f de-cfg.zip ]
 then
     $UNZIP de-cfg.zip
@@ -296,7 +377,7 @@ do
 done
 
 CH_CONFIG="https://www.pt-a.bfs.admin.ch/v1/config?appversion=1&osversion=ios&buildnr=1"
-curl -L $CH_CONFIG --output ch-cfg.json
+$CURL -L $CH_CONFIG --output ch-cfg.json
 echo ".ch config:"
 cat ch-cfg.json
 
@@ -309,11 +390,11 @@ PL_CONFIG="dunno; get later"
 
 echo "======================"
 echo ".pl TEKs"
-plzips=`curl -L "$PL_BASE/index.txt" | sed -e 's/\///g'`
+plzips=`$CURL -L "$PL_BASE/index.txt" | sed -e 's/\///g'`
 for plzip in $plzips
 do
     echo "Getting $plzip"
-    curl -L "$PL_BASE/$plzip" --output pl-$plzip
+    $CURL -L "$PL_BASE/$plzip" --output pl-$plzip
     if [[ $? == 0 ]]
     then
 	    if [ ! -s pl-$plzip ]
@@ -360,7 +441,7 @@ DK_BASE="https://app.smittestop.dk/API/v1/diagnostickeys"
 DK_CONFIG="$DK_BASE/exposureconfiguration"
 
 # the DK config needs a weird authorization header
-curl -s -o dk-cfg.json -D - -L $DK_CONFIG -H "Authorization_Mobile: 68iXQyxZOy"
+$CURL -o dk-cfg.json -D - -L $DK_CONFIG -H "Authorization_Mobile: 68iXQyxZOy"
 dkcfg_res=$?
 if [[ "$dkcfg_res" != "0" ]]
 then
@@ -397,7 +478,7 @@ do
         # colons in file names is a bad plan for some OSes
         the_local_zip_name="dk-$the_day.$dk_chunk.zip"
         echo "Fetching $the_zip_name" 
-        response_headers=`curl -s -o $the_local_zip_name -D - -L "$DK_BASE/$the_zip_name" -H "Authorization_Mobile: 68iXQyxZOy"`
+        response_headers=`$CURL -o $the_local_zip_name -D - -L "$DK_BASE/$the_zip_name" -H "Authorization_Mobile: 68iXQyxZOy"`
 
         dkzip_res=$?
         if [[ "$dkzip_res" == "0" ]]
@@ -458,11 +539,11 @@ AT_CONFIG="https://app.prod-rca-coronaapp-fd.net/Rest/v8/configuration"
 AT_BASE="https://cdn.prod-rca-coronaapp-fd.net/"
 AT_INDEX="$AT_BASE/exposures/at/index.json"
 
-curl -s -L $AT_CONFIG \
+$CURL -L $AT_CONFIG \
     -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
     -H "x-appid: at.roteskreuz.stopcorona" \
     -o at.config.json
-curl -s -L $AT_INDEX \
+$CURL -L $AT_INDEX \
     -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
     -H "x-appid: at.roteskreuz.stopcorona" \
     -o at.index.json
@@ -475,7 +556,7 @@ do
     zipurl=https://cdn.prod-rca-coronaapp-fd.net/$zipname
     the_zip_name=`basename $zipname`
     the_local_zip_name="at-$the_zip_name"
-    curl -s -L $zipurl \
+    $CURL -L $zipurl \
         -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
         -H "x-appid: at.roteskreuz.stopcorona" \
         -o $the_local_zip_name
@@ -527,12 +608,12 @@ echo ".lv Teks"
 LV_BASE="https://apturicovid-files.spkc.gov.lv"
 LV_CONFIG="$LV_BASE/exposure_configurations/v1/android.json"
 LV_INDEX="$LV_BASE/dkfs/v1/index.txt"
-curl -s -o lv-cfg.json -L "$LV_CONFIG"
+$CURL -o lv-cfg.json -L "$LV_CONFIG"
 if [[ "$?" != 0 ]]
 then
 	echo "Error grabbing .lv config: $LV_CONFIG"
 fi
-response_headers=`curl -s -D - -o lv-index.txt -L "$LV_INDEX" -i`
+response_headers=`$CURL -D - -o lv-index.txt -L "$LV_INDEX" -i`
 if [[ "$?" == 0 ]]
 then
 	clzero=`echo $response_headers | grep -c "Content-Length: 0"`
@@ -545,7 +626,7 @@ then
         do
             the_zip_name=$theurl
             the_local_zip_name="lv-`basename $theurl`"
-            curl -s -L $theurl -o $the_local_zip_name
+            $CURL -L $theurl -o $the_local_zip_name
             lvzip_res=$?
             if [[ "$lvzip_res" == "0" ]]
             then
