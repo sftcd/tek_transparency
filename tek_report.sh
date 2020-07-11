@@ -93,6 +93,8 @@ numbers mean but did check 'em and they do seem to relate to unique
 TEK values. We'll see how it goes for a day or two before worrying.</li>
     <li>On 20200709 added Latvia as there are now a few TEKs.</li>
     <li>Added Ireland on 20200710</li>
+    <li>20200711: Took a look at the <a href="https://github.com/austrianredcross/RCA-CoronaApp-Backend.git">Austrian server code</a>
+and it does have a configured minimum and jitter and randomly pads - search for ensureMinNumExposures(). No idea why they've picked such big numbers though.</li>
 
 </ul>
 
