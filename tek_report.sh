@@ -95,6 +95,10 @@ TEK values. We'll see how it goes for a day or two before worrying.</li>
     <li>Added Ireland on 20200710</li>
     <li>20200711: Took a look at the <a href="https://github.com/austrianredcross/RCA-CoronaApp-Backend.git">Austrian server code</a>
 and it does have a configured minimum and jitter and randomly pads - search for ensureMinNumExposures(). No idea why they've picked such big numbers though.</li>
+	<li>20200713: started collecting numbers for Spain, where they're
+running a trial apparently, but not clear that
+the server for their trial will be used when it goes live so we'll not 
+yet show the trial numbers.</li>
 
 </ul>
 
