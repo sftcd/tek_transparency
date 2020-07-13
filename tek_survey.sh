@@ -666,6 +666,80 @@ then
 fi
 echo "======================"
 
+# Spain
+
+# This is still in test so we'll collect, but not yet report
+
+# a friend sent me the apk for the spanish app that's being tested just now (in
+# the canaries i think).  to get the config settings use GET
+# https://dqarr2dc0prei.cloudfront.net/configuration/settings to get TEKs use GET
+# https://dqarr2dc0prei.cloudfront.net/dp3t/v1/gaen/exposed/1594512000000 (which
+# responds with 204 No Content) and GET
+# https://dqarr2dc0prei.cloudfront.net/dp3t/v1/gaen/exposed/1594425600000 which
+# gives a TEK file (signed as a demo i think)
+
+# Seems to be same as .es scheme, see the comments there
+# (Yeah, we should make a function, can do it later, but
+# we should also start to use a real DB maybe so TBD)
+
+ES_BASE="https://dqarr2dc0prei.cloudfront.net/dp3t/v1/gaen/exposed"
+now=`date +%s`
+midnight="`date -d "00:00:00Z" +%s`000"
+
+# one day in milliseconds
+day=$((60*60*24*1000))
+
+echo "======================"
+echo ".es TEKs"
+for fno in {0..14}
+do
+	echo "Doing .es file $fno" 
+	midnight=$((midnight-fno*day))
+	$CURL -L "$ES_BASE/$midnight" --output es-$midnight.zip
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .es sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s es-$midnight.zip ]
+		then
+			echo "Empty or non-existent downloaded Swiss file: es-$midnight.zip ($fno)"
+		else
+    		if [ ! -f $ARCHIVE/es-$midnight.zip ]
+    		then
+				echo "New .es file $fno es-$midnight" 
+        		cp es-$midnight.zip $ARCHIVE
+			elif ((`stat -c%s "es-$midnight.zip"`>`stat -c%s "$ARCHIVE/es-$midnight.zip"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .es file $fno es-$midnight" 
+        		cp es-$midnight.zip $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "es-$midnight.zip" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE
+        		new_keys=$?
+        			total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading es-$midnight.zip (file $fno)"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+ES_CONFIG="https://dqarr2dc0prei.cloudfront.net/configuration/settings"
+$CURL -L $ES_CONFIG --output es-cfg.json
+echo ".es config:"
+cat es-cfg.json
+
+
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."

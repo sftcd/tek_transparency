@@ -11,7 +11,7 @@ TEK_COUNT="/home/stephen/code/tek_transparency/tek_count.sh"
 CURL="/usr/bin/curl -s"
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie it de ch pl dk at lv"
+COUNTRY_LIST="ie it de ch pl dk at lv es"
 
 if [[ "$#" != "0" ]]
 then
