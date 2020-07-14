@@ -704,7 +704,7 @@ do
 		# app?) 
 		if [ ! -s es-$midnight.zip ]
 		then
-			echo "Empty or non-existent downloaded Swiss file: es-$midnight.zip ($fno)"
+			echo "Empty or non-existent downloaded Spanish file: es-$midnight.zip ($fno)"
 		else
     		if [ ! -f $ARCHIVE/es-$midnight.zip ]
     		then
