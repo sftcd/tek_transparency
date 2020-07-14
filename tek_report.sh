@@ -72,7 +72,7 @@ for those numbers is required. We are trying to find good answers for that.
 (And welcome inputs!)
 
 <ul>
-	<li>On 20200702 we learned (via personal communication) that the Swiss 
+	<li>On 20200702 we learned (from Paul-Olivier Dehaye <paulolivier@personaldata.io>) that the Swiss 
 key server always emits 10 "synthetic" TEKs per
 day as a method of exercising the client code (a fine idea), so the number
 of "real" uploads is what is shown less 10. We also learned that the
