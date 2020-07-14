@@ -321,7 +321,7 @@ echo "======================"
 # june 20
 CH_BASE="https://www.pt.bfs.admin.ch/v1/gaen/exposed"
 now=`date +%s`
-midnight="`date -d "00:00:00Z" +%s`000"
+today_midnight="`date -d "00:00:00Z" +%s`000"
 
 # it turns out (personal communication) that the .ch scheme is to change
 # the content of files but re-use the file name. I think that means that
@@ -337,7 +337,7 @@ echo ".ch TEKs"
 for fno in {0..14}
 do
 	echo "Doing .ch file $fno" 
-	midnight=$((midnight-fno*day))
+	midnight=$((today_midnight-fno*day))
 	$CURL -L "$CH_BASE/$midnight" --output ch-$midnight.zip
 	if [[ $? == 0 ]]
 	then
@@ -684,7 +684,7 @@ echo "======================"
 
 ES_BASE="https://dqarr2dc0prei.cloudfront.net/dp3t/v1/gaen/exposed"
 now=`date +%s`
-midnight="`date -d "00:00:00Z" +%s`000"
+today_midnight="`date -d "00:00:00Z" +%s`000"
 
 # one day in milliseconds
 day=$((60*60*24*1000))
@@ -694,7 +694,7 @@ echo ".es TEKs"
 for fno in {0..14}
 do
 	echo "Doing .es file $fno" 
-	midnight=$((midnight-fno*day))
+	midnight=$((today_midnight-fno*day))
 	$CURL -L "$ES_BASE/$midnight" --output es-$midnight.zip
 	if [[ $? == 0 ]]
 	then
