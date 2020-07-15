@@ -381,6 +381,17 @@ $CURL -L $CH_CONFIG --output ch-cfg.json
 echo ".ch config:"
 cat ch-cfg.json
 
+
+# This URL has the number of active users of the app
+ACTIVES_URL="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-01/master"
+$CURL -L $ACTIVES_URL -o ch-actives.json
+# This URL contains text that says how many people uploaded codes (presumably after a positive test)
+# Very oddly, the TLS server cert for that uses some oddball CA unknown to curl or wget 
+# (that's CN=QuoVadis Global SSL ICA G3,O=QuoVadis Limited,C=BM) so we'll ignore cert checks
+# just this once;-)
+CODES_URL="https://www.experimental.bfs.admin.ch/expstat/en/home/innovative-methods/swisscovid-app-monitoring.html"
+$CURL --insecure -L $CODES_URL -o ch-codes.html
+
 # Poland
 
 # yes - we end up with two slashes between hostname and path for some reason!
