@@ -36,9 +36,7 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Irish, Italian, German, Swiss, Polish, Danish, Austrian and Latvian apps. We also check if the
-Irish servers have published any TEKs (so far none that
-we can see).</p>  
+the Irish, Italian, German, Swiss, Polish, Danish, Austrian and Latvian apps. </p>  
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -47,7 +45,7 @@ Exposure Notification (GAEN) API (if they do!). The code that produces this is
 produced as part of our <a href="https://down.dsg.cs.tcd.ie/tact/">TACT</a>
 project.</p>
 
-<p>The tables below show the counts of TEK for each of the days listed. Where
+<p>The tables below show the counts of TEK valid on each of the days listed. Where
 there were no TEKs for a given day, there is no row in the file. The TEK column
 reports the number of TEKs that were published, being considered useful for
 contact tracing on that day, so do not represent the number of positive cases
