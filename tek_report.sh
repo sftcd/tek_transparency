@@ -98,9 +98,9 @@ running a trial apparently, but not clear that
 the server for their trial will be used when it goes live so we'll not 
 yet show the trial numbers.</li>
     <li>20200714: fixed a script bug that affected Swiss (and Spanish
-in future) TEK retrieval logic (thanks again to Paul-Oliver Dehane!). 
-That might affect older Swiss counts but should (assuming fix is
-correct) July is correct.</li>
+in future) TEK retrieval logic (thanks again to Paul-Olivier Dehaye!). 
+That might affect older Swiss counts but (assuming fix is
+correct) those of July should be correct.</li>
 
 </ul>
 
