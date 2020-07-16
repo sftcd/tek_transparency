@@ -2,8 +2,10 @@
 
 # count the number of new TEKs each day from Italy
 
+x=${HOME:='/home/stephen'}
+x=${TOP:="$HOME/code/tek_transparency"}
 # The trick here is to depend on the file dates.
-TEK_COUNT="/home/stephen/code/tek_transparency/tek_count.sh"
+TEK_COUNT="$TOP/tek_count.sh"
 
 for file in it-*.zip
 do

@@ -4,15 +4,22 @@
 
 # script to grab TEKs for various places, and stash 'em
 
+# For a cronjob set HOME as needed in the crontab
+# and then the rest should be ok, but you can override
+# any of these you want
+x=${HOME:='/home/stephen'}
+x=${DOCROOT:='/var/www/tact/tek-counts/'}
+x=${TOP:="$HOME/code/tek_transparency"}
+x=${DATADIR:="$TOP"}
+x=${ARCHIVE:="$DATADIR/all-zips"}
+
+TEK_DECODE="$TOP/tek_file_decode.py"
+TEK_TIMES="$TOP/tek_times.sh"
+TEK_REPORT="$TOP/tek_report.sh"
+DE_CFG_DECODE="$TOP/de_tek_cfg_decode.py"
+
 CURL="/usr/bin/curl -s"
-UNZIP=/usr/bin/unzip
-TEK_DECODE=/home/stephen/code/tek_transparency/tek_file_decode.py
-TEK_TIMES=/home/stephen/code/tek_transparency/tek_times.sh
-TEK_REPORT=/home/stephen/code/tek_transparency/tek_report.sh
-DOCROOT=/var/www/tact/tek-counts/
-DE_CFG_DECODE=/home/stephen/code/tek_transparency/de_tek_cfg_decode.py
-DATADIR=/home/stephen/code/tek_transparency
-ARCHIVE=$DATADIR/all-zips
+UNZIP="/usr/bin/unzip"
 
 function whenisitagain()
 {
@@ -45,7 +52,7 @@ fi
 CANARY="$ARCHIVE/ie-canary"
 IE_BASE="https://app.covidtracker.ie/api"
 IE_CONFIG="$IE_BASE/settings/"
-IE_RTFILE="/home/stephen/ie-refreshToken.txt"
+IE_RTFILE="$HOME/ie-refreshToken.txt"
 
 $CURL -o ie-cfg.json -L $IE_CONFIG
 

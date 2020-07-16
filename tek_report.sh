@@ -2,11 +2,18 @@
 
 # turn the CSVs into a HTML page to be nicer to readers
 
-TARGET_DIR="/var/www/tact/tek-counts"
+# For a cronjob set HOME as needed in the crontab
+# and then the rest should be ok, but you can override
+# any of these you want
+x=${HOME:='/home/stephen'}
+x=${DOCROOT:='/var/www/tact/tek-counts/'}
+x=${TOP:="$HOME/code/tek_transparency"}
+x=${DATADIR:="$TOP"}
+x=${ARCHIVE:="$DATADIR/all-zips"}
+
+TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index.html"
 COUNTRY_LIST="ie it de ch pl dk at lv"
-DATADIR=/home/stephen/code/tek_transparency
-ARCHIVE=$DATADIR/all-zips
 
 function whenisitagain()
 {
@@ -101,6 +108,10 @@ yet show the trial numbers.</li>
 in future) TEK retrieval logic (thanks again to Paul-Olivier Dehaye!). 
 That did affect older Swiss counts displayed on this page but (assuming fix is
 correct) the numbers below should now be correct.</li>
+    <li>20200716: Just to note that the Irish case numbers (at least) are
+offset by a day from what's reported in local media. That's ok though
+because any use of those numbers will likely be based on 7 or 14 day
+running averages.</li>
 
 </ul>
 

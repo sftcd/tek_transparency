@@ -4,7 +4,14 @@
 
 # script to count TEKs for various places, and stash 'em
 
-TEK_DECODE=/home/stephen/code/tek_transparency/tek_file_decode.py
+# For a cronjob set HOME as needed in the crontab
+# and then the rest should be ok, but you can override
+# any of these you want
+x=${HOME:='/home/stephen'}
+x=${TOP:="$HOME/code/tek_transparency"}
+
+TEK_DECODE="$TOP/tek_file_decode.py"
+
 
 function whenisitagain()
 {

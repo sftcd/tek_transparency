@@ -6,8 +6,13 @@
 
 # set -x
 
-# script we use
-TEK_COUNT="/home/stephen/code/tek_transparency/tek_count.sh"
+# For a cronjob set HOME as needed in the crontab
+# and then the rest should be ok, but you can override
+# any of these you want
+x=${HOME:='/home/stephen'}
+x=${TOP:="$HOME/code/tek_transparency"}
+TEK_COUNT="$TOP/tek_count.sh"
+
 CURL="/usr/bin/curl -s"
 
 # countries to do by default, or just one if given on command line
