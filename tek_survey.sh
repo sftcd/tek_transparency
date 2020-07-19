@@ -341,7 +341,7 @@ day=$((60*60*24*1000))
 
 echo "======================"
 echo ".ch TEKs"
-for fno in {0..14}
+for fno in {0..15}
 do
 	echo "Doing .ch file $fno" 
 	midnight=$((today_midnight-fno*day))
