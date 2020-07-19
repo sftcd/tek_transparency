@@ -112,6 +112,7 @@ correct) the numbers below should now be correct.</li>
 offset by a day from what's reported in local media. That's ok though
 because any use of those numbers will likely be based on 7 or 14 day
 running averages.</li>
+   <li>20200718 via Paul-Olivier Dehaye, on the Swiss system: On 20200716 around 2pm, UTC 144 debugging TEKs were introduced in the Swiss database. On 20200717 around noon UTC, 11 of those were removed. Half an hour later the practice of adding 10 dummy TEKs each day was dropped, with the bundles still available on the server being purged retroactively. The counts below reflect the maximum number of keys that were released on any given day. For some (at least 07.13 and after), the counts below reflects the post-purge count, since new keys added after the purge caught up with the pre-purge record. For others (at least 07.05 and before), the counts below reflects the pre-purge count, since no new keys will be added in the future in order to make up for those purged. We will clarify what happens between 07.06 and 07.12 later.</li>
 
 </ul>
 
