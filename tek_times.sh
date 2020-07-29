@@ -54,13 +54,8 @@ WORLD_CASES="world-cases.csv"
 TARGET="tek-times.csv"
 
 # some temp files
-T1="t1.tmp"
 T2="t2.tmp"
 T3="t3.tmp"
-T4="t4.tmp"
-T5="t5.tmp"
-
-rm -f $TARGET $T1
 
 do_who="no"
 # use a WHO file is it's fresh enough
@@ -94,19 +89,20 @@ fi
     
 for country in $COUNTRY_LIST
 do
+    echo "Country,Date,TEKs,Cases" >$country-$TARGET
     # upper case variant
     ucountry=${country^^}
     echo "Doing $country"
     $TEK_COUNT $country-*.zip >$T2
 
-    grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n >$T3
+    grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
     rm -f $T2
 
-    rm -f $T1 $country-$WORLD_CASES
-    for tm in `cat $T3`
+    for cnttm in `cat $T3`
     do 
+        tm=`echo $cnttm | awk -F, '{print $2}'`
+        cnt=`echo $cnttm | awk -F, '{print $1}'`
         td=`date +%Y-%m-%d -d @$tm` 
-        echo $td >>$T1  
         day=`echo $td | awk -F- '{print $3}'`
         month=`echo $td | awk -F- '{print $2}'`
         year=`echo $td | awk -F- '{print $1}'`
@@ -116,34 +112,16 @@ do
         then
             grep ",$ucountry," $WHO_WORLD_CASES | \
                 grep "^$year-$month-$day" | \
-                awk -F, '{print "'$country','$td',"$5}' >>$country-$T4
+                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$country-$TARGET
         else
             grep ",$ucountry," $WORLD_CASES | \
                 grep ",$((10#$day)),$((10#$month)),$year" | \
-                awk -F, '{print "'$country','$td',"$5}' >>$country-$T4
+                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$country-$TARGET
         fi
     done
+    rm -f $T3
 
-    rm -f $T3 $country-$T5
-    if [ -f $T1 ]
-    then
-        cat $T1 | uniq -c | awk '{print "'$country',"$2","$1}' >>$country-$T5
-		rm -f $T1
-    else
-        echo "No dates for $country sorry"
-    fi
 done
 
-rm -f $country-$TARGET
-for country in $COUNTRY_LIST
-do
-    # get rid of dupes
-    uniq $country-$T4 >$country-$WORLD_CASES
-    # lastly do a join
-	echo "Country,Date,TEKs,Cases" >$country-$TARGET
-    paste -d, $country-$T5 $country-$WORLD_CASES | awk -F, '{print $1","$2","$3","$6}' >>$country-$TARGET
-    # clean up
-    rm -f $country-$T4 $country-$T5 $country-$WORLD_CASES
-done
 
 
