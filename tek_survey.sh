@@ -658,7 +658,7 @@ then
                     then
                         echo "New .lv file $the_local_zip_name"
                         cp $the_local_zip_name $ARCHIVE
-                    elif ((`stlv -c%s "$the_local_zip_name"`>`stlv -c%s "$ARCHIVE/$the_local_zip_name"`));then
+                    elif ((`stat -c%s "$the_local_zip_name"`>`stat -c%s "$ARCHIVE/$the_local_zip_name"`));then
                         # if the new one is bigger than archived, then archive new one
                         echo "Updated/bigger .lv file $the_local_zip_name"
                         cp $the_local_zip_name $ARCHIVE
