@@ -54,7 +54,7 @@ IE_BASE="https://app.covidtracker.ie/api"
 IE_CONFIG="$IE_BASE/settings/"
 IE_RTFILE="$HOME/ie-refreshToken.txt"
 
-$CURL -o ie-cfg.json -L $IE_CONFIG
+$CURL --output ie-cfg.json -L $IE_CONFIG
 
 echo "======================"
 echo ".ie TEKs"
@@ -69,7 +69,7 @@ then
 else 
 
 	refreshToken=`cat $IE_RTFILE`
-	tok_json=`$CURL -s -L https://app.covidtracker.ie/api/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
+	tok_json=`$CURL -s -L $IE_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
 	if [[ "$?" != 0 ]]
 	then
 	    if [ ! -f $CANARY ]
