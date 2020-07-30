@@ -106,8 +106,8 @@ do
         day=`echo $td | awk -F- '{print $3}'`
         month=`echo $td | awk -F- '{print $2}'`
         year=`echo $td | awk -F- '{print $1}'`
-        # month and day can have leading zeros - the trick below
-        # zaps those:-)
+        # month and day can have leading zeros - the tricks below
+        # zap those:-)
         if [[ "$do_who" == "yes" ]]
         then
             grep ",$ucountry," $WHO_WORLD_CASES | \
@@ -119,6 +119,17 @@ do
                 awk -F, '{print "'$country','$td','$cnt',"$5}' >>$country-$TARGET
         fi
     done
+    # as the cases file can be 24 hours old, the TEKs can get
+    # ahead of that, so we'll output an empty cases number in
+    # that case, we won't see $td in $country-$TARGET yet so
+    # add in a line in that case - that should only happend 
+	# for the most recent day, so this can be outside the
+	# loop
+    addedteks=`grep -c $td $country-$TARGET`
+    if [[ "$addedteks" == "0" ]]
+    then
+        echo "$country,$td,$cnt," >>$country-$TARGET
+    fi
     rm -f $T3
 
 done
