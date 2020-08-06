@@ -49,7 +49,7 @@ fi
 # Ireland
 
 # used to notify us that something went wrong
-CANARY="$ARCHIVE/ie-canary"
+IE_CANARY="$ARCHIVE/ie-canary"
 IE_BASE="https://app.covidtracker.ie/api"
 IE_CONFIG="$IE_BASE/settings/"
 IE_RTFILE="$HOME/ie-refreshToken.txt"
@@ -61,9 +61,9 @@ echo ".ie TEKs"
 
 if [ ! -f $IE_RTFILE ]
 then
-    if [ ! -f $CANARY ]
+    if [ ! -f $IE_CANARY ]
     then
-        echo "<p>Skipping .ie because refreshToken access failed at $NOW.</p>" >$CANARY
+        echo "<p>Skipping .ie because refreshToken access failed at $NOW.</p>" >$IE_CANARY
     fi
     echo "Skipping .ie because refreshToken access failed at $NOW.</p>" 
 else 
@@ -72,9 +72,9 @@ else
 	tok_json=`$CURL -s -L $IE_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
 	if [[ "$?" != 0 ]]
 	then
-	    if [ ! -f $CANARY ]
+	    if [ ! -f $IE_CANARY ]
 	    then
-	        echo "<p>Skipping .ie because refreshToken use failed at $NOW.</p>" >$CANARY
+	        echo "<p>Skipping .ie because refreshToken use failed at $NOW.</p>" >$IE_CANARY
 	    fi
 	    echo "Skipping .ie because refreshToken use failed at $NOW."
     else
@@ -102,7 +102,7 @@ else
 			    if [[ $? == 0 ]]
 			    then
                     # we should be good now, so remove canary
-                    rm -f $CANARY
+                    rm -f $IE_CANARY
 			        echo "Got ie-$iebname"
 			        if [ ! -f $ARCHIVE/ie-$iebname ]
 			        then
@@ -120,6 +120,102 @@ else
 			        chunks_down=$((chunks_down+1))
 			    else
 			        echo "Error decoding ie-$iebname"
+			    fi
+			done
+	
+		fi
+	fi
+fi
+
+# Northern Ireland
+
+# Same setup as Ireland app-wise
+
+# NI is a region of the UK, so for now, we'll use the
+# prefix "uk-ni" and I don't yet have a source for the
+# numbers of cases for the region, which is TBD
+
+NI_BASE="https://app.stopcovidni.hscni.net/api"
+NI_CONFIG="$NI_BASE/settings/"
+
+# Northern Ireland
+
+# used to notify us that something went wrong
+NI_CANARY="$ARCHIVE/ukni-canary"
+NI_RTFILE="$HOME/ukni-refreshToken.txt"
+
+$CURL --output ukni-cfg.json -L $NI_CONFIG
+
+echo "======================"
+echo "Northern Ireland TEKs"
+
+if [ ! -f $NI_RTFILE ]
+then
+    if [ ! -f $NI_CANARY ]
+    then
+        echo "<p>Skipping Northern Ireland because refreshToken access failed at $NOW.</p>" >$NI_CANARY
+    fi
+    echo "Skipping Northern Ireland because refreshToken access failed at $NOW.</p>" 
+else 
+
+	refreshToken=`cat $NI_RTFILE`
+	tok_json=`$CURL -s -L $NI_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
+	if [[ "$?" != 0 ]]
+	then
+	    if [ ! -f $NI_CANARY ]
+	    then
+	        echo "<p>Skipping Northern Ireland because refreshToken use failed at $NOW.</p>" >$NI_CANARY
+	    fi
+	    echo "Skipping Northern Ireland because refreshToken use failed at $NOW."
+    else
+	
+		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+		if [[ "$newtoken" == "" ]]
+		then
+		    echo "No sign of an authToken, sorry - Skipping Northern Ireland"
+        else
+			index_str=`$CURL -s -L "$NI_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
+			echo "Northern Irish index string: $index_str"
+			nifiles=""
+			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+			do
+                check401=`echo ${row} | base64 --decode`
+                if [[ "$check401" == "401" ]]
+                then
+                    echo "401 detected in JSON answer - oops"
+                    break
+                fi
+			    _jq() {
+			             echo ${row} | base64 --decode | jq -r ${1}
+			    }
+			    nifiles="$nifiles $(_jq '.path')"
+			done
+			for nifile in $nifiles
+			do
+			    echo "Getting $nifile"
+			    nibname=`basename $nifile`
+			    $CURL -s -L "$NI_BASE/data/$nifile" --output ukni-$nibname -H "Authorization: Bearer $newtoken"
+			    if [[ $? == 0 ]]
+			    then
+                    # we should be good now, so remove canary
+                    rm -f $NI_CANARY
+			        echo "Got ukni-$nibname"
+			        if [ ! -f $ARCHIVE/ukni-$nibname ]
+			        then
+			            cp ukni-$nibname $ARCHIVE
+			        fi
+			        # try unzip and decode
+			        $UNZIP "ukni-$nibname" >/dev/null 2>&1
+			        if [[ $? == 0 ]]
+			        then
+			            $TEK_DECODE
+			            new_keys=$?
+			            total_keys=$((total_keys+new_keys))
+			        fi
+			        rm -f export.bin export.sig
+			        chunks_down=$((chunks_down+1))
+			    else
+			        echo "Error decoding ukni-$nibname"
 			    fi
 			done
 	
@@ -696,7 +792,7 @@ echo "======================"
 # https://dqarr2dc0prei.cloudfront.net/dp3t/v1/gaen/exposed/1594425600000 which
 # gives a TEK file (signed as a demo i think)
 
-# Seems to be same as .es scheme, see the comments there
+# Seems to be same as .ch scheme, see the comments there
 # (Yeah, we should make a function, can do it later, but
 # we should also start to use a real DB maybe so TBD)
 

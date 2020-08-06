@@ -13,7 +13,7 @@ x=${ARCHIVE:="$DATADIR/all-zips"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="ie it de ch pl dk at lv"
+COUNTRY_LIST="ie ukni it de ch pl dk at lv"
 
 function whenisitagain()
 {
@@ -126,6 +126,16 @@ purged. We will clarify what happens between 07.06 and 07.12 later.</li>
     <li>20200719: the German ratio of fake/real TEKs changed from 9:1 to 4:1 on
 July 2nd according to the nice dashboard <a
 href="https://micb25.github.io/dka/">here</a>.</li> 
+    <li>20200806: Added Northern Ireland, two notes on that:
+        <ul>
+            <li>I don't yet have a nice CSV file for NI case counts, as Northern Ireland
+is a region of the UK, but is not counted separated in the WHO or ECDC CSVs. Fixing that
+is TBD.</li>
+            <li>Ireland and Northern Ireland are using (more or less) the same app code, and have
+said they will "interop" soon - at that point the same TEKs might be counted in both Ireland
+and Northern Ireland. We can compare the TEK values later and see what we see.</li>
+        </ul>
+    </li>
 
 </ul>
 

@@ -16,7 +16,7 @@ TEK_COUNT="$TOP/tek_count.sh"
 CURL="/usr/bin/curl -s"
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie it de ch pl dk at lv es"
+COUNTRY_LIST="ie ukni it de ch pl dk at lv es"
 
 if [[ "$#" != "0" ]]
 then
@@ -108,7 +108,11 @@ do
         year=`echo $td | awk -F- '{print $1}'`
         # month and day can have leading zeros - the tricks below
         # zap those:-)
-        if [[ "$do_who" == "yes" ]]
+        if [[ "$country" == "ukni" ]]
+        then
+            # special case - don't yet have case counts for NI 
+            echo "$country,$td,$cnt," >>$country-$TARGET
+        elif [[ "$do_who" == "yes" ]]
         then
             grep ",$ucountry," $WHO_WORLD_CASES | \
                 grep "^$year-$month-$day" | \
