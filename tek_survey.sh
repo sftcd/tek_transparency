@@ -870,7 +870,6 @@ clzero=`echo $response_headers | grep -ic "Content-Length: 0"`
 if [[ "$clzero" != "0" ]]
 then
     echo "Skipping US Virginia because content length still zero at $NOW." 
-    exit 0
 else
     echo "US Virginia because content length no longer zero at $NOW." 
     if [ ! -f $USVA_CANARY ]
