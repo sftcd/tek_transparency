@@ -138,6 +138,7 @@ and Northern Ireland. We can compare the TEK values later and see what we see.</
     </li>
     <li>20200807: Added check whether US Virginia TEK download still has content-length: 0.
 Once we see some, we'll start counting those TEKs.</li>
+	<li>202300807: Ireland and Northern Ireland are now sharing (at least some) TEKs.</li>
 
 </ul>
 
