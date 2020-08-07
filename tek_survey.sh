@@ -852,6 +852,32 @@ $CURL -L $ES_CONFIG --output es-cfg.json
 echo ".es config:"
 cat es-cfg.json
 
+# US Virginia
+
+USVA_CANARY="$ARCHIVE/usva-canary"
+USVA_BASE="https://storage.googleapis.com/prod-export-key/exposureKeyExport-US"
+USVA_INDEX="$USVA_BASE/index.txt"
+USVA_CONFIG="$USVA_BASE/settings/"
+
+echo "======================"
+echo "US Virginia TEKs"
+
+# dunno URL yet
+# $CURL --output usva-cfg.json -L $USVA_CONFIG
+
+response_headers=`$CURL -D - -o usva-index.txt -L "$USVA_INDEX" -i`
+clzero=`echo $response_headers | grep -ic "Content-Length: 0"`
+if [[ "$clzero" != "0" ]]
+then
+    echo "Skipping US Virginia because content length still zero at $NOW." 
+    exit 0
+else
+    echo "US Virginia because content length no longer zero at $NOW." 
+    if [ ! -f $USVA_CANARY ]
+    then
+        echo "<p>US Virginia content length no longer zero at $NOW.</p>" >$USVA_CANARY
+    fi
+fi
 
 
 ## now count 'em and push to web DocRoot

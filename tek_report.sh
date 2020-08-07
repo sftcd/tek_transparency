@@ -136,6 +136,8 @@ said they will "interop" soon - at that point the same TEKs might be counted in 
 and Northern Ireland. We can compare the TEK values later and see what we see.</li>
         </ul>
     </li>
+    <li>20200807: Added check whether US Virginia TEK download still has content-length: 0.
+Once we see some, we'll start counting those TEKs.</li>
 
 </ul>
 
@@ -149,12 +151,17 @@ touch.</p>
 
 EOF
 
-# Check for Irish TEKs - there are none yet and we'll need to check
-# how to parse the index
-if [ -f $ARCHIVE/ie-canary ]
-then
-    cat $ARCHIVE/ie-canary >>$TARGET
-fi 
+# Check for canaries, these get dropped if bad happens
+IE_CANARY="ie-canary"
+UKNI_CANARY="ukni-canary"
+USVA_CANARY="usva-canary"
+for canary in "$IE_CANARY $UKNI_CANARY $USVA_CANARY"
+do
+    if [ -f $ARCHIVE/$canary ]
+    then
+        cat $ARCHIVE/$canary >>$TARGET
+    fi 
+done
 
 # table of tables with 1 row only 
 echo '<table ><tr>' >>$TARGET
