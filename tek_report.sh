@@ -43,7 +43,8 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Irish, Italian, German, Swiss, Polish, Danish, Austrian and Latvian apps. </p>  
+the Irish, Northern Irish, Italian, German, Swiss, Polish, Danish, Austrian and 
+Latvian apps. </p>  
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -66,10 +67,9 @@ means that for example the number of TEKs on the 2nd most recent day may
 be the sum of the number of people who uploaded on that and the most recent
 day. </p>
 
-<p>The count of cases declared is the number of COVID-19 cases declared by that
-country to the WHO, either based on a manually downloaded file from the WHO
-(rarely) or else on a file from the ECDC that can be downloaded from <a
-href="https://opendata.ecdc.europa.eu/covid19/casedistribution/csv">here</a>.
+<p>The count of cases declared is the number of COVID-19 cases for that
+day according to the <a href="https://github.com/CSSEGISandData/COVID-19">John's Hopkins</a>
+data set. 
 </p>
 
 <p>Comparing the TEKs and Cases columns, it is clear that some more explanation
@@ -126,19 +126,11 @@ purged. We will clarify what happens between 07.06 and 07.12 later.</li>
     <li>20200719: the German ratio of fake/real TEKs changed from 9:1 to 4:1 on
 July 2nd according to the nice dashboard <a
 href="https://micb25.github.io/dka/">here</a>.</li> 
-    <li>20200806: Added Northern Ireland, two notes on that:
-        <ul>
-            <li>I don't yet have a nice CSV file for NI case counts, as Northern Ireland
-is a region of the UK, but is not counted separated in the WHO or ECDC CSVs. Fixing that
-is TBD.</li>
-            <li>Ireland and Northern Ireland are using (more or less) the same app code, and have
-said they will "interop" soon - at that point the same TEKs might be counted in both Ireland
-and Northern Ireland. We can compare the TEK values later and see what we see.</li>
-        </ul>
-    </li>
+    <li>20200806: Added Northern Ireland. Initially, NI and IE were not sharing TEKs.</li>
     <li>20200807: Added check whether US Virginia TEK download still has content-length: 0.
 Once we see some, we'll start counting those TEKs.</li>
 	<li>20200807: Ireland and Northern Ireland are now sharing (at least some) TEKs.</li>
+    <li>20200808: Switched from using ECDC case counts to JHU, so we can get regions such as NI.</li>
 
 </ul>
 
