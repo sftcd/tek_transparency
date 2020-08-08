@@ -68,7 +68,7 @@ be the sum of the number of people who uploaded on that and the most recent
 day. </p>
 
 <p>The count of cases declared is the number of COVID-19 cases for that
-day according to the <a href="https://github.com/CSSEGISandData/COVID-19">John's Hopkins</a>
+day according to the <a href="https://github.com/CSSEGISandData/COVID-19">Johns Hopkins</a>
 data set. 
 </p>
 
