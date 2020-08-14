@@ -855,30 +855,63 @@ cat es-cfg.json
 # US Virginia
 
 USVA_CANARY="$ARCHIVE/usva-canary"
-USVA_BASE="https://storage.googleapis.com/prod-export-key/exposureKeyExport-US"
-USVA_INDEX="$USVA_BASE/index.txt"
+USVA_BASE="https://storage.googleapis.com/prod-export-key"
+USVA_INDEX="$USVA_BASE/exposureKeyExport-US/index.txt"
 USVA_CONFIG="$USVA_BASE/settings/"
+
+# USVA config is hardcoded in the app apparently (for now)
+# $CURL --output usva-cfg.json -L $USVA_CONFIG
 
 echo "======================"
 echo "US Virginia TEKs"
 
-# dunno URL yet
-# $CURL --output usva-cfg.json -L $USVA_CONFIG
-
-response_headers=`$CURL -D - -o usva-index.txt -L "$USVA_INDEX" -i`
+response_headers=`$CURL -D - -o usva-index-headers.txt -L "$USVA_INDEX" -i`
 clzero=`echo $response_headers | grep -ic "Content-Length: 0"`
 if [[ "$clzero" != "0" ]]
 then
     echo "Skipping US Virginia because content length still zero at $NOW." 
 else
-    echo "US Virginia because content length no longer zero at $NOW." 
-    if [ ! -f $USVA_CANARY ]
-    then
-        echo "<p>US Virginia content length no longer zero at $NOW.</p>" >$USVA_CANARY
-    fi
+    # download again, without headers
+    sleep 1
+    $CURL -o usva-index.txt -L "$USVA_INDEX"
+    # this may not be correct, will find out as we go...
+    for path in `cat usva-index.txt`
+    do
+        sleep 1
+        zname=`echo $path | sed -e 's/.*\///'`
+        lpath=usva-$zname
+        $CURL -D - -o $lpath -L "$USVA_BASE/$path" 
+        if [ -f $lpath ]
+        then
+            # we should be good now, so remove canary
+            rm -f $USVA_CANARY
+    		if [ ! -f $ARCHIVE/$lpath ]
+    		then
+				echo "New usva file $lpath"
+                cp $lpath $ARCHIVE
+			elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger usva file $lpath"
+                cp $lpath $ARCHIVE
+            else
+                echo "A smaller or same $lpath already archived"
+    		fi
+            # try unzip and decode
+            $UNZIP "$lpath" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
+        else
+            echo "Failed to download $lpath"
+            echo "Failed to download $lpath at $NOW" >$USVA_CANARY
+        fi
+    done
 fi
-
-
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."

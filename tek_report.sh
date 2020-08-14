@@ -13,7 +13,7 @@ x=${ARCHIVE:="$DATADIR/all-zips"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="ie ukni it de ch pl dk at lv"
+COUNTRY_LIST="ie ukni it de ch pl dk at lv usva"
 
 function whenisitagain()
 {
@@ -131,6 +131,7 @@ href="https://micb25.github.io/dka/">here</a>.</li>
 Once we see some, we'll start counting those TEKs.</li>
 	<li>20200807: Ireland and Northern Ireland are now sharing (at least some) TEKs.</li>
     <li>20200808: Switched from using ECDC case counts to JHU, so we can get regions such as NI.</li>
+    <li>20200814: Now showing some TEKs from Virginia in the US, so added those.</li>
 
 </ul>
 
