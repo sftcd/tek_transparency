@@ -912,6 +912,109 @@ else
         fi
     done
 fi
+
+echo "======================"
+echo "Canadian TEKs"
+
+CA_CANARY="$ARCHIVE/ca-canary"
+CA_BASE="https://retrieval.covid-notification.alpha.canada.ca"
+CA_CONFIG="$CA_BASE/exposure-configuration/CA.json"
+
+# Grab config
+$CURL --output ca-cfg.json -L $CA_CONFIG
+
+# From Doug:
+# Code from app that generates TEK URL:
+#  async retrieveDiagnosisKeys(period: number) {
+#    const periodStr = `${period > 0 ? period : LAST_14_DAYS_PERIOD}`;
+#    const message = `${MCC_CODE}:${periodStr}:${Math.floor(getMillisSinceUTCEpoch() / 1000 / 3600)}`;
+#    const hmac = hmac256(message, encHex.parse(this.hmacKey)).toString(encHex);
+#    const url = `${this.retrieveUrl}/retrieve/${MCC_CODE}/${periodStr}/${hmac}`;
+#    captureMessage('retrieveDiagnosisKeys', {period, url});
+#    return downloadDiagnosisKeysFile(url);
+#  }
+#
+# MCC_CODE is “302”, LAST_14_DAYS_PERIOD = ‘00000’.   looks like the nasty 
+# long string in the url is hmac encrypted form of message string.  fortunately the key is hardwired into the app:
+#
+#.field public static final HMAC_KEY:Ljava/lang/String; = “3631313045444b345742464633504e44524a3457494855505639593136464a3846584d4c59334d30"
+#
+#(why do they even bother with this shitty “security”).
+
+# I note that that hmac key is an ascii hex encoding:
+# $ echo 3631313045444b345742464633504e44524a3457494855505639593136464a3846584d4c59334d30 | xxd -r -p
+# 6110EDK4WBFF3PNDRJ4WIHUPV9Y16FJ8FXMLY3M0
+
+HMAC_KEY="6110EDK4WBFF3PNDRJ4WIHUPV9Y16FJ8FXMLY3M0"
+MCC_CODE="302"
+periodStr="00000"
+
+# Demo re-calculation of HMAC
+# URL at approx 20200819-140000Z
+# https://retrieval.covid-notification.alpha.canada.ca/retrieve/302/00000/cc0b17155fe1d642495dfc1dd0230c33573def6c35a33b61260306d797637e33
+# And to re-calc...
+#THEN=`date -d "2020-08-19T14:00:00" +%s`
+#timeStr=$((THEN/3600))
+#MESSAGE="$MCC_CODE:$periodStr:$timeStr"
+#THENCODE=`echo -n $MESSAGE | openssl sha256 -hmac "$HMAC_KEY" | awk '{print $2}'`
+#CA_INDEX="$CA_BASE/retrieve/MCC_CODE/$periodStr/$THENCODE"
+#echo "want cc0b17155fe1d642495dfc1dd0230c33573def6c35a33b61260306d797637e33"
+
+# Try for various top of the hour values and keep those that work
+# It looks like the server actually only offers files named for
+# the two hours before now, this hour and the next hour, but we'll
+# check 25 hours worth just in case, as that might change
+nowStr=`date +%s` 
+nowTimeStr=$((nowStr/3600))
+for houroff in {-12..12}
+do
+    thenStr=$((nowTimeStr+houroff))
+    MESSAGE="$MCC_CODE:$periodStr:$thenStr"
+    THENCODE=`echo -n $MESSAGE | openssl sha256 -hmac "$HMAC_KEY" | awk '{print $2}'`
+    CA_INDEX="$CA_BASE/retrieve/$MCC_CODE/$periodStr/$THENCODE"
+    echo "Trying `date -d @$((thenStr*3600))` $houroff hours off from $CA_INDEX"
+    response_headers=`$CURL -D - -o ca-$thenStr-headers.txt -L "$CA_INDEX" -i`
+    unauth=`echo $response_headers | grep -c "HTTP/2 401"`
+    if [[ "$unauth" == "0" ]]
+    then
+        # try get actual zip
+        $CURL -o ca-$thenStr.zip -L "$CA_INDEX"
+        lpath=ca-$thenStr.zip
+        if [ -f $lpath ]
+        then
+            # we should be good now, so remove canary
+    		if [ ! -f $ARCHIVE/$lpath ]
+    		then
+				echo "New ca file $lpath"
+                cp $lpath $ARCHIVE
+			elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger ca file $lpath"
+                cp $lpath $ARCHIVE
+            else
+                echo "A smaller or same $lpath already archived"
+    		fi
+            # try unzip and decode
+            $UNZIP "$lpath" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
+        else
+            echo "Failed to download $lpath"
+            echo "Failed to download $lpath at $NOW" >$CA_CANARY
+        fi
+    else
+        echo "401'd"
+    fi
+    # be a little nice to 'em
+    sleep 1
+done
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."

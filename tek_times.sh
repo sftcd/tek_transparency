@@ -16,7 +16,7 @@ TEK_COUNT="$TOP/tek_count.sh"
 CURL="/usr/bin/curl -s"
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva"
+COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva ca"
 
 declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["ukni"]="Northern Ireland" \
@@ -28,7 +28,8 @@ declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["dk"]="Denmark" \
                ["lv"]="Latvia" \
                ["es"]="Spain" \
-               ["usva"]="Virginia" )
+               ["usva"]="Virginia" \
+               ["ca"]="Canada" )
 
 if [[ "$#" != "0" ]]
 then

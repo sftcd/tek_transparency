@@ -13,7 +13,7 @@ x=${ARCHIVE:="$DATADIR/all-zips"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="ie ukni it de ch pl dk at lv usva"
+COUNTRY_LIST="ie ukni it de ch pl dk at lv usva ca"
 
 function whenisitagain()
 {
@@ -43,8 +43,8 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Irish, Northern Irish, Italian, German, Swiss, Polish, Danish, Austrian and 
-Latvian apps. </p>  
+the Irish, Northern Irish, Italian, German, Swiss, Polish, Danish, Austrian,
+Latvian and United States, Virigina apps. </p>  
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -132,6 +132,7 @@ Once we see some, we'll start counting those TEKs.</li>
 	<li>20200807: Ireland and Northern Ireland are now sharing (at least some) TEKs.</li>
     <li>20200808: Switched from using ECDC case counts to JHU, so we can get regions such as NI.</li>
     <li>20200814: Now showing some TEKs from Virginia in the US, so added those.</li>
+    <li>20200820: Added Canada (or maybe it's just Ontario? We'll see)</li>
 
 </ul>
 
