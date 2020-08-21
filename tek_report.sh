@@ -133,6 +133,9 @@ Once we see some, we'll start counting those TEKs.</li>
     <li>20200808: Switched from using ECDC case counts to JHU, so we can get regions such as NI.</li>
     <li>20200814: Now showing some TEKs from Virginia in the US, so added those.</li>
     <li>20200820: Added Canada (or maybe it's just Ontario? We'll see)</li>
+	<li>20200821: Some JHU data for 20200819 had a date format issue so my script missed that. The
+counts for 20200820 in those cases show 2 days worth of cases. If that keeps happening I can fix
+it, but if it's a one-off, no need.</li>
 
 </ul>
 
