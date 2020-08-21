@@ -193,8 +193,15 @@ do
                 awk -F, '{print "'$country','$td','$cnt',"$5}' >>$country-$TARGET
         elif [[ "$do_jhu" == "yes" ]]
         then
-            grep "$country,$year-$month-$day" $JHU_WORLD_CASES | \
-                awk -F, '{print "'$country','$td','$cnt',"$4}' >>$country-$TARGET
+            # some dates can be missing in the JHU data for some countries/regions
+            gotJHU=`grep -c "$country,$year-$month-$day" $JHU_WORLD_CASES` 
+            if [[ "$gotJHU" != 0 ]]
+            then
+                grep "$country,$year-$month-$day" $JHU_WORLD_CASES | \
+                    awk -F, '{print "'$country','$td','$cnt',"$4}' >>$country-$TARGET
+            else
+                    echo "$country,$td,$cnt,0" >>$country-$TARGET
+            fi
         else
             echo "No idea what country count to use - exiting"
             exit 99
