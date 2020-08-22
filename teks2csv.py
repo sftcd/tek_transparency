@@ -2,18 +2,30 @@
 
 # Map all TEK zips in input directory to one CSV file
 # I plan to use this in analysis. As of now, it produces
-# a single 4.1GB CSV for all the archived ZIP, so we'll
+# a single 12GB CSV for all the archived ZIPs, so we'll
 # need to tool up some more;-)
 
 import sys,os,argparse,tempfile
-import binascii
+import re,binascii
 import TemporaryExposureKeyExport_pb2
 from pathlib import Path
 from zipfile import ZipFile
 
+def matchespattern(fname,pattern):
+    try:
+        #print("matching",pattern,"vs",fname)
+        if re.match(pattern,fname):
+            #print(pattern,"matches",fname)
+            return True
+        #print(pattern,"doesn't match",fname)
+        return False
+    except Exception as e:
+        print("problem matching:",str(e),"when trying",pattern,"against",fname)
+        sys.exit(1)
+
 # default  values
 #indir=os.path.basename(os.getcwd())
-indir=os.getcwd()
+indir=os.getcwd()+"/"
 outfile="teks.csv"
 
 parser=argparse.ArgumentParser(description='Map all the GAEN TEK zipfiles in a directory into CSV entries')
@@ -37,11 +49,16 @@ parser.add_argument('-r','--recurse',
                     help='recurse down from "indir" and try process all aptly-named zips')
 parser.add_argument('-p','--pattern',
                     dest='pattern',
-                    help='pattern for directory names when recursing (default: *)')
+                    help='provide a pattern used to select which zip files to process')
+parser.add_argument('-j','--justlist',
+                    action='store_true',
+                    help='just list the set of zips that would be processed, then exit')
 args=parser.parse_args()
 
 if args.indir is not None:
     indir=args.indir
+    if indir[-1]!='/':
+        indir+="/"
 if args.outfile is not None:
     outfile=args.outfile
 
@@ -53,14 +70,33 @@ try:
     if args.recurse is False:
         lziplist = [f for f in os.listdir(indir) if os.path.isfile(os.path.join(indir, f)) and f.endswith('.zip')]
         for z in lziplist:
-            ziplist.append(indir+"/"+z)
+            if args.pattern is not None:
+                if not matchespattern(indir+z,args.pattern):
+                    continue
+            ftime=str(os.path.getctime(indir+z))
+            ziplist.append([ftime,indir+z])
     else:
         for path in Path(indir).rglob("[a-z]*-*.zip"):
-            ziplist.append(path)
+            if args.pattern is not None:
+                if not matchespattern(str(path),args.pattern):
+                    continue
+            ftime=str(os.path.getctime(path))
+            ziplist.append([ftime,path])
     print("About to process " + str(len(ziplist)) + " zip files")
 except Exception as e:
-    print("problem making ziplist:" + str(e))
+    print("problem making ziplist:",str(e),ziplist)
     sys.exit(1)
+
+if len(ziplist)==0:
+    print("No zipfiles selected - exiting")
+    sys.exit(2)
+
+if args.justlist is True:
+    print("Would have processed",len(ziplist),"zips")
+    if args.verbose:
+        for z in ziplist:
+            print("\t",z[1])
+    sys.exit(0)
 
 if args.append:
     outf=open(outfile,"a")
@@ -69,15 +105,22 @@ else:
 if args.header:
     outf.write("indir,country,zipfile,filetime,zipstart,zipend,zipkeyver,zipverkeyid,tek,epoch,period,risklevel\n")
 
+# sort ziplist by file time so eventual CSV is naturally sorted
+if args.verbose:
+    print("Sorting ziplist")
+sortedziplist = sorted(ziplist, key=lambda x:x[0])
+if args.verbose:
+    print("Sorted ziplist")
+
 try:
-    for zipname in ziplist:
+    for zipname in sortedziplist:
         # the .de config is also a zip'd protobuf, so skip that...
-        bn=os.path.basename(zipname)
+        bn=os.path.basename(zipname[1])
         cfgind=bn.find("-cfg.zip")
         if cfgind!=-1:
             continue
         # we get some empty files from .ch, so skip those too
-        if os.stat(zipname).st_size == 0:
+        if os.stat(zipname[1]).st_size == 0:
             continue
         # our zipnames are like ie-NNNNNN.zip, we'll use that rather than
         # the country within the zip, because the NI zip says GB (which 
@@ -95,8 +138,7 @@ try:
         # one in our archive "dk-2020-07-28.0.zip"
         try:
             # unzip, pull out export.bin, decode and store
-            with ZipFile(zipname, 'r') as zipObj:
-                ftime=str(os.path.getctime(zipname))
+            with ZipFile(zipname[1], 'r') as zipObj:
                 # Get a list of all archived file names from the zip
                 listOfFileNames = zipObj.namelist()
                 # Iterate over the file names, though we only really want the one
@@ -118,8 +160,8 @@ try:
                         for key in g.keys:
                             outf.write( indir+","+
                                         country+","+
-                                        str(zipname)+","+
-                                        ftime+","+
+                                        str(zipname[1])+","+
+                                        zipname[0]+","+
                                         str(g.start_timestamp)+","+str(g.end_timestamp)+","+
                                         g.signature_infos[0].verification_key_version+","+
                                         g.signature_infos[0].verification_key_id+","+
@@ -136,9 +178,9 @@ try:
                         os.remove(ename)
                     os.rmdir(lzip)
         except Exception as e:
-            print("Skipping " + str(zipname) + ":" + str(e))
+            print("Skipping " + str(zipname[1]) + ":" + str(e))
 except Exception as e:
-    print("problem with " + str(zipname) + ":" + str(e))
+    print("problem with " + str(zipname[1]) + ":" + str(e))
     sys.exit(1)
 
 if args.verbose:
