@@ -8,6 +8,7 @@
 import sys,os,argparse,tempfile
 import re,binascii
 import TemporaryExposureKeyExport_pb2
+import hashlib
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -47,6 +48,9 @@ parser.add_argument('-v','--verbose',
 parser.add_argument('-r','--recurse',
                     action='store_true',
                     help='recurse down from "indir" and try process all aptly-named zips')
+parser.add_argument('-R','--raw',
+                    action='store_true',
+                    help='don\'t hash the TEK values, just emit the raw data (default: false)')
 parser.add_argument('-p','--pattern',
                     dest='pattern',
                     help='provide a pattern used to select which zip files to process')
@@ -103,7 +107,10 @@ if args.append:
 else:
     outf=open(outfile,"w")
 if args.header:
-    outf.write("indir,country,zipfile,filetime,zipstart,zipend,zipkeyver,zipverkeyid,tek,epoch,period,risklevel\n")
+    if args.raw:
+        outf.write("indir,country,zipfile,filetime,zipstart,zipend,zipkeyver,zipverkeyid,tek,epoch,period,risklevel\n")
+    else:
+        outf.write("indir,country,zipfile,filetime,zipstart,zipend,zipkeyver,zipverkeyid,H(tek),epoch,period,risklevel\n")
 
 # sort ziplist by file time so eventual CSV is naturally sorted
 if args.verbose:
@@ -158,6 +165,9 @@ try:
                         g.ParseFromString(f.read())
                         f.close()
                         for key in g.keys:
+                            tekval=hashlib.sha256(key.key_data).hexdigest()
+                            if args.raw:
+                                tekval=key.key_data.hex()
                             outf.write( indir+","+
                                         country+","+
                                         str(zipname[1])+","+
@@ -165,7 +175,7 @@ try:
                                         str(g.start_timestamp)+","+str(g.end_timestamp)+","+
                                         g.signature_infos[0].verification_key_version+","+
                                         g.signature_infos[0].verification_key_id+","+
-                                        key.key_data.hex()+","+
+                                        tekval+","+
                                         str(key.rolling_start_interval_number)+","+
                                         str(key.rolling_period)+","+
                                         str(key.transmission_risk_level)+"\n")

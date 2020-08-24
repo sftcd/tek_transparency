@@ -21,16 +21,20 @@ def filtercsv(fname,outfile):
                 if row[0]=="indir":
                     continue
                 country=row[1]
-                ftime=str(int(float(row[3])))
+                fftime=float(row[3])
+                ftime=str(fftime)
                 tek=row[8]
-                epoch=str(int(row[9])*600)
+                iepoch=int(row[9])*600
+                epoch=str(iepoch)
                 ctek=country+"/"+tek
+                ihourssinceepoch=int((fftime-iepoch)/3600)
+                hourssinceepoch=str(ihourssinceepoch)
                 if ctek not in cteks:
                     cteks.append(ctek)
-                    uniques.append([ctek,country,ftime,epoch])
+                    uniques.append([ctek,country,ftime,epoch,hourssinceepoch])
                 else:
                     ind=cteks.index(ctek)
-                    uniques[ind]=[ctek,country,ftime,epoch]
+                    uniques[ind]=[ctek,country,ftime,epoch,hourssinceepoch]
                 rowind+=1
                 if (rowind%1000)==0:
                     print("did",rowind,"rows")
@@ -40,7 +44,7 @@ def filtercsv(fname,outfile):
     outp=open(outfile,"w")
     cind=0
     for u in uniques:
-        outp.write(u[0]+","+u[1]+","+u[2]+","+u[3]+"\n")
+        outp.write(u[0]+","+u[1]+","+u[2]+","+u[3]+","+u[4]+"\n")
         cind+=1
         if (cind%1000)==0:
             print("wrote",cind,"rows")
