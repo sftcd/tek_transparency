@@ -164,13 +164,14 @@ try:
                         header = f.read(16)
                         g.ParseFromString(f.read())
                         f.close()
+                        lzipname=str(zipname[1])[len(indir):]
                         for key in g.keys:
                             tekval=hashlib.sha256(key.key_data).hexdigest()
                             if args.raw:
                                 tekval=key.key_data.hex()
                             outf.write( indir+","+
                                         country+","+
-                                        str(zipname[1])+","+
+                                        lzipname+","+
                                         zipname[0]+","+
                                         str(g.start_timestamp)+","+str(g.end_timestamp)+","+
                                         g.signature_infos[0].verification_key_version+","+

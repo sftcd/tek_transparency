@@ -164,14 +164,14 @@ do
             then
                 tt=$dtot
                 dtot=$((dtot/10))
-                echo "Mapped $tt to $dtot for $country on $year-$month-$day"
+                #echo "Mapped $tt to $dtot for $country on $year-$month-$day"
             elif [[ "$country" == "de" && $mn -ge $de10xtill ]]
             then
                 tt=$dtot
                 dtot=$((dtot/5))
-                echo "Mapped $tt to $dtot for $country on $year-$month-$day"
+                #echo "Mapped $tt to $dtot for $country on $year-$month-$day"
             fi
-            echo "$country,$year-$month-$day,$dtot,$epoch" >>$OUTFILE
+            echo "$year-$month-$day,$country,$dtot,$epoch" >>$OUTFILE
         done
 
         # only process one run's worth per day
