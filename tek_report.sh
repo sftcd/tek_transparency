@@ -136,6 +136,10 @@ Once we see some, we'll start counting those TEKs.</li>
 	<li>20200821: Some JHU data for 20200819 had a date format issue so my script missed that. The
 counts for 20200820 in those cases show 2 days worth of cases. If that keeps happening I can fix
 it, but if it's a one-off, no need.</li>
+    <li>20200826: It seems that the Austrian fake TEKs might (TBC) be randomly generated
+and so only published once in one zip file, whereas the real TEKs continue to be published
+for multiple days. I've collated the set of one-off TEKs and so now scan for those and
+(for now) no longer accumulate them in Austrian counts.</li> 
 
 </ul>
 

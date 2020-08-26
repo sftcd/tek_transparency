@@ -12,11 +12,36 @@
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
 TEK_COUNT="$TOP/tek_count.sh"
-
 CURL="/usr/bin/curl -s"
+
+
+# Whether to report raw (e.g. Austria) counts ("no") or to 
+# reduce those by not counting TEKs that were only ever
+# seen in one zip file ("yes")
+REDUCE="no"
+
+# When REDUCEing...
+# there are some special cases with dates associated:
+# - Switzerland added 10 fakes until (approx) July 19th
+#   runs (so with epoch up to 17th)
+chstoppedfakes=`date -d "2020-07-19" +%s`
+# - Germany were posting 10 TEKs for each real one until
+#   July 2nd, at which point they switched to posting 5
+#   TEKs for each real one (we offset that by 2 days
+#   in the run-dates)
+de10xtill=`date -d "2020-07-04" +%s`
+# - since July 7th Ireland and UKNI share TEKS so we just
+#   do Ireland here, another script will separate those 
+#   based on firstseen times if/as possible
+# - Austria were posting 1000's of fake TEKs until about
+#   August 11th, not sure if we can make much sense of
+#   numbers before then, just TBC
+#   
 
 # countries to do by default, or just one if given on command line
 COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva ca"
+DATADIR="`/bin/pwd`"
+OUTDIR="`/bin/pwd`"
 
 declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["ukni"]="Northern Ireland" \
@@ -31,9 +56,56 @@ declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["usva"]="Virginia" \
                ["ca"]="Canada" )
 
-if [[ "$#" != "0" ]]
+
+function usage()
+{
+    echo "$0 [-chiov] - test HPKE test vectors"
+    echo "  -c [country-list] specifies which countries to process (defailt: all)"
+    echo "      provide the country list as a space separatead lsit of 2-letter codes"
+    echo "      e.g. '-c \"$COUNTRY_LIST\"'"
+    echo "  -d specifies the input data directory (default: $DATADIR)"
+    echo "  -h means print this"
+    echo "  -o specifies the output directory (default: $OUTDIR)"
+    echo "  -r means to reduce TEK numbers calculated based on known oddities (default: "no" - report raw numbers)"
+    echo "  -v means be verbose"
+    exit 99
+}
+
+# options may be followed by one colon to indicate they have a required argument
+if ! options=$(/usr/bin/getopt -s bash -o c:d:ho:rv -l countries:,dir:,help,outdir:,reduce,verbose -- "$@")
 then
-    COUNTRY_LIST=$@
+    # something went wrong, getopt will put out an error message for us
+    exit 1
+fi
+#echo "|$options|"
+eval set -- "$options"
+while [ $# -gt 0 ]
+do
+    case "$1" in
+        -c|--countries) COUNTRY_LIST=$2; shift;;
+        -d|--dir) DATADIR=$2; shift;;
+        -h|--help) usage;;
+        -o|--outdir) OUTDIR=$2; shift;;
+        -r|--reduce) REDUCE="yes";; 
+        -v|--verbose) verbose="yes" ;;
+        (--) shift; break;;
+        (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
+        (*)  break;;
+    esac
+    shift
+done
+
+# We'll work in $DATADIR
+if [ ! -d $DATADIR ]
+then
+    echo "Can't see $DATADIR - exiting"
+    exit 1
+fi
+cd $DATADIR
+if [ ! -d $OUTDIR ]
+then
+    echo "Can't see $OUTDIR - exiting"
+    exit 2
 fi
 
 # list of cases for all countries
@@ -45,7 +117,7 @@ do_ecdc="no"
 
 x=${JHU_TOP:="$HOME/code/covid/jhu/COVID-19"}
 # We create this file from JHU data
-JHU_WORLD_CASES="jhu.csv"
+JHU_WORLD_CASES="$OUTDIR/jhu.csv"
 
 # You can get the WHO file via some JS crap at https://covid19.who.int/
 # If that exists, and is <24 hours old, we prefer it. 
@@ -65,19 +137,20 @@ JHU_WORLD_CASES="jhu.csv"
 
 # Anyway, if we have a file called this that's <24 hours old
 # we'll use it...
-WHO_WORLD_CASES="WHO-COVID-19-global-data.csv"
+WHO_WORLD_CASES="$OUTDIR/WHO-COVID-19-global-data.csv"
 
 
 # If not, we'll grab one that kinda works via curl 
 CASES_URL="https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
 # local copy - refreshed if > 1 day old
-ECDC_WORLD_CASES="world-cases.csv"
+ECDC_WORLD_CASES="$OUTDIR/world-cases.csv"
 
 # the (suffix of the) final outcome
 TARGET="tek-times.csv"
 
 # some temp files
 T2="t2.tmp"
+T2p5="t2.5.tmp"
 T3="t3.tmp"
 
 # use a WHO file is it's fresh enough
@@ -160,11 +233,45 @@ do
         echo "Skipping $country"
         continue
     fi
-    echo "Country,Date,TEKs,Cases" >$country-$TARGET
+    echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
     # upper case variant
     ucountry=${country^^}
     echo "Doing $country"
     $TEK_COUNT $country-*.zip >$T2
+
+    # TODO: figure out if this is correct or not! (Likely requires contact to .at)
+    # experimental Austrian pruning - it seems that almost all TEKs from .at 
+    # only exist in one zip file, that seems wrong. I've collected a pile of
+    # the ones that occur in less than 24 files and put those and the sha256 
+    # hashes of 'em in files. If any TEK here is in one of those files, we'll 
+    # not bother counting it.
+    if [[ "$REDUCE" == "yes" && "$country" == "at" ]]
+    then
+        rm -f $T2p5
+        if [ -f $HOME/one-off-at-teks ]
+        then
+            # This is quicker but requires access to plain TEKs
+            t2_l=`wc -l $T2`
+            grep -v -f $HOME/one-off-at-teks $T2 >$T2p5
+            t2p5_l=`wc -l $T2p5`
+            echo "Started with $t2_l ended up with $t2p5_l"
+        else
+            # This is waaay slower but safer, as we don't need to
+            # distribute real TEKs. Mind you, when I say "safe"
+            # I've not tested it fully, because it's so slow;-)
+            for line in `cat $T2` 
+            do 
+                ltek=`echo $line | awk -F\' '{print $2}'`
+                lhash=`echo -n $ltek | openssl sha256 | awk '{print $2}'`
+                hit=`grep -c $lhash $TOP/one-off-at-hteks`
+                if [[ "$hit" == "0" ]]
+                then
+                    echo $line >>$T2p5
+                fi
+           done
+        fi
+        mv $T2p5 $T2
+    fi
 
     grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
     rm -f $T2
@@ -179,28 +286,45 @@ do
         day=`echo $td | awk -F- '{print $3}'`
         month=`echo $td | awk -F- '{print $2}'`
         year=`echo $td | awk -F- '{print $1}'`
+
+        if [[ "$REDUCE" == "yes" ]]
+        then
+            # Handle our exceptions for weird counters, we need to decode for that
+            if [[ "$country" == "ch" && $cnt -ge 10 && $tm -lt $chstoppedfakes ]]
+            then
+                cnt=$((cnt-10))
+            fi
+            if [[ "$country" == "de" && $tm -lt $dex10till ]]
+            then
+                cnt=$((cnt/10))
+            elif [[ "$country" == "de" && $tm -ge $dex10till ]]
+            then
+                cnt=$((cnt/5))
+            fi
+        fi
+
         # month and day can have leading zeros - the tricks below
         # zap those:-)
         if [[ "$do_who" == "yes" ]]
         then
             grep ",$ucountry," $WHO_WORLD_CASES | \
                 grep "^$year-$month-$day" | \
-                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$country-$TARGET
+                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$OUTDIR/$country-$TARGET
         elif [[ "$do_ecdc" == "yes" ]]
         then
             grep ",$ucountry," $ECDC_WORLD_CASES | \
                 grep ",$((10#$day)),$((10#$month)),$year" | \
-                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$country-$TARGET
+                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$OUTDIR/$country-$TARGET
         elif [[ "$do_jhu" == "yes" ]]
         then
-            # some dates can be missing in the JHU data for some countries/regions
+            # some dates can be missing or malformed in the JHU data for some countries/regions
             gotJHU=`grep -c "$country,$year-$month-$day" $JHU_WORLD_CASES` 
             if [[ "$gotJHU" != 0 ]]
             then
                 grep "$country,$year-$month-$day" $JHU_WORLD_CASES | \
-                    awk -F, '{print "'$country','$td','$cnt',"$4}' >>$country-$TARGET
+                    awk -F, '{print "'$country','$td','$cnt',"$4}' >>$OUTDIR/$country-$TARGET
             else
-                    echo "$country,$td,$cnt,0" >>$country-$TARGET
+                    echo "$country,$td,$cnt,0" >>$OUTDIR/$country-$TARGET
             fi
         else
             echo "No idea what country count to use - exiting"
@@ -210,16 +334,16 @@ do
     rm -f $T3
     # as the cases file can be 24 hours old, the TEKs can get
     # ahead of that, so we'll output an empty cases number in
-    # that case, we won't see $td in $country-$TARGET yet so
+    # that case, we won't see $td in $OUTDIR/$country-$TARGET yet so
     # add in a line in that case - that should only happend 
 	# for the most recent day, so this can be outside the
 	# loop
     if [[ "$td" != "" ]]
     then
-        addedteks=`grep -c $td $country-$TARGET`
+        addedteks=`grep -c $td $OUTDIR/$country-$TARGET`
         if [[ "$addedteks" == "0" ]]
         then
-        echo "$country,$td,$cnt," >>$country-$TARGET
+        echo "$country,$td,$cnt," >>$OUTDIR/$country-$TARGET
         fi
     fi
 

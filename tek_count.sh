@@ -30,13 +30,16 @@ fi
 total_keys=0
 for file in $zips
 do
+    echo -e "\tDoing $file"
     # try unzip and decode
-    unzip $file >/dev/null 2>&1
+    timeout 120s unzip $file >/dev/null 2>&1
     if [[ $? == 0 ]]
     then
         $TEK_DECODE
         new_keys=$?
         total_keys=$((total_keys+new_keys))
+    else
+        echo "Unzip of $file failed or took too long"
     fi
     rm -f export.bin export.sig
     chunk_no=$((chunk_no+1))
