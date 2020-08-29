@@ -131,8 +131,9 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(1)
     ax.xaxis_date()
     ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-    ax.tick_params(axis='both', which='major', labelsize=16)
-    ax.tick_params(axis='both', which='minor', labelsize=12)
+    ax.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
+    ax.tick_params(axis='y', which='major', labelsize=24)
+    #ax.tick_params(axis='both', which='minor', labelsize=12)
     dmintime=dates[0]
     dmaxtime=dates[-1]
     if args.start:
@@ -140,7 +141,9 @@ if __name__ == "__main__":
     if args.end:
         dmaxtime=maxtime
     ax.set_xlim(dmintime,dmaxtime)
+
     ax2=ax.twinx()
+    ax2.tick_params(axis='y', which='major', labelsize=24)
 
     bar_width=0.8/(2*len(countries))
     for c in countries:
@@ -160,9 +163,6 @@ if __name__ == "__main__":
             ax2.plot([d+bwm for d in dates[14:]],c14_case[c],marker='^',color=colours[(2*countries.index(c)+1)%len(colours)])
             ax2.plot([d+bwm for d in dates[14:]],c14_ratio[c],linestyle='dashed',color=colours[(2*countries.index(c))%len(colours)])
 
-    #ax.xaxis.set_major_locator(mdates.DayLocator())
-    #ax.xaxis_date()
-
     if not args.notitle:
         plt.suptitle("TEKs versus Cases for "+str(countries))
         if args.seven and args.fourteen:
@@ -181,12 +181,8 @@ if __name__ == "__main__":
                 patches.append(mpatches.Patch(lw=None,ls='dashed',color=colours[(2*countries.index(c))%len(colours)],label=c+'-tek/case-ratio'))
         fig.legend(loc='lower center', fancybox=True, ncol=10, handles=patches)
 
-    #ax.xaxis.set_major_locator(mdates.DayLocator())
-    #ax.xaxis_date()
-    #ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-
     if args.outfile is not None:
-        fig.set_size_inches(18.5, 10.5)
+        fig.set_size_inches(18.5, 11.5)
         plt.savefig(args.outfile,dpi=300)
     else:
         plt.show()
