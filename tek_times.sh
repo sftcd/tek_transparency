@@ -15,6 +15,11 @@ TEK_COUNT="$TOP/tek_count.sh"
 CURL="/usr/bin/curl -s"
 
 
+# countries to do by default, or just one if given on command line
+COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva ca"
+DATADIR="`/bin/pwd`"
+OUTDIR="`/bin/pwd`"
+
 # Whether to report raw (e.g. Austria) counts ("no") or to 
 # reduce those by not counting TEKs that were only ever
 # seen in one zip file ("yes")
@@ -38,10 +43,19 @@ de10xtill=`date -d "2020-07-04" +%s`
 #   numbers before then, just TBC
 #   
 
-# countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva ca"
-DATADIR="`/bin/pwd`"
-OUTDIR="`/bin/pwd`"
+# And also when REDUCEing we need to keep track of what
+# TEKs are from .ie and which from ukni
+IETEKS="$DATADIR/iefirstteks"
+UKNITEKS="$DATADIR/uknifirstteks"
+
+if [[ "$REDUCE" == "yes" ]]
+then 
+    if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
+    then
+        echo "Reducing ie/unki prep..."
+        $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
+    fi
+fi
 
 declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["ukni"]="Northern Ireland" \
@@ -270,6 +284,32 @@ do
                 fi
            done
         fi
+        mv $T2p5 $T2
+    elif [[ "$REDUCE" == "yes" && "$country" == "ie" ]]
+    then
+        # for Ireland and NI, we re-analyse all TEKs from
+        # the island, and end up with files that contain
+        # only those first seen on the relevant side of
+        # the border, so we'll grep away the rest of the
+        # TEKs in $T2 based on that
+        # first, we re-generate those files - the script
+        # we're using is a bit slow, but can be optimsed
+        # later
+        if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
+        then
+            $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
+        fi
+        rm -f $T2p5
+        grep -v -f $UKNITEKS $T2 >$T2p5
+        mv $T2p5 $T2
+    elif [[ "$REDUCE" == "yes" && "$country" == "ukni" ]]
+    then
+        if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
+        then
+            $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
+        fi
+        rm -f $T2p5
+        grep -v -f $IETEKS $T2 >$T2p5
         mv $T2p5 $T2
     fi
 

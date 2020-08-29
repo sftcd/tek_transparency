@@ -42,6 +42,9 @@ if __name__ == "__main__":
     parser.add_argument('-n','--nolegend',     
                     help='don\'t add legend to figure',
                     action='store_true')
+    parser.add_argument('-t','--notitle',     
+                    help='don\'t add title to figure',
+                    action='store_true')
     parser.add_argument('-7','--seven',     
                     help='add 7 day running averages',
                     action='store_true')
@@ -128,6 +131,8 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(1)
     ax.xaxis_date()
     ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+    ax.tick_params(axis='both', which='major', labelsize=16)
+    ax.tick_params(axis='both', which='minor', labelsize=12)
     dmintime=dates[0]
     dmaxtime=dates[-1]
     if args.start:
@@ -158,13 +163,14 @@ if __name__ == "__main__":
     #ax.xaxis.set_major_locator(mdates.DayLocator())
     #ax.xaxis_date()
 
-    plt.suptitle("TEKs versus Cases for "+str(countries))
-    if args.seven and args.fourteen:
-        ax.set(title="with 7- and 14- day running averages on lines (dashed=ratio)")
-    elif args.seven:
-        ax.set(title="with 7- day running averages on lines (dashed=ratio)")
-    elif args.fourteen:
-        ax.set(title="with 14- day running averages on lines (dashed=ratio)")
+    if not args.notitle:
+        plt.suptitle("TEKs versus Cases for "+str(countries))
+        if args.seven and args.fourteen:
+            ax.set(title="with 7- and 14- day running averages on lines (dashed=ratio)")
+        elif args.seven:
+            ax.set(title="with 7- day running averages on lines (dashed=ratio)")
+        elif args.fourteen:
+            ax.set(title="with 14- day running averages on lines (dashed=ratio)")
 
     if not args.nolegend:
         patches=[]
