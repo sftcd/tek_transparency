@@ -5,10 +5,11 @@
 # Input is a CSV with: country,date,count,epoch
 
 import sys,argparse,csv,dateutil,math,statistics
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import matplotlib
 import numpy as np
 import gif,datetime
 

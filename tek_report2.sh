@@ -13,7 +13,7 @@ x=${DOCROOT:='/var/www/tact/tek-counts/'}
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${DATADIR:="$TOP"}
 x=${ARCHIVE:="$DATADIR/all-zips"}
-x=${DAILYDIR:="$TOP/27augrun"}
+x=${DAILYDIR:="$TOP/dailies"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index2.html"
@@ -95,21 +95,27 @@ active users and case counts. The latest table is below.</p>
 
 <table>
     <tr><td>
+	Uploads since we started:
 
 EOF
 
 # add latest table
 cat $DAILYDIR/shortfalls.html >>$TARGET
 # add latest table
+cat >>$TARGET <<EOF
+        </td> <td>
+	Uploads for the last two weeks:
+EOF
+
+cat $DAILYDIR/shortfalls2w.html >>$TARGET
 
 cat >>$TARGET <<EOF
-
-        </td>
-        <td>
+        </td><td>
 
 <p>These images show our estimates of key uploads versus cases for each of the
-countries in question. Click through for a bigger image.
-And here is the <a href="country-counts.csv">CSV file</a> on which those graphs are based.</p>
+countries in question. <br/>
+Click through for a bigger image.<br/>
+The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
 
 <table>
     <tr>
@@ -138,7 +144,6 @@ And here is the <a href="country-counts.csv">CSV file</a> on which those graphs 
         </td></tr>
         </table>
 EOF
-
 
 cat >>$TARGET <<EOF
 <h2><a name="counts">Daily Counts</a></h2>

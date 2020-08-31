@@ -126,6 +126,7 @@ if __name__ == "__main__":
         else:
             tline.append(country_actives[country])
         zerodays=0
+        casetot=0
         tektot=sum(country_teks[country])
         if args.rampup:
             zerodays = next((index for index,value in enumerate(country_teks[country]) if value != 0), None)
@@ -138,9 +139,12 @@ if __name__ == "__main__":
             if zerodays is not None:
                 casetot=sum(country_cases[country][zerodays:])
                 #print(casetot,zerodays,country_cases[country])
+                if casetot==0:
+                    dosf=False
             else:
-                print("zerodays is None - probably no TEKs in range at all (tektot=",tektot,")")
-                casetot=1
+                #print("zerodays is None - probably no TEKs in range at all (tektot=",tektot,")")
+                casetot=sum(country_cases[country])
+                dosf=False
 
         tline.append(str(casetot))
         if dosf:
@@ -149,7 +153,7 @@ if __name__ == "__main__":
             tline.append(str('%.1f' % shortfall))
         else:
             tline.append("-")
-        if args.rampup:
+        if args.rampup and zerodays is not None:
             tline.append(dates[zerodays].strftime("%Y-%m-%d"))
         else:
             tline.append("-")

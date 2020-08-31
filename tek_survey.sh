@@ -1026,8 +1026,10 @@ then
     cp *.csv $DOCROOT
 fi
 
+# temporarily do dailies - just testing this for now
 cd $DAILIES
 $TOP/dailycounter.sh -d $DAILIES
+$TOP/tek_report2.sh
 
 cd $ARCHIVE
 

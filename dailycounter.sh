@@ -240,18 +240,59 @@ cat >$OUTDIR/shortfalls.html <<EOF
     <tr><td>Country/<br/>Region</td><td>Pop<br/>millions</td><td>Actives<br/>millions</td><td>Uploads</td><td>Cases</td><td>Shortfall<br/>percent</td><td>First TEK seen</td></tr>
 
 EOF
-
 for country in $COUNTRY_LIST
 do
     $TOP/shortfalls.py -rH -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv -c $country >>$OUTDIR/shortfalls.html
 done
 cat >>$OUTDIR/shortfalls.html <<EOF
 </table>
+
 EOF
 
 if [ -d $DOCROOT ]
 then
     cp $OUTDIR/shortfalls.html $DOCROOT
+	# put the csv in place too
+	cp $OUTDIR/$OUTFILE $DOCROOT
+fi
+
+# same again but just for last 2 weeks, 'till yesterday:  make HTML fragment with shortfalls
+endy=`date -d "00:00Z" +%s`
+endy=$((endy-86400))
+starty=$((endy-14*86400))
+eday=`date -d @$endy +"%d"`
+emonth=`date -d @$endy +"%m"`
+eyear=`date -d @$endy +"%Y"`
+sday=`date -d @$starty +"%d"`
+smonth=`date -d @$starty +"%m"`
+syear=`date -d @$starty +"%Y"`
+estr="$eyear-$emonth-$eday"
+sstr="$syear-$smonth-$sday"
+
+if [ -f $OUTDIR/shortfalls2w.html ]
+then
+    mv $OUTDIR/shortfalls2w.html $OUTDIR/shortfalls2w.$NOW.html
+    # also make a more machine readable version, not quite json but feck it:-)
+    $TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv -s $sstr -e $estr >>$OUTDIR/shortfalls2w.$NOW.json
+fi
+
+cat >$OUTDIR/shortfalls2w.html <<EOF
+<table border="1">
+    <tr><td>Country/<br/>Region</td><td>Pop<br/>millions</td><td>Actives<br/>millions</td><td>Uploads</td><td>Cases</td><td>Shortfall<br/>percent</td><td>First TEK seen</td></tr>
+
+EOF
+for country in $COUNTRY_LIST
+do
+    $TOP/shortfalls.py -rH -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv -c $country -s $sstr -e $estr  >>$OUTDIR/shortfalls2w.html
+done
+cat >>$OUTDIR/shortfalls2w.html <<EOF
+</table>
+
+EOF
+
+if [ -d $DOCROOT ]
+then
+    cp $OUTDIR/shortfalls2w.html $DOCROOT
 fi
 
 # and finally some pictures
@@ -272,4 +313,5 @@ do
         cp $OUTDIR/$country.png $OUTDIR/$country-small.png $DOCROOT
     fi
 done
+
 
