@@ -1,11 +1,12 @@
 #!/bin/bash
 
-# set -x
+#set -x
 
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${DATADIR="$HOME/data/teks/tek_transparency"}
 x=${OUTDIR="`/bin/pwd`"}
+x=${DOCROOT:='/var/www/tact/tek-counts/'}
 
 
 # script to count each day's TEKs for each country/region
@@ -17,7 +18,7 @@ x=${OUTDIR="`/bin/pwd`"}
 # UTC midnight each day (currently, 1am Irish Summer Time)
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva ca"
+COUNTRY_LIST="ie ukni ch at dk de it pl lv es usva ca"
 
 # default values for parameters
 verbose="no"
@@ -80,6 +81,28 @@ DAYSECS=$((60*60*24))
 HOURS="48"
 
 #echo "Going to count daily TEKS from $START_STR ($START) to $END_STR ($END) in $COUNTRY_LIST"
+
+# And also when REDUCEing we need to keep track of what
+# TEKs are from .ie and which from ukni
+IETEKS="$OUTDIR/iefirstteks"
+UKNITEKS="$OUTDIR/uknifirstteks"
+if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
+then
+    echo "Reducing ie/unki prep..."
+    $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
+else
+    iemtime=`date -r $IETEKS +%s`
+    uknimtime=`date -r $UKNITEKS +%s`
+    now=`date +%s`
+    if [ "$((now-iemtime))" -gt "86400" -o "$((now-uknimtime))" -gt "86400" ]
+    then
+        # make a wee backup
+        mv $IETEKS $IETEKS.backup.$NOW
+        mv $UKNITEKS $UKNITEKS.backup.$NOW
+        echo "Reducing ie/unki prep as files older than 24 hours..."
+        $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
+    fi
+fi
 
 # We'll make a CSV in each relevant directory, if one doesn't
 # already exist there that's younger than all the zips in that
@@ -156,15 +179,11 @@ do
                 alreadythere=`grep -c "$ll" $TMPF`
                 if [[ "$alreadythere" == "0" ]]
                 then
-                    # Handle any exceptions for weird counters, we need to decode for that
-                    # Moved that code to tek_times.sh
                     llc=`echo "$ll" | awk -F, '{print $1}'` 
                     llday=`echo "$ll" | awk -F, '{print $2}'` 
                     lltime_t=`date -d "$llday" +%s`
                     lltek=`echo "$ll" | awk -F, '{print $3}'` 
                     llcnt=`echo "$ll" | awk -F, '{print $4}'` 
-                    #echo "Input: $ll"
-                    #echo "Output: $llc,$llday,$lltek,$llcnt" 
                     echo "$llc,$llday,$lltek,$llcnt" >>$TMPF
                 fi
             fi
@@ -206,5 +225,51 @@ fi
 # and sort removing columns with the same date, (col2) then reverse
 # again to get our output
 cat $TMPF $TMPF1 | sort | tac | sort -u -t, -r -k1,2 |tac > $OUTDIR/$OUTFILE
-# cat $TMPF $TMPF1 | sort > $OUTDIR/$OUTFILE
 rm -f $TMPF $TMPF1
+
+# now make HTML fragment with shortfalls
+if [ -f $OUTDIR/shortfalls.html ]
+then
+    mv $OUTDIR/shortfalls.html $OUTDIR/shortfalls.$NOW.html
+    # also make a more machine readable version, not quite json but feck it:-)
+    $TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv >>$OUTDIR/shortfalls.$NOW.json
+fi
+
+cat >$OUTDIR/shortfalls.html <<EOF
+<table border="1">
+    <tr><td>Country/<br/>Region</td><td>Pop<br/>millions</td><td>Actives<br/>millions</td><td>Uploads</td><td>Cases</td><td>Shortfall<br/>percent</td><td>First TEK seen</td></tr>
+
+EOF
+
+for country in $COUNTRY_LIST
+do
+    $TOP/shortfalls.py -rH -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv -c $country >>$OUTDIR/shortfalls.html
+done
+cat >>$OUTDIR/shortfalls.html <<EOF
+</table>
+EOF
+
+if [ -d $DOCROOT ]
+then
+    cp $OUTDIR/shortfalls.html $DOCROOT
+fi
+
+# and finally some pictures
+cdate_list=`$TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv | \
+                awk -F, '{print $1$7}' | \
+                sed -e 's/\[//' | \
+                sed -e 's/]//' | \
+                sed -e "s/'//g" | \
+                sed -e 's/ /,/'`
+for cdate in $cdate_list
+do
+    country=`echo $cdate | awk -F, '{print $1}'`
+    sdate=`echo $cdate | awk -F, '{print $2}'`
+    $TOP/plot-dailies.py -c $country -1 -i $OUTDIR/$OUTFILE -s $sdate -o $OUTDIR/$country.png
+    convert $OUTDIR/$country.png -resize 115x71 $OUTDIR/$country-small.png
+    if [ -d $DOCROOT ]
+    then
+        cp $OUTDIR/$country.png $OUTDIR/$country-small.png $DOCROOT
+    fi
+done
+

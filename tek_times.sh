@@ -54,6 +54,16 @@ then
     then
         echo "Reducing ie/unki prep..."
         $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
+    else
+        iemtime=`date -r $IETEKS +%s`
+        uknimtime=`date -r $UKNITEKS +%s`
+        now=`date +%s`
+        if [ "$((now-iemtime))" -gt "86400" || "$((now-uknimtime))" -gt "86400" ]
+        then
+            echo "Reducing ie/unki prep as files older than 24 hours..."
+            $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
+        fi
+            
     fi
 fi
 
@@ -250,7 +260,11 @@ do
     echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
     # upper case variant
     ucountry=${country^^}
-    echo "Doing $country"
+    if [[ "$REDUCE" != "yes" ]]
+    then
+        # be a bit quieter then:-)
+        echo "Doing $country"
+    fi
     $TEK_COUNT $country-*.zip >$T2
 
     # TODO: figure out if this is correct or not! (Likely requires contact to .at)

@@ -164,7 +164,7 @@ if __name__ == "__main__":
             ax2.plot([d+bwm for d in dates[14:]],c14_ratio[c],linestyle='dashed',color=colours[(2*countries.index(c))%len(colours)])
 
     if not args.notitle:
-        plt.suptitle("TEKs versus Cases for "+str(countries))
+        plt.suptitle("Estimated uploads versus cases for "+str(countries))
         if args.seven and args.fourteen:
             ax.set(title="with 7- and 14- day running averages on lines (dashed=ratio)")
         elif args.seven:

@@ -12,6 +12,7 @@ x=${DOCROOT:='/var/www/tact/tek-counts/'}
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${DATADIR:="$TOP"}
 x=${ARCHIVE:="$DATADIR/all-zips"}
+x=${DAILIES:="$DATADIR/dailies"}
 
 TEK_DECODE="$TOP/tek_file_decode.py"
 TEK_TIMES="$TOP/tek_times.sh"
@@ -1024,6 +1025,12 @@ if [ -d  $DOCROOT ]
 then
     cp *.csv $DOCROOT
 fi
+
+cd $DAILIES
+$TOP/dailycounter.sh -d $DAILIES
+
+cd $ARCHIVE
+
 $TEK_REPORT
 
 END=$(whenisitagain)

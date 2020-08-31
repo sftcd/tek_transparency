@@ -11,6 +11,12 @@
 # we use the file creation times to determine which is
 # 'earlier'
 
+function whenisitagain()
+{
+	date -u +%Y%m%d-%H%M%S
+}
+NOW=$(whenisitagain)
+
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${DATADIR="$HOME/data/teks/tek_transparency/all-zips"}
 OUTFILE="attribution.csv"
@@ -33,6 +39,17 @@ fi
 
 # only do the slow bits if needed
 
+if [ -f $IEF ]
+then
+    iefmtime=`date -r $IEF +%s`
+    now=`date +%s`
+    if [ "$((now-iefmtime))" -gt "86400" ]
+    then
+        # make a wee backup
+        mv $IEF $IEF.backup.$NOW
+    else
+fi
+
 if [ ! -f $IEF ]
 then
     tmpf=`mktemp /tmp/ieunkiXXXX`
@@ -50,7 +67,19 @@ then
     cat $tmpf | sort -t, -k3 | sort -u -t, -k4 >ie-$OUTFILE
     rm -f $tmpf
 else
-    echo "Using existing $IEF"
+
+        echo "Using existing $IEF"
+fi
+
+if [ -f $UKNIF ]
+then
+    uknifmtime=`date -r $UKNIF +%s`
+    now=`date +%s`
+    if [ "$((now-uknifmtime))" -gt "86400" ]
+    then
+        # make a wee backup
+        mv $UKNIF $UKNIF.backup.$NOW
+    else
 fi
 
 if [ ! -f $UKNIF ]
