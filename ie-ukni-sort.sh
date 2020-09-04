@@ -47,7 +47,7 @@ then
     then
         # make a wee backup
         mv $IEF $IEF.backup.$NOW
-    else
+    fi
 fi
 
 if [ ! -f $IEF ]
@@ -79,7 +79,7 @@ then
     then
         # make a wee backup
         mv $UKNIF $UKNIF.backup.$NOW
-    else
+    fi
 fi
 
 if [ ! -f $UKNIF ]
