@@ -276,24 +276,24 @@ do
     if [[ "$REDUCE" == "yes" && "$country" == "at" ]]
     then
         rm -f $T2p5
-        if [ -f $HOME/one-off-at-index ]
+        if [ -f $HOME/at-one-off/one-off-at-index ]
         then
             # still faster but avoids grep using so much memory
             # which is apparently needed on our ancient server:-)
             t2_l=`wc -l $T2`
             rm -f $T2p5
-            for tfile in `cat $HOME/one-off-at-index` 
+            for tfile in `cat $HOME/at-one-off/one-off-at-index` 
             do
-                grep -v -f $HOME/$tfile $T2 >$T2p5
-                mv $T2p5 $T2
+                grep -v -f $HOME/at-one-off/$tfile $T2 >$T2p5
+                cp $T2p5 $T2
             done
             t2p5_l=`wc -l $T2p5`
             echo "Started with $t2_l ended up with $t2p5_l"
-        elif [ -f $HOME/one-off-at-teks ]
+        elif [ -f $HOME/at-one-off/one-off-at-teks ]
         then
             # This is quicker but requires access to plain TEKs
             t2_l=`wc -l $T2`
-            grep -v -f $HOME/one-off-at-teks $T2 >$T2p5
+            grep -v -f $HOME/at-one-off/one-off-at-teks $T2 >$T2p5
             t2p5_l=`wc -l $T2p5`
             echo "Started with $t2_l ended up with $t2p5_l"
         else
@@ -304,7 +304,7 @@ do
             do 
                 ltek=`echo $line | awk -F\' '{print $2}'`
                 lhash=`echo -n $ltek | openssl sha256 | awk '{print $2}'`
-                hit=`grep -c $lhash $TOP/one-off-at-hteks`
+                hit=`grep -c $lhash $TOP/at-one-off/one-off-at-hteks`
                 if [[ "$hit" == "0" ]]
                 then
                     echo $line >>$T2p5

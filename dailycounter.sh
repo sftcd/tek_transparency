@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+# set -x
 
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
