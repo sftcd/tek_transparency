@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#set -x
+set -x
 
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
@@ -77,8 +77,6 @@ NOW=$(whenisitagain)
 START_STR=`date -d @$START`
 END_STR=`date -d @$END`
 DAYSECS=$((60*60*24))
-
-HOURS="48"
 
 #echo "Going to count daily TEKS from $START_STR ($START) to $END_STR ($END) in $COUNTRY_LIST"
 

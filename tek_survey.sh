@@ -1028,7 +1028,7 @@ fi
 
 # temporarily do dailies - just testing this for now
 cd $DAILIES
-$TOP/dailycounter.sh -d $DAILIES
+$TOP/dailycounter.sh -d $TOP
 $TOP/tek_report2.sh
 
 cd $ARCHIVE
