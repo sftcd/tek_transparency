@@ -113,9 +113,15 @@ else
 			        $UNZIP "ie-$iebname" >/dev/null 2>&1
 			        if [[ $? == 0 ]]
 			        then
-			            $TEK_DECODE
+                        tderr=`mktemp /tmp/tderrXXXX`
+			            $TEK_DECODE 2>$tderr
 			            new_keys=$?
 			            total_keys=$((total_keys+new_keys))
+                        tderrsize=`stat -c%s $tderr`
+                        if [[ "$tderrsize" != '0' ]] 
+                        then
+                            echo "tek-decode error processing ie-$iebname"
+                        fi
 			        fi
 			        rm -f export.bin export.sig
 			        chunks_down=$((chunks_down+1))

@@ -276,7 +276,20 @@ do
     if [[ "$REDUCE" == "yes" && "$country" == "at" ]]
     then
         rm -f $T2p5
-        if [ -f $HOME/one-off-at-teks ]
+        if [ -f $HOME/one-off-at-index ]
+        then
+            # still faster but avoids grep using so much memory
+            # which is apparently needed on our ancient server:-)
+            t2_l=`wc -l $T2`
+            rm -f $T2p5
+            for tfile in `cat $HOME/one-off-at-index` 
+            do
+                grep -v -f $HOME/$tfile $T2 >$T2p5
+                mv $T2p5 $T2
+            done
+            t2p5_l=`wc -l $T2p5`
+            echo "Started with $t2_l ended up with $t2p5_l"
+        elif [ -f $HOME/one-off-at-teks ]
         then
             # This is quicker but requires access to plain TEKs
             t2_l=`wc -l $T2`
