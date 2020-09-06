@@ -433,6 +433,14 @@ CH_BASE="https://www.pt.bfs.admin.ch/v1/gaen/exposed"
 now=`date +%s`
 today_midnight="`date -d "00:00:00Z" +%s`000"
 
+# Swiss cgs & stats
+# The GAEN config
+CH_CONFIG="https://www.pt-a.bfs.admin.ch/v1/config?appversion=1&osversion=ios&buildnr=1"
+# The count of active users 
+CH_ACTIVES="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-01.2/master"
+# The count of covidcodes uploaded
+CH_CODES="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-04/master"
+
 # it turns out (personal communication) that the .ch scheme is to change
 # the content of files but re-use the file name. I think that means that
 # files that are less than 14 days old may be updated, with newly uploaded
@@ -486,11 +494,9 @@ do
 	sleep 1
 done
 
-CH_CONFIG="https://www.pt-a.bfs.admin.ch/v1/config?appversion=1&osversion=ios&buildnr=1"
 $CURL -L $CH_CONFIG --output ch-cfg.json
-echo ".ch config:"
-cat ch-cfg.json
-
+$CURL -L $CH_ACTIVES --output ch-actives.json
+$CURL -L $CH_CODES --output ch-codes.json
 
 # This URL has the number of active users of the app
 ACTIVES_URL="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-01/master"
