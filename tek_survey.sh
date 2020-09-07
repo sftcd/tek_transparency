@@ -439,7 +439,10 @@ CH_CONFIG="https://www.pt-a.bfs.admin.ch/v1/config?appversion=1&osversion=ios&bu
 # The count of active users 
 CH_ACTIVES="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-01.2/master"
 # The count of covidcodes uploaded
-CH_CODES="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-04/master"
+CH_CODES="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-03/master"
+# Same but weekly - we don't get this now, just still here 'cause I accidentally grabbed it for
+# a day or two;-)
+CH_WEEKLY_CODES="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.01-SwissCovidApp-04/master"
 
 # it turns out (personal communication) that the .ch scheme is to change
 # the content of files but re-use the file name. I think that means that
