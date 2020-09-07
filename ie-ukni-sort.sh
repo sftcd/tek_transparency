@@ -18,7 +18,7 @@ function whenisitagain()
 NOW=$(whenisitagain)
 
 x=${TOP:="$HOME/code/tek_transparency"}
-x=${DATADIR="$HOME/data/teks/tek_transparency/all-zips"}
+x=${DATADIR="$HOME/code/tek_transparency/all-zips"}
 OUTFILE="attribution.csv"
 IEF="ie-$OUTFILE" 
 UKNIF="ukni-$OUTFILE"
@@ -67,8 +67,7 @@ then
     cat $tmpf | sort -t, -k3 | sort -u -t, -k4 >ie-$OUTFILE
     rm -f $tmpf
 else
-
-        echo "Using existing $IEF"
+	echo "Using existing $IEF"
 fi
 
 if [ -f $UKNIF ]
