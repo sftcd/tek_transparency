@@ -140,11 +140,11 @@ it, but if it's a one-off, no need.</li>
 and so only published once in one zip file, whereas the real TEKs continue to be published
 for multiple days. I've collated the set of one-off TEKs and so now scan for those and
 (for now) no longer accumulate them in Austrian counts.</li> 
-    <li>20200810: Added Spanish live data (thanks to 
+    <li>20200910: Added Spanish live data (thanks to 
         <a href="https://github.com/sftcd/tek_transparency/pull/12">github PR#12</a> from @Crazy-Projects).
         Data up to 20200727 was from a pilot.
     </li>
-    <li>20200810: Added US/Alabama</li>
+    <li>20200910: Added US/Alabama</li>
 
 </ul>
 
