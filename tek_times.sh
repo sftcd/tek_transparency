@@ -16,7 +16,7 @@ CURL="/usr/bin/curl -s"
 
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva usal ca"
+COUNTRY_LIST="ie ukni it de ch pl dk at ee lv es usva usal ca"
 DATADIR="`/bin/pwd`"
 OUTDIR="`/bin/pwd`"
 
@@ -76,6 +76,7 @@ declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["at"]="Austria" \
                ["dk"]="Denmark" \
                ["lv"]="Latvia" \
+               ["ee"]="Estonia" \
                ["es"]="Spain" \
                ["usva"]="Virginia" \
                ["usal"]="Alabama" \

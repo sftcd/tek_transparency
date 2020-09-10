@@ -22,7 +22,7 @@ TEK_DECODE="$TOP/tek_file_decode.py"
 # UTC midnight each day (currently, 1am Irish Summer Time)
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni ch at dk de it pl lv es usva usal ca"
+COUNTRY_LIST="ie ukni ch at dk de it pl ee lv es usva usal ca"
 
 declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["ukni"]="Northern Ireland" \
@@ -33,6 +33,7 @@ declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
                ["at"]="Austria" \
                ["dk"]="Denmark" \
                ["lv"]="Latvia" \
+               ["ee"]="Estonia" \
                ["es"]="Spain" \
                ["usva"]="Virginia" \
                ["usal"]="Alabama" \

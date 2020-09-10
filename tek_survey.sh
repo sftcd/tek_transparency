@@ -1094,6 +1094,70 @@ else
     done
 fi
 
+# Estonia
+
+EE_BASE="https://enapi.sm.ee/authorization/v1/gaen/exposed"
+now=`date +%s`
+toay_midnight="`date -d "00:00:00Z" +%s`000"
+
+# one day in milliseconds
+day=$((60*60*24*1000))
+
+echo "======================"
+echo ".ee TEKs"
+for fno in {0..14}
+do
+	echo "Doing .ee file $fno" 
+	midnight=$((toay_midnight-fno*day))
+	$CURL -L "$EE_BASE/$midnight" --output ee-$midnight.zip
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .ee sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s ee-$midnight.zip ]
+		then
+			echo "Empty or non-existent downloaded Estonian file: ee-$midnight.zip ($fno)"
+		else
+    		if [ ! -f $ARCHIVE/ee-$midnight.zip ]
+    		then
+				echo "New .ee file $fno ee-$midnight" 
+        		cp ee-$midnight.zip $ARCHIVE
+			elif ((`stat -c%s "ee-$midnight.zip"`>`stat -c%s "$ARCHIVE/ee-$midnight.zip"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .ee file $fno ee-$midnight" 
+        		cp ee-$midnight.zip $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "ee-$midnight.zip" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE
+        		new_keys=$?
+        			total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading ee-$midnight.zip (file $fno)"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+# Don't know config URL yet
+#EE_CONFIG="https://enapi.sm.ee/authorization/configuration/settings"
+#EE_LOCALES="https://radarcovid.covid19.gob.ee/configuration/masterData/locales?locale=ee-EE"
+#EE_CCAA="https://radarcovid.covid19.gob.ee/configuration/masterData/ccaa?locale=ee-ES&additionalInfo=true"
+#$CURL -L $EE_CONFIG --output ee-cfg.json
+#$CURL -L $EE_LOCALES --output ee-locales.json
+#$CURL -L $EE_CCAA --output ee-ccaa.json
+#echo ".ee config:"
+#cat ee-cfg.json
+
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."
