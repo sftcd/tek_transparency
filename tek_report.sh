@@ -144,7 +144,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
         <a href="https://github.com/sftcd/tek_transparency/pull/12">github PR#12</a> from @Crazy-Projects).
         Data up to 20200727 was from a pilot.
     </li>
-    <li>"20200810: Added US/Alabama</li>
+    <li>20200810: Added US/Alabama</li>
 
 </ul>
 
