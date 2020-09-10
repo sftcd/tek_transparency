@@ -18,7 +18,7 @@ x=${DOCROOT:='/var/www/tact/tek-counts/'}
 # UTC midnight each day (currently, 1am Irish Summer Time)
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni ch at dk de it pl lv es usva ca"
+COUNTRY_LIST="ie ukni ch at dk de it pl ee lv es usva usal ca"
 
 # default values for parameters
 verbose="no"

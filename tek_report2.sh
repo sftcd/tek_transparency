@@ -17,7 +17,7 @@ x=${DAILYDIR:="$TOP/dailies"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index2.html"
-COUNTRY_LIST="ie ukni ch at dk de it pl lv es usva usal ca"
+COUNTRY_LIST="ie ukni ch at dk de it pl ee lv es usva usal ca"
 
 function whenisitagain()
 {
@@ -131,6 +131,7 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
     </tr>
     <tr>
         <td><a href="it.png"><img src="it-small.png" alt=".it"/></a></td>
+        <td><a href="ee.png"><img src="ee-small.png" alt=".ee"/></a></td>
         <td><a href="lv.png"><img src="lv-small.png" alt=".lv"/></a></td>
         <td><a href="pl.png"><img src="pl-small.png" alt=".pl"/></a></td>
     </tr>
