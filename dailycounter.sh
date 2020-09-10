@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# set -x
+set -x
 
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
@@ -23,7 +23,8 @@ COUNTRY_LIST="ie ukni ch at dk de it pl lv es usva ca"
 # default values for parameters
 verbose="no"
 OUTFILE="country-counts.csv"
-START=`date +%s -d 2020-06-01T00:00:00Z`
+RUNHOUR="00"
+START=`date +%s -d 2020-06-01T$RUNHOUR:00:00Z`
 END=`date +%s`
 
 function usage()
@@ -37,13 +38,14 @@ function usage()
     echo "  -h means print this"
     echo "  -o specifies the output directory (default: $OUTDIR)"
     echo "  -O specifies the output CSV file (default: $OUTFILE)"
+    echo "  -r specifies the hour of thr run to use, between 00 and 23 (default: $RUNHOUR)"
     echo "  -s specifies the start time, in secs since UNIX epoch (default: $START)"
     echo "  -v means be verbose"
     exit 99
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(/usr/bin/getopt -s bash -o c:d:e:ho:O:s:v -l countries:,dir:,end:,help,outdir:,outfile:,start:,verbose -- "$@")
+if ! options=$(/usr/bin/getopt -s bash -o c:d:e:ho:O:r:s:v -l countries:,dir:,end:,help,outdir:,outfile:,runhour:,start:,verbose -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -59,6 +61,7 @@ do
         -h|--help) usage;;
         -o|--outdir) OUTDIR=$2; shift;;
         -O|--outfile) OUTFILE=$2; shift;;
+        -r|--runhour) RUNHOUR=$2; START=`date +%s -d 2020-06-01T$RUNHOUR:00:00Z`; shift;;
         -s|--start) START=$2; shift;;
         -v|--verbose) verbose="yes" ;;
         (--) shift; break;;
@@ -74,11 +77,11 @@ function whenisitagain()
 }
 NOW=$(whenisitagain)
 
-START_STR=`date -d @$START`
-END_STR=`date -d @$END`
-DAYSECS=$((60*60*24))
-
+#START_STR=`date -d @$START`
+#END_STR=`date -d @$END`
 #echo "Going to count daily TEKS from $START_STR ($START) to $END_STR ($END) in $COUNTRY_LIST"
+
+DAYSECS=$((60*60*24))
 
 # And also when REDUCEing we need to keep track of what
 # TEKs are from .ie and which from ukni
@@ -120,7 +123,7 @@ do
     # but, some could be missing and I used only do 6 hourly
     # runs early on, so we'll take the earliest run we can find
     # for that day - I hope that doesn't mean we miss any TEKS
-    runlist4day="$DATADIR/$year$month$day-*"
+    runlist4day="`ls -d $DATADIR/$year$month$day-*`"
 
     for run in $runlist4day
     do
@@ -129,6 +132,22 @@ do
             #echo -e "\tSkipping $run"
             continue
         fi 
+        # if run time is before $mn then also skip it
+        rtstr=`basename $run`
+        rtyear=${rtstr:0:4}
+        rtmonth=${rtstr:4:2}
+        rtday=${rtstr:6:2}
+        rthour=${rtstr:9:2}
+        rtmin=${rtstr:11:2}
+        rtsec=${rtstr:13:2}
+        rt=`date +%s -d "$rtyear-$rtmonth-$rtday"T"$rthour:$rtmin:$rtsec"Z`
+        if [[ $rt -lt $mn ]]
+        then
+           echo "$rt is less than $mn (for $run)"
+           continue
+        fi 
+        echo "$rt is not less than $mn (for $run)"
+
         dirtarget="$OUTDIR/$year-$month-$day"
         if [ ! -d $dirtarget ]
         then
@@ -255,7 +274,7 @@ then
 fi
 
 # same again but just for last 2 weeks, 'till yesterday:  make HTML fragment with shortfalls
-endy=`date -d "00:00Z" +%s`
+endy=`date -d "$RUNHOUR:00Z" +%s`
 endy=$((endy-86400))
 starty=$((endy-14*86400))
 eday=`date -d @$endy +"%d"`

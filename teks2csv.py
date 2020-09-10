@@ -30,7 +30,7 @@ indir=os.getcwd()+"/"
 outfile="teks.csv"
 
 parser=argparse.ArgumentParser(description='Map all the GAEN TEK zipfiles in a directory into CSV entries')
-parser.add_argument('-i','--input',
+parser.add_argument('-i','--indir',
                     dest='indir',
                     help='name of directory containing zip file (default: .)')
 parser.add_argument('-o','--output',
@@ -86,13 +86,14 @@ try:
                     continue
             ftime=str(os.path.getctime(path))
             ziplist.append([ftime,path])
-    print("About to process " + str(len(ziplist)) + " zip files")
+    if args.verbose:
+        print("About to process " + str(len(ziplist)) + " zip files")
 except Exception as e:
     print("problem making ziplist:",str(e),ziplist)
     sys.exit(1)
 
 if len(ziplist)==0:
-    print("No zipfiles selected - exiting")
+    #print("No zipfiles selected - exiting")
     sys.exit(2)
 
 if args.justlist is True:

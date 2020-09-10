@@ -7,7 +7,10 @@ f = open("export.bin", "rb")
 g = TemporaryExposureKeyExport_pb2.TemporaryExposureKeyExport()
 header = f.read(16)
 print("header:"+str(header))
-g.ParseFromString(f.read())
+try:
+    g.ParseFromString(f.read())
+except:
+    sys.exit(-1)
 f.close()
 print("file timestamps: start "+str(g.start_timestamp)+", end "+str(g.end_timestamp))
 print("batch_num: "+str(g.batch_num)+", batch_size: "+str(g.batch_size))
