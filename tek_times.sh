@@ -358,7 +358,7 @@ do
         if [[ "$REDUCE" == "yes" ]]
         then
             # Handle our exceptions for weird counters, we need to decode for that
-            if [[ "$country" == "ch" && $cnt -ge 10 && $tm -lt $chstoppedfakes ]]
+            if [[ "$country" == "ch" && $cnt -ge 10 && $tm -le $chstoppedfakes ]]
             then
                 cnt=$((cnt-10))
             fi
