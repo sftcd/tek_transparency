@@ -13,7 +13,7 @@ x=${ARCHIVE:="$DATADIR/all-zips"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="ie ukni it de ch pl dk at es lv usva ca"
+COUNTRY_LIST="ie ukni it de ch pl dk at es lv usva usal ca"
 
 function whenisitagain()
 {
@@ -44,7 +44,7 @@ vlink="#000080" alink="#FF0000">
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
 the Irish, Northern Irish, Italian, German, Swiss, Polish, Danish, Austrian,
-Latvian, Spanish, Canadian (Ontario) and United States (Virigina) apps. </p>  
+Latvian, Spanish, Canadian (Ontario?) and United States (Virigina, Alabama) apps. </p>  
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -141,9 +141,10 @@ and so only published once in one zip file, whereas the real TEKs continue to be
 for multiple days. I've collated the set of one-off TEKs and so now scan for those and
 (for now) no longer accumulate them in Austrian counts.</li> 
     <li>20200810: Added Spanish live data (thanks to 
-        <a href="https://github.com/sftcd/tek_transparency/pull/12">github PR#12</a> from @Crazy-Projects)
+        <a href="https://github.com/sftcd/tek_transparency/pull/12">github PR#12</a> from @Crazy-Projects).
+        Data up to 20200727 was from a pilot.
     </li>
-
+    <li>"20200810: Added US/Alabama</li>
 
 </ul>
 

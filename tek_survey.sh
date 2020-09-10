@@ -1035,6 +1035,65 @@ do
     sleep 1
 done
 
+
+# US Alabama
+
+USAL_CANARY="$ARCHIVE/usal-canary"
+USAL_BASE="https://covidexposure-files-store.azureedge.net"
+USAL_INDEX="$USAL_BASE/index.txt"
+USAL_CONFIG="$USAL_BASE/settings/"
+
+echo "======================"
+echo "US Alabama TEKs"
+
+response_headers=`$CURL -D - -o usal-index-headers.txt -L "$USAL_INDEX" -i`
+clzero=`echo $response_headers | grep -ic "Content-Length: 0"`
+if [[ "$clzero" != "0" ]]
+then
+    echo "Skipping US Alabama because content length still zero at $NOW." 
+else
+    # download again, without headers
+    sleep 1
+    $CURL -o usal-index.txt -L "$USAL_INDEX"
+    # this may not be correct, will find out as we go...
+    for url in `cat usal-index.txt | awk '{print $1}'`
+    do
+        sleep 1
+        zname=`basename $url`
+        lpath=usal-$zname
+        $CURL -D - -o $lpath -L "$url"
+        if [ -f $lpath ]
+        then
+            # we should be good now, so remove canary
+            rm -f $USAL_CANARY
+    		if [ ! -f $ARCHIVE/$lpath ]
+    		then
+				echo "New usal file $lpath"
+                cp $lpath $ARCHIVE
+			elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger usal file $lpath"
+                cp $lpath $ARCHIVE
+            else
+                echo "A smaller or same $lpath already archived"
+    		fi
+            # try unzip and decode
+            $UNZIP "$lpath" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
+        else
+            echo "Failed to download $lpath"
+            echo "Failed to download $lpath at $NOW" >$USAL_CANARY
+        fi
+    done
+fi
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."

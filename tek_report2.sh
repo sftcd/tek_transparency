@@ -17,7 +17,7 @@ x=${DAILYDIR:="$TOP/dailies"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index2.html"
-COUNTRY_LIST="ie ukni ch at dk de it pl lv es usva ca"
+COUNTRY_LIST="ie ukni ch at dk de it pl lv es usva usal ca"
 
 function whenisitagain()
 {
@@ -66,7 +66,8 @@ EOF
 IE_CANARY="ie-canary"
 UKNI_CANARY="ukni-canary"
 USVA_CANARY="usva-canary"
-for canary in $IE_CANARY $UKNI_CANARY $USVA_CANARY
+USAL_CANARY="usal-canary"
+for canary in $IE_CANARY $UKNI_CANARY $USVA_CANARY $USAL_CANARY
 do
     if [ -f $ARCHIVE/$canary ]
     then
@@ -136,6 +137,7 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
     <tr>
         <td><a href="es.png"><img src="es-small.png" alt=".es"/></a></td>
         <td><a href="usva.png"><img src="usva-small.png" alt=".usva"/></a></td>
+        <td><a href="usal.png"><img src="usal-small.png" alt=".usal"/></a></td>
         <td><a href="ca.png"><img src="ca-small.png" alt=".ca"/></a></td>
     </tr>
     <tr>
