@@ -812,7 +812,7 @@ echo "======================"
 # (Yeah, we should make a function, can do it later, but
 # we should also start to use a real DB maybe so TBD)
 
-ES_BASE="https://dqarr2dc0prei.cloudfront.net/dp3t/v1/gaen/exposed"
+ES_BASE="https://radarcovid.covid19.gob.es/dp3t/v1/gaen/exposed"
 now=`date +%s`
 today_midnight="`date -d "00:00:00Z" +%s`000"
 
@@ -863,8 +863,12 @@ do
 	sleep 1
 done
 
-ES_CONFIG="https://dqarr2dc0prei.cloudfront.net/configuration/settings"
+ES_CONFIG="https://radarcovid.covid19.gob.es/configuration/settings"
+ES_LOCALES="https://radarcovid.covid19.gob.es/configuration/masterData/locales?locale=es-ES"
+ES_CCAA="https://radarcovid.covid19.gob.es/configuration/masterData/ccaa?locale=es-ES&additionalInfo=true"
 $CURL -L $ES_CONFIG --output es-cfg.json
+$CURL -L $ES_LOCALES --output es-locales.json
+$CURL -L $ES_CCAA --output es-ccaa.json
 echo ".es config:"
 cat es-cfg.json
 
