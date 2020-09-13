@@ -142,11 +142,11 @@ fi
 # When REDUCEing we need to keep track of what
 # TEKs are from .ie and which from ukni
 do_ieukni=False
-if [ $COUNTRY_LIST = * ie * ]
+if [ $COUNTRY_LIST = *ie* ]
 then
     do_ieukni=True
 fi
-if [ $COUNTRY_LIST = * ukni * ]
+if [ $COUNTRY_LIST = *ukni* ]
 then
     do_ieukni=True
 fi
@@ -325,7 +325,7 @@ then
     do
         if [ -s $at ]
         then
-            mv $at "$OUTDIR/`basename $at .allteks`.csv"
+            mv $at "$OUTDIR/`basename $at .csv.allteks`.csv"
         fi
     done
 fi
@@ -348,7 +348,10 @@ do
         mminus1=`date -d@$((mn-DAYSECS)) +%m`
         dminus1=`date -d@$((mn-DAYSECS)) +%d`
         # produced by loop above
-        ifiles="$OUTDIR/$year$month$day-*.csv $OUTDIR/$yminus1$mminus1$dminus1-*.csv"
+        ifiles="$OUTDIR/$year$month$day-*.csv"
+        # Tried adding the day before but it made no difference, might try again another time
+        # or maybe it'll make a difference if there's some deployment with a TZ oddity
+        #ifiles="$OUTDIR/$year$month$day-*.csv $OUTDIR/$yminus1$mminus1$dminus1-*.csv"
         theteks=`mktemp /tmp/theteksXXXX`
         theepochteks=`mktemp /tmp/theteksXXXX`
         grep ",$c," $ifiles >$theteks
