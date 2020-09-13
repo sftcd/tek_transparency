@@ -142,11 +142,11 @@ fi
 # When REDUCEing we need to keep track of what
 # TEKs are from .ie and which from ukni
 do_ieukni=False
-if [ $COUNTRY_LIST = *ie* ]
+if [[ $COUNTRY_LIST = *ie* ]]
 then
     do_ieukni=True
 fi
-if [ $COUNTRY_LIST = *ukni* ]
+if [[ $COUNTRY_LIST = *ukni* ]]
 then
     do_ieukni=True
 fi
