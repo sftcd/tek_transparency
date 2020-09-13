@@ -13,7 +13,7 @@ x=${ARCHIVE:="$DATADIR/all-zips"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index.html"
-COUNTRY_LIST="ie ukni it de ch pl dk at es ee lv usva usal ca"
+COUNTRY_LIST="ie ukni it de ch pl dk at es fi ee lv usva usal ca"
 
 function whenisitagain()
 {
@@ -146,6 +146,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     </li>
     <li>20200910: Added US/Alabama</li>
     <li>20200910: Added Estonia</li>
+    <li>20200913: Added Finland</li>
 
 </ul>
 

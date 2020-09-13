@@ -1157,6 +1157,68 @@ done
 #echo ".ee config:"
 #cat ee-cfg.json
 
+# Finland
+
+CANARY="$ARCHIVE/fi-canary"
+FI_BASE="https://taustajarjestelma.koronavilkku.fi/diagnosis"
+FI_CONFIG="https://taustajarjestelma.koronavilkku.fi/exposure/configuration/v1"
+FI_CONFIG2="https://repo.thl.fi/sites/koronavilkku/yhteystiedot.json"
+
+# Server needs crazy user agent for some reason
+FI_UA="-A Koronavilkku/1.0.0.174"
+
+
+$CURL -o fi-cfg.json -L $FI_CONFIG $FI_UA
+$CURL -o fi-cfg2.json -L $FI_CONFIG2 $FI_UA
+
+if [ ! -f $CANARY ]
+then
+	fi_index=`$CURL -L "$FI_BASE/v1/list?previous=0" $FI_UA`
+	if [[ "$?" == "0" ]]
+	then
+        echo "Finnish index: $fi_index"
+        batches=`echo $fi_index |  sed -e 's/","/ /g' | sed -e 's/"]}//' | sed -e 's/.*"//'`
+        for batch in $batches
+        do
+            $CURL -o fi-$batch.zip -L "$FI_BASE/v1/batch/$batch" $FI_UA
+            if [[ $? == 0 ]]
+            then
+                # we do see zero sized files from .es sometimes
+                # which is odd but whatever (could be their f/w
+                # doing that but what'd be the effect on the 
+                # app?) 
+                if [ ! -s fi-$batch.zip ]
+                then
+                    echo "Empty or non-existent downloaded Finnish file: fi-$batch.zip"
+                else
+                    if [ ! -f $ARCHIVE/fi-$batch.zip ]
+                    then
+                        echo "New .fi file fi-$batch" 
+                        cp fi-$batch.zip $ARCHIVE
+                    elif ((`stat -c%s "fi-$batch.zip"`>`stat -c%s "$ARCHIVE/fi-$batch.zip"`));then
+                        # if the new one is bigger than archived, then archive new one
+                        echo "Updated/bigger .fi file fi-$batch" 
+                        cp fi-$batch.zip $ARCHIVE
+                    fi
+                    # try unzip and decode
+                    $UNZIP "fi-$batch.zip" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
+                fi
+            else
+                echo "curl - error downloading fi-$batch.zip (file $fno)"
+            fi
+        done
+	fi
+fi
+
+
 
 ## now count 'em and push to web DocRoot
 

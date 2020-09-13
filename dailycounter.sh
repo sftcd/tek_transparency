@@ -18,7 +18,7 @@ x=${DOCROOT:='/var/www/tact/tek-counts/'}
 # UTC midnight each day (currently, 1am Irish Summer Time)
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni ch at dk de it pl ee lv es usva usal ca"
+COUNTRY_LIST="ie ukni ch at dk de it pl ee fi lv es usva usal ca"
 
 # default values for parameters
 verbose="no"
@@ -249,7 +249,7 @@ if [ -f $OUTDIR/shortfalls.html ]
 then
     mv $OUTDIR/shortfalls.html $OUTDIR/shortfalls.$NOW.html
     # also make a more machine readable version, not quite json but feck it:-)
-    $TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv >>$OUTDIR/shortfalls.$NOW.json
+    $TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $TOP/country-pops.csv >>$OUTDIR/shortfalls.$NOW.json
 fi
 
 cat >$OUTDIR/shortfalls.html <<EOF
@@ -259,7 +259,7 @@ cat >$OUTDIR/shortfalls.html <<EOF
 EOF
 for country in $COUNTRY_LIST
 do
-    $TOP/shortfalls.py -rH -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv -c $country >>$OUTDIR/shortfalls.html
+    $TOP/shortfalls.py -rH -t $OUTDIR/$OUTFILE -d $TOP/country-pops.csv -c $country >>$OUTDIR/shortfalls.html
 done
 cat >>$OUTDIR/shortfalls.html <<EOF
 </table>
@@ -290,7 +290,7 @@ if [ -f $OUTDIR/shortfalls2w.html ]
 then
     mv $OUTDIR/shortfalls2w.html $OUTDIR/shortfalls2w.$NOW.html
     # also make a more machine readable version, not quite json but feck it:-)
-    $TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv -s $sstr -e $estr >>$OUTDIR/shortfalls2w.$NOW.json
+    $TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $TOP/country-pops.csv -s $sstr -e $estr >>$OUTDIR/shortfalls2w.$NOW.json
 fi
 
 cat >$OUTDIR/shortfalls2w.html <<EOF
@@ -300,7 +300,7 @@ cat >$OUTDIR/shortfalls2w.html <<EOF
 EOF
 for country in $COUNTRY_LIST
 do
-    $TOP/shortfalls.py -rH -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv -c $country -s $sstr -e $estr  >>$OUTDIR/shortfalls2w.html
+    $TOP/shortfalls.py -rH -t $OUTDIR/$OUTFILE -d $TOP/country-pops.csv -c $country -s $sstr -e $estr  >>$OUTDIR/shortfalls2w.html
 done
 cat >>$OUTDIR/shortfalls2w.html <<EOF
 </table>
@@ -313,7 +313,7 @@ then
 fi
 
 # and finally some pictures
-cdate_list=`$TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $OUTDIR/country-pops.csv | \
+cdate_list=`$TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $TOP/country-pops.csv | \
                 awk -F, '{print $1$7}' | \
                 sed -e 's/\[//' | \
                 sed -e 's/]//' | \

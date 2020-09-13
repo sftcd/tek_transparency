@@ -17,7 +17,7 @@ x=${DAILYDIR:="$TOP/dailies"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index2.html"
-COUNTRY_LIST="ie ukni ch at dk de it pl ee lv es usva usal ca"
+COUNTRY_LIST="ie ukni ch at dk de it pl ee fi lv es usva usal ca"
 
 function whenisitagain()
 {
@@ -130,13 +130,16 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
         <td><a href="dk.png"><img src="dk-small.png" alt=".dk"/></a></td>
     </tr>
     <tr>
-        <td><a href="it.png"><img src="it-small.png" alt=".it"/></a></td>
+        <td><a href="fi.png"><img src="fi-small.png" alt=".fi"/></a></td>
         <td><a href="ee.png"><img src="ee-small.png" alt=".ee"/></a></td>
         <td><a href="lv.png"><img src="lv-small.png" alt=".lv"/></a></td>
-        <td><a href="pl.png"><img src="pl-small.png" alt=".pl"/></a></td>
     </tr>
     <tr>
+        <td><a href="it.png"><img src="it-small.png" alt=".it"/></a></td>
+        <td><a href="pl.png"><img src="pl-small.png" alt=".pl"/></a></td>
         <td><a href="es.png"><img src="es-small.png" alt=".es"/></a></td>
+    </tr>
+    <tr>
         <td><a href="usva.png"><img src="usva-small.png" alt=".usva"/></a></td>
         <td><a href="usal.png"><img src="usal-small.png" alt=".usal"/></a></td>
         <td><a href="ca.png"><img src="ca-small.png" alt=".ca"/></a></td>
@@ -264,6 +267,14 @@ and so only published once in one zip file, whereas the real TEKs continue to be
 for multiple days. I've collated the set of one-off TEKs and so now scan for those and
 (for now) no longer accumulate them in Austrian counts.</li> 
     <li>20200830: started refactorying tek_report.sh to make this new page</li>
+    <li>20200910: Added Spanish live data (thanks to 
+        <a href="https://github.com/sftcd/tek_transparency/pull/12">github PR#12</a> from @Crazy-Projects).
+        Data up to 20200727 was from a pilot.
+    </li>
+    <li>20200910: Added US/Alabama</li>
+    <li>20200910: Added Estonia</li>
+    <li>20200913: Added Finland</li>
+
 </ul>
 </p>
 </html>
