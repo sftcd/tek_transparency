@@ -56,9 +56,9 @@ then
     for file in $DATADIR/ie-*.zip
     do
         # modification time
-        #fm=`stat -c %Y $file`
-        bf=`basename $file`
-        fm=${bf:3:10}
+        fm=`stat -c %Y $file`
+        #bf=`basename $file`
+        #fm=${bf:3:10}
         tlist=`$TOP/tek_count.sh $file | grep period | awk -F\' '{print $2}'`
         for tek in $tlist
         do
@@ -89,9 +89,9 @@ then
     for file in $DATADIR/ukni-*.zip
     do
         # modification time
-        #fm=`stat -c %Y $file`
-        bf=`basename $file`
-        fm=${bf:5:10}
+        fm=`stat -c %Y $file`
+        #bf=`basename $file`
+        #fm=${bf:5:10}
         tlist=`$TOP/tek_count.sh $file | grep period | awk -F\' '{print $2}'`
         for tek in $tlist
         do
