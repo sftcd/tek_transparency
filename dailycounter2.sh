@@ -315,9 +315,9 @@ then
 	    if [ "$((now-iemtime))" -gt $IETEKFREQ -o "$((now-uknimtime))" -gt $IETEKFREQ ]
 	    then
 	        # make a wee backup
-	        mv $IETEKS $IETEKS.backup.$NOW
-	        mv $UKNITEKS $UKNITEKS.backup.$NOW
-	        echo "Reducing ie/unki prep as files older than $IETEKFREQ seconds..."
+	        cp $IETEKS $IETEKS.backup.$NOW
+	        cp $UKNITEKS $UKNITEKS.backup.$NOW
+	        echo "Re-checking ie/unki prep as files older than $IETEKFREQ seconds..."
 	        $TOP/new-ie-ukni-sort.sh 
 	    fi
 	fi
