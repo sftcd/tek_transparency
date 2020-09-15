@@ -2,7 +2,7 @@
 
 # Same goal as dailycounter.sh, but with a different alg
 
-set -x
+# set -x
 
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
@@ -43,8 +43,8 @@ declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
 # default values for parameters
 verbose="no"
 OUTFILE="country-counts.csv"
-RUNHOUR="00"
-START=`date +%s -d 2020-06-01T$RUNHOUR:00:00Z`
+RUNHOUR="02"
+START=`date +%s -d 2020-06-25T$RUNHOUR:00:00Z`
 END=`date +%s`
 
 function usage()
@@ -139,45 +139,6 @@ then
     done
 fi
 
-# When REDUCEing we need to keep track of what
-# TEKs are from .ie and which from ukni
-do_ieukni=False
-if [[ $COUNTRY_LIST = *ie* ]]
-then
-    do_ieukni=True
-fi
-if [[ $COUNTRY_LIST = *ukni* ]]
-then
-    do_ieukni=True
-fi
-
-IETEKS="$OUTDIR/iefirstteks"
-UKNITEKS="$OUTDIR/uknifirstteks"
-IETEKFREQ="3600"
-
-if [[ "$do_ieukni" == "True" ]]
-then
-	if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
-	then
-	    echo "Reducing ie/unki prep..."
-	    $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
-	else
-	    iemtime=`date -r $IETEKS +%s`
-	    uknimtime=`date -r $UKNITEKS +%s`
-	    now=`date +%s`
-	    # change from before - do it hourly now, which allows quicker tests
-	    # but more accurate counts (once we get it right)
-	    if [ "$((now-iemtime))" -gt $IETEKFREQ -o "$((now-uknimtime))" -gt $IETEKFREQ ]
-	    then
-	        # make a wee backup
-	        mv $IETEKS $IETEKS.backup.$NOW
-	        mv $UKNITEKS $UKNITEKS.backup.$NOW
-	        echo "Reducing ie/unki prep as files older than $IETEKFREQ seconds..."
-	        $TOP/ie-ukni-sort.sh $IETEKS $UKNITEKS
-	    fi
-	fi
-fi
-
 # Plan:
 # for each country:
 #   iterate from run after start to run after end...
@@ -221,20 +182,9 @@ done
 # Now apply special processing for crazy AT fake TEK removal 
 # We *really* don't want to do this often - it's slooooowwww
 # Other fake TEKs are handled later
-CRAZY_LIST="at"
-do_crazy="False"
-for crazy in $CRAZY_LIST
-do
-    if [[ $COUNTRY_LIST == *$crazy* ]]
-    then
-        do_crazy="True"
-        break
-    fi
-done
 
-if [[ "$docrazy" == "True" ]]
+if [[ $COUNTRY_LIST = *at* ]]
 then
-
 	for run in $runlist
 	do
 	    ifile="$OUTDIR/`basename $run`.csv.allteks"
@@ -244,6 +194,7 @@ then
 	        continue
 	    fi
 	    # just in case other countries do similarly odd things later...
+        CRAZY_LIST="at"
 	    for c in $CRAZY_LIST
 	    do
 	        # do country-specifics
@@ -252,7 +203,7 @@ then
 	        tmpf=`mktemp /tmp/dc2XXXX`
 	        if [[ "$c" == "at" ]]
 	        then
-	            atstoppedfakes=$((`date -d "2020-08-11" +%s`))
+	            atstoppedfakes=$((`date -d "2020-08-12" +%s`))
 	            rtstr=`basename $run`
 	            rtyear=${rtstr:0:4}
 	            rtmonth=${rtstr:4:2}
@@ -330,6 +281,48 @@ then
     done
 fi
 
+#IETEKS="$OUTDIR/iefirstteks"
+#UKNITEKS="$OUTDIR/uknifirstteks"
+IETEKS="$OUTDIR/new-iefirsts"
+UKNITEKS="$OUTDIR/new-uknifirsts"
+IETEKFREQ="3600"
+
+# When REDUCEing we need to keep track of what
+# TEKs are from .ie and which from ukni
+do_ieukni=False
+if [[ $COUNTRY_LIST = *ie* ]]
+then
+    do_ieukni=True
+fi
+if [[ $COUNTRY_LIST = *ukni* ]]
+then
+    do_ieukni=True
+fi
+
+if [[ "$do_ieukni" == "True" ]]
+then
+    # $IETEKS $UKNITEKS are hard-coded names within the new sript for now
+	if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
+	then
+	    echo "Reducing ie/unki prep..."
+	    $TOP/new-ie-ukni-sort.sh 
+	else
+	    iemtime=`date -r $IETEKS +%s`
+	    uknimtime=`date -r $UKNITEKS +%s`
+	    now=`date +%s`
+	    # change from before - do it hourly now, which allows quicker tests
+	    # but more accurate counts (once we get it right)
+	    if [ "$((now-iemtime))" -gt $IETEKFREQ -o "$((now-uknimtime))" -gt $IETEKFREQ ]
+	    then
+	        # make a wee backup
+	        mv $IETEKS $IETEKS.backup.$NOW
+	        mv $UKNITEKS $UKNITEKS.backup.$NOW
+	        echo "Reducing ie/unki prep as files older than $IETEKFREQ seconds..."
+	        $TOP/new-ie-ukni-sort.sh 
+	    fi
+	fi
+fi
+
 # From here on, we don't cache but re-calculate always
 
 TMPF=`mktemp $OUTDIR/dctekXXXX`
@@ -339,7 +332,6 @@ do
     latest_epoch=0
     mn=$START
     while ((mn < END))
-    #for run in $runlist
     do
         year=`date -d @$mn +%Y`
         month=`date -d @$mn +%m`
@@ -347,31 +339,65 @@ do
         yminus1=`date -d@$((mn-DAYSECS)) +%Y`
         mminus1=`date -d@$((mn-DAYSECS)) +%m`
         dminus1=`date -d@$((mn-DAYSECS)) +%d`
-        # produced by loop above
-        ifiles="$OUTDIR/$year$month$day-*.csv"
-        # Tried adding the day before but it made no difference, might try again another time
-        # or maybe it'll make a difference if there's some deployment with a TZ oddity
-        #ifiles="$OUTDIR/$year$month$day-*.csv $OUTDIR/$yminus1$mminus1$dminus1-*.csv"
-        theteks=`mktemp /tmp/theteksXXXX`
-        theepochteks=`mktemp /tmp/theteksXXXX`
-        grep ",$c," $ifiles >$theteks
-        tekcnt=`cat $theteks | awk -F, '{print $9}' | sort | uniq -c | wc -l`
-        tekepoch=`cat $theteks | awk -F, '{print $10}' | sort -n | uniq | tail -1`
-        dstr=`date -d@$((tekepoch*600))`
-        cat $theteks | grep ",$tekepoch," >$theepochteks
-        teksofepochcnt=`cat $theepochteks | awk -F, '{print $9}' | sort | uniq | wc -l`
-        echo "Unique TEK count for $c,$year-$month-$day (and day before) is $tekcnt, latest epoch: $tekepoch, $teksofepochcnt match"
-        # eliminate any IE/UKNI duplicates at this point
+        yplus1=`date -d@$((mn+DAYSECS)) +%Y`
+        mplus1=`date -d@$((mn+DAYSECS)) +%m`
+        dplus1=`date -d@$((mn+DAYSECS)) +%d`
 
+        # check if CSVs exist for that day
+        tek_files=$OUTDIR/$year$month$day-*.csv 
+        index_file_m1="$OUTDIR/$yplus1$mplus1$dplus1-00*.csv"
+        index_file="$OUTDIR/$yplus1$mplus1$dplus1-01*.csv"
+        all_files="$tek_files $index_file_m1 $index_file"
+        fileexists=True
+        for tf in $all_files
+        do
+            if [ ! -s $tf ]
+            then
+                fileexists=False
+                echo "Missing or empty $tf"
+            fi
+        done
+        if [[ "$filesexist" == "False" ]]
+        then
+            echo "Skipping $year-$month-$day"
+            mn=$((mn+DAYSECS))
+            continue
+        fi
+        # CSVs are produced by loop above
+
+        # we detect the latest epoch from the index file and then count
+        # the number of TEKs matching that epoch from the previous 25 
+        # hours (24 would be tidier but doesn't matter:-)
+        tekepoch=`grep ",$c," $index_file | awk -F, '{print $10}' | sort -n | uniq | tail -1`
+        if [[ "$tekepoch" == "" ]]
+        then
+            # this can happen as services are introduced
+            teksofepochcnt=0
+            tekepoch=0
+        else
+            theepochteks=`mktemp /tmp/theteksXXXX`
+            grep ",$c," $all_files | grep ",$tekepoch," >$theepochteks
+            teksofepochcnt=`cat $theepochteks | awk -F, '{print $9}' | sort | uniq | wc -l`
+        fi
+        dstr=`date -d@$((tekepoch*600))`
+        echo "Unique TEK count for $c,$year-$month-$day is $teksofepochcnt, latest epoch: $tekepoch"
+
+        # eliminate any IE/UKNI duplicates at this point
         if [[ "$c" == "ie" ]]
         then
             before=$teksofepochcnt
-            teksofepochcnt=`grep -v -f $UKNITEKS $theepochteks | awk -F, '{print $9}' | sort | uniq | wc -l`
+            if (( before > 0 ))
+            then
+                teksofepochcnt=`grep -v -f $UKNITEKS $theepochteks | awk -F, '{print $9}' | sort | uniq | wc -l`
+            fi
             echo "Fake ie TEKs removal: from $before to $teksofepochcnt on $dstr"
         elif [[ "$c" == "ukni" ]]
         then
             before=$teksofepochcnt
-            teksofepochcnt=`grep -v -f $IETEKS $theepochteks | awk -F, '{print $9}' | sort | uniq | wc -l`
+            if (( before > 0 ))
+            then
+                teksofepochcnt=`grep -v -f $IETEKS $theepochteks | awk -F, '{print $9}' | sort | uniq | wc -l`
+            fi
             echo "Fake ukni TEKs removal: from $before to $teksofepochcnt on $dstr"
         fi
         if [[ "$c" == "de" ]]
@@ -391,9 +417,9 @@ do
         then
             # subtract 10, depending on date
             chstoppedfakes=$((`date -d "2020-07-19" +%s`/600))
-            if (( tekepoch < chstoppedfakes ))
+            before=$teksofepochcnt
+            if (( before >=10 && tekepoch < chstoppedfakes ))
             then
-                before=$teksofepochcnt
                 teksofepochcnt=$((teksofepochcnt-10))
                 echo "Fake ch TEKs removal: from $before to $teksofepochcnt on $dstr"
             fi
@@ -409,7 +435,9 @@ do
         else
             echo "No epoch change,$dstr,$c,$latest_epoch,$tekepoch"
         fi
-        rm -f $theteks $theepochteks
+        #rm -f $theteks $theepochteks $thefirstteks
+        #rm -f $theteks $theepochteks 
+        rm -f $theepochteks 
 
         mn=$((mn+DAYSECS))
     done
