@@ -13,6 +13,7 @@ x=${TOP:="$HOME/code/tek_transparency"}
 x=${DATADIR:="$TOP"}
 x=${ARCHIVE:="$DATADIR/all-zips"}
 x=${DAILIES:="$DATADIR/dailies"}
+x=${DAILIES2:="$DATADIR/dailies2"}
 
 TEK_DECODE="$TOP/tek_file_decode.py"
 TEK_TIMES="$TOP/tek_times.sh"
@@ -285,6 +286,7 @@ echo "======================"
 
 DE_BASE="https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE"
 DE_INDEX="$DE_BASE/date"
+
 # .de index format so far: ["2020-06-23"]
 # let's home tomorrow will be ["2020-06-23","2020-06-24"]
 echo "======================"
@@ -418,6 +420,8 @@ then
         rm -f export.bin export.sig
     fi 
 fi
+DE_KEYS="https://github.com/micb25/dka/raw/master/data_CWA/diagnosis_keys_statistics.csv"
+$CURL -L $DE_KEYS --output de-keys.csv
 
 echo "======================"
 echo "======================"
@@ -1233,6 +1237,11 @@ fi
 # temporarily do dailies - just testing this for now
 cd $DAILIES
 $TOP/dailycounter.sh -d $TOP
+
+# almost but not quite ready to turn on next version of this
+#cd $DAILIES2
+#$TOP/dailycounter2.sh -d $TOP
+#$TOP/ground-truth.sh
 $TOP/tek_report2.sh
 
 cd $ARCHIVE

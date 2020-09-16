@@ -152,6 +152,20 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
 EOF
 
 cat >>$TARGET <<EOF
+<p>We can estimate the accuracy of a couple of the above estimates because
+Germany and Switzerland publish data on the number of keys uploaded. The
+bar charts below show our estimates and the source data.</p>
+
+<table>
+<tr>
+    <td><a href="ch-ground.png"><img src="ch-ground-small.png" alt=".ch-ground"/></a></td>
+    <td><a href="de-ground.png"><img src="de-ground-small.png" alt=".de-ground"/></a></td>
+</tr>
+</table>
+
+EOF
+
+cat >>$TARGET <<EOF
 <h2><a name="counts">Daily Counts</a></h2>
 
 <p>The tables below show the counts of TEK valid on each of the days listed. Where
