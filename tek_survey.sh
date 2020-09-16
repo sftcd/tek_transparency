@@ -1460,6 +1460,59 @@ do
     fi
 done
 
+# Wyoming
+
+CANARY="$ARCHIVE/uswy-canary"
+USWY_INDEX="https://encdn.prod.exposurenotification.health/v1/index.txt"
+USWY_BASE="https://encdn.prod.exposurenotification.health"
+USWY_CONFIG="https://exposureapi.care19.app/api/v1/apps/2/devices/b640737e-aada-42c7-9bf5-0d453de1d084/exposureconfig?regionId=5"
+
+# used to notify us that something went wrong
+CANARY="$ARCHIVE/uswy-canary"
+
+echo "======================"
+echo "Wyoming TEKs"
+
+$CURL --output uswy-cfg.json -L $USWY_CONFIG 
+
+index_str=`$CURL -s -L "$USWY_INDEX"` 
+if [[ $? != 0 ]]
+then
+    echo "Error getting index string: $index_str ($?)"
+    exit 1
+fi
+echo "Wyoming index string: $index_str"
+for uswyfile in $index_str
+do
+    echo "Getting $uswyfile"
+    uswyname=`basename $uswyfile`
+    $CURL -s -L "$USWY_BASE/$uswyfile" --output uswy-$uswyname 
+    if [[ $? == 0 ]]
+    then
+        # we should be good now, so remove canary
+        rm -f $CANARY
+        echo "Got uswy-$uswyname"
+        if [ ! -f $ARCHIVE/uswy-$uswyname ]
+        then
+            cp uswy-$uswyname $ARCHIVE
+        fi
+        # try unzip and decode
+        $UNZIP "uswy-$uswyname" >/dev/null 2>&1
+        if [[ $? == 0 ]]
+        then
+            $TEK_DECODE
+            new_keys=$?
+            total_keys=$((total_keys+new_keys))
+        fi
+        rm -f export.bin export.sig
+        chunks_down=$((chunks_down+1))
+    else
+        echo "Error decoding uswy-$uswyname"
+    fi
+done
+
+
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."

@@ -29,6 +29,7 @@ verbose="no"
 OUTFILE="country-counts.csv"
 RUNHOUR="02"
 START=`date +%s -d 2020-06-25T$RUNHOUR:00:00Z`
+STARTGIVEN="no"
 END=`date +%s`
 
 function usage()
@@ -66,7 +67,7 @@ do
         -o|--outdir) OUTDIR=$2; shift;;
         -O|--outfile) OUTFILE=$2; shift;;
         -r|--runhour) RUNHOUR=$2; START=`date +%s -d 2020-06-01T$RUNHOUR:00:00Z`; shift;;
-        -s|--start) START=$2; shift;;
+        -s|--start) STARTGIVEN="yes"; START=$2; shift;;
         -v|--verbose) verbose="yes" ;;
         (--) shift; break;;
         (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
@@ -312,7 +313,44 @@ then
 	fi
 fi
 
-# From here on, we don't cache but re-calculate always
+# From here on, we usen't cache but re-calculate always
+# but that's v. v. slow on down (for some reason) so we
+# can instead only take our cue from the output file and
+# reduce the work
+
+# we'll check the latest date in the output, then go
+# back 48 hours before that and go from there - we do
+# that by adjusting the START date (unless one was
+# given on the command line)
+
+
+CCMINUS3=""
+set -x
+if [[ "$STARTGIVEN" == "no" ]]
+then
+    if [ -f $OUTDIR/$OUTFILE ]
+    then
+        ldate_str=`cat $OUTDIR/$OUTFILE | awk -F, '{print $2}' | sort | tail -1`
+        ldate_str="$ldate_str"Z
+        ldate=`date +%s $ldate_str`
+        ldate=$((ldate-3*DAYSECS))
+        START=$ldate
+        # Make a version of output that omits those days
+        thed=$START
+        thedfile=`mktemp /tmp/thedXXXX`
+        while ((thed < END ))
+        do
+            yminus=`date -d@$((thed)) +%Y`
+            mminus=`date -d@$((thed)) +%m`
+            dminus=`date -d@$((thed)) +%d`
+            echo "$yminus-$mminus-$dminus" >>$thedfile
+        done
+        CCMINUS3=`mktemp /tmp/ccm3XXXX`
+        grep -v -f $thedfile $OUTDIR/$OUTFILE >$CCMINUS3
+        rm -f $thedfile
+    fi
+fi
+set +X
 
 TMPF=`mktemp $OUTDIR/dctekXXXX`
 TMPF1=`mktemp $OUTDIR/dctekXXXX`
@@ -463,8 +501,10 @@ fi
 # catenate the non-zero days and zero days, then sort, reverse (tac)
 # and sort removing columns with the same date, (col2) then reverse
 # again to get our output
-cat $TMPF $TMPF1 | sort | tac | sort -u -t, -r -k1,2 |tac > $OUTDIR/$OUTFILE
-rm -f $TMPF $TMPF1
+# CCMINUS3 may be empty or might have the previous output minus
+# the last 3 days
+cat $CCMINUS3 $TMPF $TMPF1 | sort | tac | sort -u -t, -r -k1,2 |tac > $OUTDIR/$OUTFILE
+rm -f $TMPF $TMPF1 $CCMINUS3
 
 # now make HTML fragment with shortfalls
 if [ -f $OUTDIR/shortfalls.html ]
