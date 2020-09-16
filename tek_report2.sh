@@ -17,7 +17,7 @@ x=${DAILYDIR:="$TOP/dailies"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index2.html"
-COUNTRY_LIST="ie ukni ch at dk de it pl ee fi lv es usva usal ca"
+COUNTRY_LIST="ie ukni uksc ch at dk de it pl ee fi lv es usva usal usde ca"
 
 function whenisitagain()
 {
@@ -47,8 +47,8 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
-the Irish, Northern Irish, Italian, German, Swiss, Polish, Danish, Austrian,
-Latvian and United States, Virigina apps, and a limited July-2020 trial in Spain.</p>  
+the Irish, Northern Irish, Scots, Italian, German, Swiss, Polish, Danish, Austrian,
+Estonian, Latvian, Spanish, Canadian (Ontario?) and United States (Virigina, Alabama, Delaware) apps. </p>  
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -288,6 +288,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     <li>20200910: Added US/Alabama</li>
     <li>20200910: Added Estonia</li>
     <li>20200913: Added Finland</li>
+    <li>20200916: Added Scotland and US/Delaware</li>
 
 </ul>
 </p>

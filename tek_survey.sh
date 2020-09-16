@@ -1222,7 +1222,193 @@ then
 	fi
 fi
 
+# Scotland
 
+CANARY="$ARCHIVE/uksc-canary"
+UKSC_INDEX="https://api-scot-prod.nearform-covid-services.com/api/exposures/?since=0&limit=1"
+UKSC_BASE="https://api-scot-prod.nearform-covid-services.com/api/data"
+UKSC_REFRESH="https://api-scot-prod.nearform-covid-services.com/api/refresh"
+UKSC_CONFIG="https://api-scot-prod.nearform-covid-services.com/api/settings/exposures"
+UKSC_LANG="https://api-scot-prod.nearform-covid-services.com/api/settings/language"
+UKSC_STATS="https://api-scot-prod.nearform-covid-services.com/api/stats"
+
+# used to notify us that something went wrong
+CANARY="$ARCHIVE/uksc-canary"
+UKSC_RTFILE="$HOME/uksc-refreshToken.txt"
+
+echo "======================"
+echo "Scotland TEKs"
+
+$CURL --output uksc-lang.json -L $UKSC_LANG
+
+if [ ! -f $UKSC_RTFILE ]
+then
+    if [ ! -f $CANARY ]
+    then
+        echo "<p>Skipping Scotland stats/cfg because refreshToken access failed at $NOW.</p>" >$CANARY
+    fi
+    echo "Skipping Scotland stats/cfg because refreshToken access failed at $NOW.</p>" 
+else 
+
+	refreshToken=`cat $UKSC_RTFILE`
+	tok_json=`$CURL -s -L $UKSC_REFRESH -H "Authorization: Bearer $refreshToken" -d "{}"`
+	if [[ "$?" != 0 ]]
+	then
+	    if [ ! -f $CANARY ]
+	    then
+	        echo "<p>Skipping Scotland stats/cfg because refreshToken use failed at $NOW.</p>" >$CANARY
+	    fi
+	    echo "Skipping Scotland stats/cfg because refreshToken use failed at $NOW."
+    else
+		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+		if [[ "$newtoken" == "" ]]
+		then
+		    echo "No sign of an authToken, sorry - Skipping Scotland"
+        else
+            # config now requires authz for some reason
+            $CURL --output uksc-cfg.json -L $UKSC_CONFIG -H "Authorization: Bearer $newtoken"` 
+            $CURL --output uksc-stats.json -L $UKSC_STATS -H "Authorization: Bearer $newtoken"` 
+
+            index_str=`$CURL -L "$UKSC_INDEX" -H "Authorization: Bearer $newtoken"`  
+            if [[ $? != 0 ]]
+            then
+                echo "Error getting index string: $index_str ($?)"
+                exit 1
+            fi
+            echo "Scotland index string: $index_str"
+			ukscfiles=""
+			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+			do
+                check401=`echo ${row} | base64 --decode`
+                if [[ "$check401" == "401" ]]
+                then
+                    echo "401 detected in JSON answer - oops"
+                    break
+                fi
+			    _jq() {
+			             echo ${row} | base64 --decode | jq -r ${1}
+			    }
+			    ukscfiles="$ukscfiles $(_jq '.path')"
+			done
+            for ukscfile in $ukscfiles
+            do
+                echo "Getting $ukscfile"
+                ukscname=`basename $ukscfile`
+                $CURL -L "$UKSC_BASE/$ukscfile" --output uksc-$ukscname -H "Authorization: Bearer $newtoken"
+                if [[ $? == 0 ]]
+                then
+                    # we should be good now, so remove canary
+                    rm -f $CANARY
+                    echo "Got uksc-$ukscname"
+                    if [ ! -f $ARCHIVE/uksc-$ukscname ]
+                    then
+                        cp uksc-$ukscname $ARCHIVE
+                    fi
+                    # try unzip and decode
+                    $UNZIP "uksc-$ukscname" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
+                else
+                    echo "Error decoding uksc-$ukscname"
+                fi
+            done
+
+        fi
+    fi
+fi
+
+# Delaware
+
+CANARY="$ARCHIVE/usde-canary"
+USDE_INDEX="https://encdn.prod.exposurenotification.health/v1/index.txt"
+USDE_BASE="https://encdn.prod.exposurenotification.health/"
+USDE_REFRESH="https://api-dela-prod.nearform-covid-services.com/api/refresh"
+USDE_CONFIG="https://api-dela-prod.nearform-covid-services.com/api/settings/exposures"
+USDE_LANG="https://api-dela-prod.nearform-covid-services.com/api/settings/language"
+USDE_STATS="https://api-dela-prod.nearform-covid-services.com/api/stats"
+
+# used to notify us that something went wrong
+CANARY="$ARCHIVE/usde-canary"
+USDE_RTFILE="$HOME/usde-refreshToken.txt"
+
+echo "======================"
+echo "Delaware TEKs"
+
+$CURL --output usde-lang.json -L $USDE_LANG
+
+if [ ! -f $USDE_RTFILE ]
+then
+    if [ ! -f $CANARY ]
+    then
+        echo "<p>Skipping Delaware stats/cfg because refreshToken access failed at $NOW.</p>" >$CANARY
+    fi
+    echo "Skipping Delaware stats/cfg because refreshToken access failed at $NOW.</p>" 
+else 
+
+	refreshToken=`cat $USDE_RTFILE`
+	tok_json=`$CURL -s -L $USDE_REFRESH -H "Authorization: Bearer $refreshToken" -d "{}"`
+	if [[ "$?" != 0 ]]
+	then
+	    if [ ! -f $CANARY ]
+	    then
+	        echo "<p>Skipping Delaware stats/cfg because refreshToken use failed at $NOW.</p>" >$CANARY
+	    fi
+	    echo "Skipping Delaware stats/cfg because refreshToken use failed at $NOW."
+    else
+		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+		if [[ "$newtoken" == "" ]]
+		then
+		    echo "No sign of an authToken, sorry - Skipping Delaware"
+        else
+            # config now requires authz for some reason
+            $CURL --output usde-cfg.json -L $USDE_CONFIG -H "Authorization: Bearer $newtoken"` 
+            $CURL --output usde-stats.json -L $USDE_STATS -H "Authorization: Bearer $newtoken"` 
+
+		fi
+	fi
+fi
+
+index_str=`$CURL -s -L "$USDE_INDEX"` 
+if [[ $? != 0 ]]
+then
+    echo "Error getting index string: $index_str ($?)"
+    exit 1
+fi
+echo "Delaware index string: $index_str"
+for usdefile in $index_str
+do
+    echo "Getting $usdefile"
+    usdename=`basename $usdefile`
+    $CURL -s -L "$USDE_BASE/$usdefile" --output usde-$usdename 
+    if [[ $? == 0 ]]
+    then
+        # we should be good now, so remove canary
+        rm -f $CANARY
+        echo "Got usde-$usdename"
+        if [ ! -f $ARCHIVE/usde-$usdename ]
+        then
+            cp usde-$usdename $ARCHIVE
+        fi
+        # try unzip and decode
+        $UNZIP "usde-$usdename" >/dev/null 2>&1
+        if [[ $? == 0 ]]
+        then
+            $TEK_DECODE
+            new_keys=$?
+            total_keys=$((total_keys+new_keys))
+        fi
+        rm -f export.bin export.sig
+        chunks_down=$((chunks_down+1))
+    else
+        echo "Error decoding usde-$usdename"
+    fi
+done
 
 ## now count 'em and push to web DocRoot
 
