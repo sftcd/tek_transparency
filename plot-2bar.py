@@ -6,7 +6,7 @@
 
 import sys,argparse,csv,dateutil,math,statistics
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates

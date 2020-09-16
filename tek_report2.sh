@@ -13,7 +13,7 @@ x=${DOCROOT:='/var/www/tact/tek-counts/'}
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${DATADIR:="$TOP"}
 x=${ARCHIVE:="$DATADIR/all-zips"}
-x=${DAILYDIR:="$TOP/dailies"}
+x=${DAILYDIR:="$TOP/dailies2"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index2.html"
@@ -122,9 +122,10 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
     <tr>
         <td><a href="ie.png"><img src="ie-small.png" alt=".ie"/></a></td>
         <td><a href="ukni.png"><img src="ukni-small.png" alt=".ukni"/></a></td>
-        <td><a href="ch.png"><img src="ch-small.png" alt=".ch"/></a></td>
+        <td><a href="uksc.png"><img src="uksc-small.png" alt=".uksc"/></a></td>
     </tr>
     <tr>
+        <td><a href="ch.png"><img src="ch-small.png" alt=".ch"/></a></td>
         <td><a href="at.png"><img src="at-small.png" alt=".at"/></a></td>
         <td><a href="de.png"><img src="de-small.png" alt=".de"/></a></td>
         <td><a href="dk.png"><img src="dk-small.png" alt=".dk"/></a></td>
@@ -142,6 +143,7 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
     <tr>
         <td><a href="usva.png"><img src="usva-small.png" alt=".usva"/></a></td>
         <td><a href="usal.png"><img src="usal-small.png" alt=".usal"/></a></td>
+        <td><a href="usde.png"><img src="usde-small.png" alt=".usde"/></a></td>
         <td><a href="ca.png"><img src="ca-small.png" alt=".ca"/></a></td>
     </tr>
     <tr>

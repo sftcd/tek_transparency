@@ -9,7 +9,7 @@
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${JHU_TOP:="$HOME/code/covid/jhu/COVID-19"}
-x=${DATADIR="$HOME/data/teks/tek_transparency"}
+x=${DATADIR="$HOME/code/tek_transparency"}
 x=${DAILIES="$HOME/code/tek_transparency/dailies2"}
 # Swiss
 
@@ -38,9 +38,9 @@ then
     ctmp=`mktemp /tmp/ctmpXXXX`
     stmp=`mktemp /tmp/stmpXXXX`
     grep "ch," $cinput | awk -F, '{print $2","$3}' >$ctmp
-    cdlist=`cat $sinput | json_pp  | grep -A1 Codeact | \
+    cdlist=`cat $sinput | json_pp  -json_opt canonical,indent | grep -A1 Codeact | \
         tr '\n' ' ' | tr '\-\-' '\n' |  \
-        sed -e 's/", *$//' | sed -e 's/^.*t" : "//' | sed -e 's/".*"/,/'`
+        sed -e 's/", *$//' | sed -e 's/^.*t":"//' | sed -e 's/".*"/,/'`
     for cd in $cdlist
     do
         c=`echo $cd | awk -F, '{print $1}'`
