@@ -1410,6 +1410,56 @@ do
     fi
 done
 
+# Nevada
+
+USNV_INDEX="https://exposure-notification-export-cpmxr.storage.googleapis.com/exposure-keys/index.txt"
+USNV_BASE="https://exposure-notification-export-cpmxr.storage.googleapis.com"
+USNV_CONFIG="https://static.nvcovidtrace.com/remote.json"
+CANARY="$ARCHIVE/usnv-canary"
+
+echo "======================"
+echo "Nevada TEKs"
+
+$CURL --output usnv-cfg.json -L $USNV_CONFIG 
+
+index_str=`$CURL -s -L "$USNV_INDEX"` 
+if [[ $? != 0 ]]
+then
+    echo "Error getting index string: $index_str ($?)"
+    echo "Error getting index string: $index_str ($?) at $NOW" >$CANARY
+    exit 1
+fi
+echo "Nevada index string: $index_str"
+for usnvfile in $index_str
+do
+    echo "Getting $usnvfile"
+    usnvname=`basename $usnvfile`
+    $CURL -s -L "$USNV_BASE/$usnvfile" --output usnv-$usnvname 
+    if [[ $? == 0 ]]
+    then
+        # we should be good now, so remove canary
+        rm -f $CANARY
+        echo "Got usnv-$usnvname"
+        if [ ! -f $ARCHIVE/usnv-$usnvname ]
+        then
+            cp usnv-$usnvname $ARCHIVE
+        fi
+        # try unzip and decode
+        $UNZIP "usnv-$usnvname" >/dev/null 2>&1
+        if [[ $? == 0 ]]
+        then
+            $TEK_DECODE
+            new_keys=$?
+            total_keys=$((total_keys+new_keys))
+        fi
+        rm -f export.bin export.sig
+        chunks_down=$((chunks_down+1))
+    else
+        echo "Error decoding usnv-$usnvname"
+        echo "Error decoding usnv-$usnvname at $NOW" >$CANARY`
+    fi
+done
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."
@@ -1421,14 +1471,16 @@ then
 fi
 
 # temporarily do dailies - just testing this for now
-cd $DAILIES
-$TOP/dailycounter.sh -d $TOP
-
+#cd $DAILIES
+#$TOP/dailycounter.sh -d $TOP
 # almost but not quite ready to turn on next version of this
+# but not at an hourly cadence! will add a new cron job
+# (For some reason this takes a loooooong time on down - grep
+# seems substantially slower than my laptop)
 #cd $DAILIES2
 #$TOP/dailycounter2.sh -d $TOP
 #$TOP/ground-truth.sh
-$TOP/tek_report2.sh
+#$TOP/tek_report2.sh
 
 cd $ARCHIVE
 

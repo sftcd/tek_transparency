@@ -17,7 +17,8 @@ x=${DAILYDIR:="$TOP/dailies2"}
 
 TARGET_DIR="$DOCROOT"
 TARGET="$TARGET_DIR/index2.html"
-COUNTRY_LIST="ie ukni uksc ch at dk de it pl ee fi lv es usva usal usde ca"
+
+. $TOP/country_list.sh
 
 function whenisitagain()
 {
@@ -48,7 +49,8 @@ vlink="#000080" alink="#FF0000">
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
 the Irish, Northern Irish, Scots, Italian, German, Swiss, Polish, Danish, Austrian,
-Estonian, Latvian, Spanish, Canadian (Ontario?) and United States (Virigina, Alabama, Delaware) apps. </p>  
+Estonian, Latvian, Spanish, Canadian (Ontario?) and United States (Virigina, Alabama, Delaware, Nevada and
+the one Wyoming+N. Dakota) apps. </p>  
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -139,12 +141,13 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
         <td><a href="it.png"><img src="it-small.png" alt=".it"/></a></td>
         <td><a href="pl.png"><img src="pl-small.png" alt=".pl"/></a></td>
         <td><a href="es.png"><img src="es-small.png" alt=".es"/></a></td>
+        <td><a href="ca.png"><img src="ca-small.png" alt=".ca"/></a></td>
     </tr>
     <tr>
         <td><a href="usva.png"><img src="usva-small.png" alt=".usva"/></a></td>
         <td><a href="usal.png"><img src="usal-small.png" alt=".usal"/></a></td>
         <td><a href="usde.png"><img src="usde-small.png" alt=".usde"/></a></td>
-        <td><a href="ca.png"><img src="ca-small.png" alt=".ca"/></a></td>
+        <td><a href="usnv.png"><img src="usnv-small.png" alt=".usnv"/></a></td>
     </tr>
     <tr>
 </table>
@@ -291,6 +294,11 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     <li>20200910: Added Estonia</li>
     <li>20200913: Added Finland</li>
     <li>20200916: Added Scotland and US/Delaware</li>
+    <li>20200916: Added Nevada</li>
+    <li>20200916: Added Wyoming (and N. Dakota!). The same app (care19.app) is used for
+    both states with the same endpoint for downloading the same set of TEKs. I've just
+    put that in as Wyoming for now, both for population and case counts, which is wrong
+    but will do for a bit.</li>
 
 </ul>
 </p>

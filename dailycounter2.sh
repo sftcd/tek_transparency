@@ -21,26 +21,8 @@ TEK_DECODE="$TOP/tek_file_decode.py"
 # The input here is the run-directory for the run at 
 # UTC midnight each day (currently, 1am Irish Summer Time)
 
-# countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni uksc ch at dk de it pl fi ee lv es usva usal usde ca"
+. $TOP/country_list.sh
 
-declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
-               ["ukni"]="Northern Ireland" \
-               ["uksc"]="Scotland" \
-               ["it"]="Italy" \
-               ["de"]="Germany" \
-               ["ch"]="Switzerland" \
-               ["pl"]="Poland" \
-               ["at"]="Austria" \
-               ["dk"]="Denmark" \
-               ["lv"]="Latvia" \
-               ["fi"]="Finland" \
-               ["ee"]="Estonia" \
-               ["es"]="Spain" \
-               ["usva"]="Virginia" \
-               ["usal"]="Alabama" \
-               ["usde"]="Delaware" \
-               ["ca"]="Canada" )
 
 # default values for parameters
 verbose="no"
