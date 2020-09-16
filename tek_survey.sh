@@ -1456,7 +1456,7 @@ do
         chunks_down=$((chunks_down+1))
     else
         echo "Error decoding usnv-$usnvname"
-        echo "Error decoding usnv-$usnvname at $NOW" >$CANARY`
+        echo "Error decoding usnv-$usnvname at $NOW" >$CANARY
     fi
 done
 
