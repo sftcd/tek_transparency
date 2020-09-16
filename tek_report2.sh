@@ -148,6 +148,7 @@ The <a href="country-counts.csv">CSV file</a> on which those are based.</p>
         <td><a href="usal.png"><img src="usal-small.png" alt=".usal"/></a></td>
         <td><a href="usde.png"><img src="usde-small.png" alt=".usde"/></a></td>
         <td><a href="usnv.png"><img src="usnv-small.png" alt=".usnv"/></a></td>
+        <td><a href="uswy.png"><img src="uswy-small.png" alt=".uswy"/></a></td>
     </tr>
     <tr>
 </table>
