@@ -332,7 +332,7 @@ then
     then
         ldate_str=`cat $OUTDIR/$OUTFILE | awk -F, '{print $2}' | sort | tail -1`
         ldate_str="$ldate_str"Z
-        ldate=`date +%s $ldate_str`
+        ldate=`date +%s -d $ldate_str`
         ldate=$((ldate-3*DAYSECS))
         START=$ldate
         # Make a version of output that omits those days
@@ -344,13 +344,13 @@ then
             mminus=`date -d@$((thed)) +%m`
             dminus=`date -d@$((thed)) +%d`
             echo "$yminus-$mminus-$dminus" >>$thedfile
+            thed=$((thed+DAYSECS))
         done
         CCMINUS3=`mktemp /tmp/ccm3XXXX`
         grep -v -f $thedfile $OUTDIR/$OUTFILE >$CCMINUS3
         rm -f $thedfile
     fi
 fi
-set +X
 
 TMPF=`mktemp $OUTDIR/dctekXXXX`
 TMPF1=`mktemp $OUTDIR/dctekXXXX`
@@ -457,7 +457,7 @@ do
             latest_epoch=$tekepoch
             echo "Changed Epoch,$dstr,$c,$latest_epoch,$tekepoch"
             lday=`date +%Y-%m-%d -d@$((tekepoch*600))`
-            ccnt=`grep "$c,$lday" $JHU_WORLD_CASES | awk -F, '{print $4}'`
+            ccnt=`grep "^$c,$lday" $JHU_WORLD_CASES | awk -F, '{print $4}'`
             echo "$c,$lday,$teksofepochcnt,$ccnt" >>$TMPF
         else
             echo "No epoch change,$dstr,$c,$latest_epoch,$tekepoch"
@@ -479,10 +479,10 @@ do
     day=`date -d @$mn +%d`
     for country in $COUNTRY_LIST
     do
-        alreadythere=`grep -c "$country,$year-$month-$day" $TMPF`
+        alreadythere=`grep -c "^$country,$year-$month-$day" $TMPF`
         if [[ "$alreadythere" == "0" ]]
         then
-            allcases=`grep "$country,$year-$month-$day" $JHU_WORLD_CASES | awk -F, '{print $4}'`
+            allcases=`grep "^$country,$year-$month-$day" $JHU_WORLD_CASES | awk -F, '{print $4}'`
             if [[ "$allcases" == "" ]]
             then
                 allcases=0
