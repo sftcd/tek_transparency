@@ -26,6 +26,11 @@ do
         fi
     fi
 done
+if [[ "$sinput" == "" ]]
+then
+    echo "$sinput is empty or missing - exitint"
+    exit 2
+fi
 if [ -s $sinput ]
 then
     cinput="$DAILIES/country-counts.csv"
