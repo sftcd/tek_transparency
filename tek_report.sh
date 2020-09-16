@@ -44,7 +44,7 @@ vlink="#000080" alink="#FF0000">
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day, for
 the Irish, Northern Irish, Italian, German, Swiss, Polish, Danish, Austrian,
-Estonian, Latvian, Spanish, Canadian (Ontario?) and United States (Virigina, Alabama) apps. </p>  
+Finnish, Estonian, Latvian, Spanish, Canadian (Ontario?) and United States (Virigina, Alabama) apps. </p>  
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple

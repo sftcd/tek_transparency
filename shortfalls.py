@@ -163,7 +163,7 @@ if __name__ == "__main__":
         if args.countries is None:
             # give header/footer only if not doing 'em piecemeal
             print("<table border=\"1\">")
-            print("<tr><td>Country</td><td>Pop</td><td>Actives</td><td>Uploads</td><td>Cases</td><td>Shortfall</td><td>First</td></tr>")
+            print("<tr><td>Country</td><td>Pop</td><td>Actives</td><td>Estimated Uploads</td><td>Cases</td><td>Shortfall</td><td>First</td></tr>")
         for tline in table_lines:
             print("<tr>",end="")
             for tle in tline:

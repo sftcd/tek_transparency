@@ -97,6 +97,8 @@ function whenisitagain()
 }
 NOW=$(whenisitagain)
 
+echo "At $NOW: Running $0 $*"
+
 DAYSECS=$((60*60*24))
 
 # We create this file from JHU data
@@ -174,8 +176,11 @@ do
             echo "No TEKs in $run!"
         fi
     else
-        ntek=`wc -l $ofile | awk '{print $1}'`
-        echo "Re-using $ntek TEKs from $run in $ofile"
+		# wc is a bit slow for so many largish CSVs and
+		# the info's not that interesting so we'll skip
+        # ntek=`wc -l $ofile | awk '{print $1}'`
+		#echo "Re-using $ntek TEKs from $run in $ofile"
+        echo "Re-using TEKs from $run in $ofile"
     fi
 done
 
@@ -569,4 +574,8 @@ do
     fi
 done
 
+
+NOW=$(whenisitagain)
+
+echo "At $NOW: Finished running $0 $*"
 

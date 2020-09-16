@@ -96,7 +96,7 @@ active users and case counts. The latest table is below.</p>
 
 <table>
     <tr><td>
-	Uploads since we started:
+	Estimated Uploads since we started:
 
 EOF
 
@@ -105,7 +105,7 @@ cat $DAILYDIR/shortfalls.html >>$TARGET
 # add latest table
 cat >>$TARGET <<EOF
         </td> <td>
-	Uploads for the last two weeks:
+	Estimated Uploads for the last two weeks:
 EOF
 
 cat $DAILYDIR/shortfalls2w.html >>$TARGET
