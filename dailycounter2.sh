@@ -325,7 +325,6 @@ fi
 
 
 CCMINUS3=""
-set -x
 if [[ "$STARTGIVEN" == "no" ]]
 then
     if [ -f $OUTDIR/$OUTFILE ]
