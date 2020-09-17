@@ -59,9 +59,8 @@ Exposure Notification (GAEN) API (if they do!). The code that produces this is
 produced as part of our <a href="https://down.dsg.cs.tcd.ie/tact/">TACT</a>
 project.</p>
 
-<p>This file is updated every hour while we figure out the behaviour. This update is from $NOW UTC. If
-you manage one of these systems and would prefer we query less often please feel free to get in
-touch.</p> 
+<p>This file is updated irregularly while we debug our scripts. This update is from $NOW UTC.</p> 
+
 EOF
 
 # Check for canaries, these get dropped if bad happens
