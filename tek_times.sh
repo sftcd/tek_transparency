@@ -372,10 +372,10 @@ do
         elif [[ "$do_jhu" == "yes" ]]
         then
             # some dates can be missing or malformed in the JHU data for some countries/regions
-            gotJHU=`grep -c "$country,$year-$month-$day" $JHU_WORLD_CASES` 
+            gotJHU=`grep -c "^$country,$year-$month-$day" $JHU_WORLD_CASES` 
             if [[ "$gotJHU" != 0 ]]
             then
-                grep "$country,$year-$month-$day" $JHU_WORLD_CASES | \
+                grep "^$country,$year-$month-$day" $JHU_WORLD_CASES | \
                     awk -F, '{print "'$country','$td','$cnt',"$4}' >>$OUTDIR/$country-$TARGET
             else
                     echo "$country,$td,$cnt,0" >>$OUTDIR/$country-$TARGET
