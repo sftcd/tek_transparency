@@ -8,14 +8,26 @@ x=${TOP:="$HOME/code/tek_transparency"}
 x=${IEF:="new-iefirsts"}
 x=${UKNIF:="new-uknifirsts"}
 x=${DODGY:="new-notieuknifirsts"}
+x=${DATADIR:="$TOP/dailies2"}
 
 tmpf=`mktemp /tmp/newsortXXXX`
 tmpf1=`mktemp /tmp/newsortXXXX`
+tmpf2=`mktemp /tmp/newsortXXXX`
 
 
 # find modification time
-iemod=`stat -c %Y $IEF`
-uknimod=`stat -c %Y $UKNIF`
+if [ -f $IEF ]
+then
+    iemod=`stat -c %Y $IEF`
+else
+    iemod=0
+fi
+if [ -f $UKNIF ]
+then
+    uknimod=`stat -c %Y $UKNIF`
+else
+    uknimod=0
+fi
 early=$iemod
 if (( uknimod < iemod ))
 then
@@ -25,7 +37,7 @@ fi
 maxfdate=0
 
 # build list of files newer than our outputs
-iflist=202*.csv
+iflist=$DATADIR/202*.csv
 oflist=""
 for f in $iflist
 do
@@ -51,7 +63,8 @@ fi
 # grep entire lines
 grep ",ie," $oflist >$tmpf1
 grep ",ukni," $oflist >>$tmpf1
-sort $tmpf1
+sort $tmpf1 >$tmpf2
+mv $tmpf2 $tmpf1
 # grep tek values
 cat $tmpf1 | awk -F, '{print $9}' | sort | uniq >$tmpf
 

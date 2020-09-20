@@ -28,7 +28,7 @@ do
 done
 if [[ "$sinput" == "" ]]
 then
-    echo "$sinput is empty or missing - exitint"
+    echo "sinput is empty or missing - exiting"
     exit 2
 fi
 if [ -s $sinput ]
