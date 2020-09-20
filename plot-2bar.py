@@ -154,7 +154,7 @@ if __name__ == "__main__":
     ax.xaxis_date()
     ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     ax.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
-    #ax.tick_params(axis='y', which='major', labelsize=24)
+    ax.tick_params(axis='y', which='major', labelsize=24)
     dmintime=min(dates1[0],dates2[0])
     dmaxtime=min(dates1[-1],dates2[-1])
     if args.start:
@@ -237,16 +237,17 @@ if __name__ == "__main__":
         ax2.plot([d+bwm for d in dates1[14+ind1:]],c14_1[ind1:],marker='o',color="red")
         ax2.plot([d+bwm for d in dates2[14+ind2:]],c14_2[ind2:],marker='o',color="blue")
 
-    if args.country:
-        plt.suptitle("Estimated uploads versus ground truth for "+args.country)
-    else:
-        plt.suptitle("Estimated uploads versus ground truth")
-    if args.seven and args.fourteen:
-        ax.set(title="with 7- and 14- day running averages on lines")
-    elif args.seven:
-        ax.set(title="with 7- day running averages on lines")
-    elif args.fourteen:
-        ax.set(title="with 14- day running averages on lines")
+    if not args.nolegend:
+        if args.country:
+            plt.suptitle("Estimated uploads versus ground truth for "+args.country)
+        else:
+            plt.suptitle("Estimated uploads versus ground truth")
+        if args.seven and args.fourteen:
+            ax.set(title="with 7- and 14- day running averages on lines")
+        elif args.seven:
+            ax.set(title="with 7- day running averages on lines")
+        elif args.fourteen:
+            ax.set(title="with 14- day running averages on lines")
 
     if not args.nolegend:
         patches=[]

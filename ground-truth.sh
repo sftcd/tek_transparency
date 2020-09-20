@@ -52,7 +52,7 @@ then
         d=`echo $cd | awk -F, '{print $2}'`
         echo "${d:6:4}-${d:3:2}-${d:0:2},$c" >>$stmp
     done
-    $TOP/plot-2bar.py -1 $ctmp -2 $stmp -o "TEK Survey" -t "Swiss Codes" -c "Switzerland" -f -i ch-ground.png $*
+    $TOP/plot-2bar.py -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "Swiss Codes" -c "Switzerland" -f -i ch-ground.png $*
     convert ch-ground.png -resize 115x71 ch-ground-small.png
     rm -f $ctmp $stmp
 else
@@ -87,7 +87,7 @@ then
     stmp=`mktemp /tmp/stmpXXXX`
     grep "de," $cinput | awk -F, '{print $2","$3}' >$ctmp
     tail -n +2 $sinput | awk -F, '{print strftime("%Y-%m-%d",$1)","$3}' >$stmp
-    $TOP/plot-2bar.py -1 $ctmp -2 $stmp -o "TEK Survey" -t "German Codes" -c "Germany" -f -i de-ground.png $*
+    $TOP/plot-2bar.py -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "German Codes" -c "Germany" -f -i de-ground.png $*
     convert de-ground.png -resize 115x71 de-ground-small.png
     rm -f $ctmp $stmp
 else
