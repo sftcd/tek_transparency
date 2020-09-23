@@ -107,6 +107,8 @@ if __name__ == "__main__":
     ax.xaxis_date()
     ax.yaxis_date()
     ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
+    ax.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
+    ax.tick_params(axis='y', which='major', labelsize=24)
     if args.country is None:
         dmintime=min(ie_dates[0],ukni_dates[0])
         dmaxtime=max(ie_dates[-1],ukni_dates[-1])
