@@ -42,7 +42,7 @@ then
     echo "Plotting Swiss ground-truth from $sinput and $cinput" 
     ctmp=`mktemp /tmp/ctmpXXXX`
     stmp=`mktemp /tmp/stmpXXXX`
-    grep "ch," $cinput | awk -F, '{print $2","$3}' >$ctmp
+    grep "^ch," $cinput | awk -F, '{print $2","$3}' >$ctmp
     cdlist=`cat $sinput | json_pp  -json_opt canonical,indent | grep -A1 Codeact | \
         tr '\n' ' ' | tr '\-\-' '\n' |  \
         sed -e 's/", *$//' | sed -e 's/^.*t":"//' | sed -e 's/".*"/,/'`
@@ -85,9 +85,10 @@ then
     echo "Plotting German ground-truth from $sinput and $cinput" 
     ctmp=`mktemp /tmp/ctmpXXXX`
     stmp=`mktemp /tmp/stmpXXXX`
-    grep "de," $cinput | awk -F, '{print $2","$3}' >$ctmp
+    grep "^de," $cinput | awk -F, '{print $2","$3}' >$ctmp
     tail -n +2 $sinput | awk -F, '{print strftime("%Y-%m-%d",$1)","$3}' >$stmp
-    $TOP/plot-2bar.py -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "German Codes" -c "Germany" -f -i de-ground.png $*
+    #$TOP/plot-2bar.py -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "German Codes" -c "Germany" -f -i de-ground.png $*
+    $TOP/plot-2bar.py -s 2020-07-01 -e 2020-09-19 -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "German Codes" -c "Germany" -f -i de-ground.png $*
     convert de-ground.png -resize 115x71 de-ground-small.png
     rm -f $ctmp $stmp
 else

@@ -21,8 +21,8 @@ def smape(predicted, actual):
     if len(predicted) != len(actual):
         raise ValueError('mase: lengths differ (',len(predicted),len(actual),')')
     # mean average error
-    #smape=sum([abs(predicted[i]-actual[i])/((abs(actual[i])+predicted[i])/2) for i in range(len(predicted))])/len(predicted)
-    smape=sum([abs(predicted[i]-actual[i])/((abs(actual[i])+predicted[i])) for i in range(len(predicted))])/len(predicted)
+    smape=sum([abs(predicted[i]-actual[i])/((abs(actual[i])+predicted[i])/2) for i in range(len(predicted))])/len(predicted)
+    #smape=sum([abs(predicted[i]-actual[i])/((abs(actual[i])+predicted[i])) for i in range(len(predicted))])/len(predicted)
     return smape
 
 def mape(predicted, actual):
@@ -154,7 +154,9 @@ if __name__ == "__main__":
     ax.xaxis_date()
     ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     ax.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
-    ax.tick_params(axis='y', which='major', labelsize=24)
+    #ax.tick_params(axis='y', which='major', labelsize=24)
+    #ax.tick_params([])
+    ax.set_yticks([],[])
     dmintime=min(dates1[0],dates2[0])
     dmaxtime=min(dates1[-1],dates2[-1])
     if args.start:
