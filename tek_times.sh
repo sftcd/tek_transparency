@@ -230,9 +230,9 @@ then
             tmpf2=`mktemp jhuXXXX`
             grep "$cstring" $JHU_TOP/csse_covid_19_data/csse_covid_19_daily_reports/*.csv  | awk -F, '{print $5,$8}' >$tmpf
 			# handle cases with US dates like 09/8/20
-			grep "$cstring" | | awk -F, '{print $5,$8}' | grep / | awk -F/ '{print "20"$3" "$2" "$1'}  | awk '{printf("%04d-%02d-%02d,%d\n",$1,$4,$5,$3)'} >>$tmpf
+            grep "$cstring" $JHU_TOP/csse_covid_19_data/csse_covid_19_daily_reports/*.csv  | awk -F, '{print $5,$8}' | grep '/' | awk -F'/' '{print "20"$3" "$2" "$1'}  | awk '{printf("%04d-%02d-%02d,%d\n",$1,$5,$4,$3)'} >>$tmpf
 
-            cat $tmpf | grep "^202[01]-" | awk -F' ' '{print $1","$3}' >$tmpf1
+            cat $tmpf | sort | grep "^202[01]-" | awk -F' ' '{print $1","$3}' >$tmpf1
             cat $tmpf1 | awk -F, '{array[$1]+=$2} END { for (i in array) {print i"," array[i]}}' | sort  >$tmpf2
             cat $tmpf2 | awk -F, 'BEGIN {last=0} {print "'$country',"$1","$2","$2-last; last=$2}' >>$JHU_WORLD_CASES
             rm -f $tmpf $tmpf1 $tmpf2 
