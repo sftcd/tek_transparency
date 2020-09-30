@@ -54,6 +54,7 @@ then
     done
     $TOP/plot-2bar.py -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "Swiss Codes" -c "Switzerland" -f -i ch-ground.png $*
     convert ch-ground.png -resize 115x71 ch-ground-small.png
+    mv $stmp ch-codes.csv
     rm -f $ctmp $stmp
 else
     echo "$sinput is empty or missing - exitint"
@@ -90,6 +91,7 @@ then
     #$TOP/plot-2bar.py -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "German Codes" -c "Germany" -f -i de-ground.png $*
     $TOP/plot-2bar.py -s 2020-07-01 -e 2020-09-19 -n -1 $ctmp -2 $stmp -o "TEK Survey" -t "German Codes" -c "Germany" -f -i de-ground.png $*
     convert de-ground.png -resize 115x71 de-ground-small.png
+    mv $stmp de-codes.csv
     rm -f $ctmp $stmp
 else
     echo "$sinput is empty or missing - exitint"
