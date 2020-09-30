@@ -103,6 +103,7 @@ then
     convert de-ground.png -resize 115x71 de-ground-small.png
     mv $stmp de-codes.csv
     rm -f $ctmp $stmp
-    echo "$sinput is empty or missing - exitint"
+else
+    echo "$sinput is empty or missing - exiting"
     exit 2
 fi
