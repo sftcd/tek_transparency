@@ -573,30 +573,8 @@ then
     cp $OUTDIR/shortfalls2w.html $DOCROOT
 fi
 
-# and finally some pictures
-cdate_list=`$TOP/shortfalls.py -rn -t $OUTDIR/$OUTFILE -d $TOP/country-pops.csv | \
-                awk -F, '{print $1$7}' | \
-                sed -e 's/\[//' | \
-                sed -e 's/]//' | \
-                sed -e "s/'//g" | \
-                sed -e 's/ /,/'`
-for cdate in $cdate_list
-do
-    country=`echo $cdate | awk -F, '{print $1}'`
-    sdate=`echo $cdate | awk -F, '{print $2}'`
-    if [[ "$sdate" == "" ]]
-    then
-        echo "No sign of start date for $country"
-    else
-        $TOP/plot-dailies.py -c $country -1 -i $OUTDIR/$OUTFILE -s $sdate -o $OUTDIR/$country.png
-        convert $OUTDIR/$country.png -resize 115x71 $OUTDIR/$country-small.png
-        if [ -d $DOCROOT ]
-        then
-            cp $OUTDIR/$country.png $OUTDIR/$country-small.png $DOCROOT
-        fi
-    fi
-done
-
+# do some plots
+$TOP/dcplots.sh -f $OUTDIR/$OUTFILE
 
 NOW=$(whenisitagain)
 

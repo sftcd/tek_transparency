@@ -133,7 +133,12 @@ if __name__ == "__main__":
     ax.xaxis_date()
     ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
     ax.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
-    ax.tick_params(axis='y', which='major', labelsize=24)
+    #ax.tick_params(axis='y', which='major', labelsize=16)
+    plt.yticks([])
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Estimated Uploads/Cases")
+    ax.xaxis.label.set_size(16)
+    ax.yaxis.label.set_size(16)
     #ax.tick_params(axis='both', which='minor', labelsize=12)
     dmintime=dates[0]
     dmaxtime=dates[-1]
@@ -153,7 +158,6 @@ if __name__ == "__main__":
         bwm=datetime.timedelta(days=(2*countries.index(c)+1)*bar_width)
         plt.bar([d+bwm for d in dates],country_teksncases[c+'-cases'],bar_width,color=colours[(2*countries.index(c)+1)%len(colours)])
 
-    d7=dates[7:]
     for c in countries:
         if args.seven:
             ax2.plot([d+bwm for d in dates[7:]],c7_tek[c],marker='o',color=colours[(2*countries.index(c))%len(colours)])
@@ -182,8 +186,12 @@ if __name__ == "__main__":
                 patches.append(mpatches.Patch(lw=None,ls='dashed',color=colours[(2*countries.index(c))%len(colours)],label=c+'-tek/case-ratio'))
         fig.legend(loc='lower center', fancybox=True, ncol=10, handles=patches)
 
+    ax.set_xticks(ax.get_xticks()[::2])
+    plt.tight_layout()
+
     if args.outfile is not None:
-        fig.set_size_inches(18.5, 11.5)
+        #fig.set_size_inches(18.5, 11.5)
+        fig.set_size_inches(9.25, 5.75)
         plt.savefig(args.outfile,dpi=300)
     else:
         plt.show()

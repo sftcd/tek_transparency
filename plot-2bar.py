@@ -153,9 +153,7 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(1)
     ax.xaxis_date()
     ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-    ax.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
-    #ax.tick_params(axis='y', which='major', labelsize=24)
-    #ax.tick_params([])
+    ax.tick_params(axis='x', which='major', labelrotation=20)
     ax.set_yticks([],[])
     dmintime=min(dates1[0],dates2[0])
     dmaxtime=min(dates1[-1],dates2[-1])
@@ -164,7 +162,7 @@ if __name__ == "__main__":
     if args.end:
         dmaxtime=maxtime
     ax2=ax.twinx()
-    ax2.tick_params(axis='y', which='major', labelsize=24)
+    ax2.tick_params(axis='y', which='major', labelsize=16)
 
 
     # match up the dates - we'll graph only the common dates
@@ -269,15 +267,20 @@ if __name__ == "__main__":
     fig7, ax7 = plt.subplots(1)
     ax7.xaxis_date()
     ax7.format_xdata = mdates.DateFormatter('%Y-%m-%d')
-    #ax7.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
-    ax7.tick_params(axis='x', which='major', labelrotation=20)
+    ax7.tick_params(axis='x', which='major', labelsize=16, labelrotation=20)
+    ax7.tick_params(axis='y', which='major', labelsize=16)
+    ax7.set_xlabel("Date")
+    ax7.set_ylabel("Estimated Uploads/Codes Issued")
+    ax7.xaxis.label.set_size(16)
+    ax7.yaxis.label.set_size(16)
     dmintime=min(dates1[0],dates2[0])
     dmaxtime=min(dates1[-1],dates2[-1])
     if args.start:
         dmintime=mintime
     if args.end:
         dmaxtime=maxtime
-    bar_width=0.8
+    #bar_width=0.8
+    bar_width=2
     #bwm=datetime.timedelta(days=2*bar_width)
     bwm=datetime.timedelta(days=1)
     plt.bar([d-bwm for d in d7],p7,bar_width,color="red")
@@ -285,8 +288,12 @@ if __name__ == "__main__":
 
     outfile7=os.path.splitext(args.outfile)[0]+"-seven.png"
 
+    ax7.set_xticks(ax7.get_xticks()[::2])
+    plt.tight_layout()
+
     if args.outfile is not None:
-        fig.set_size_inches(18.5, 11.5)
+        #fig.set_size_inches(18.5, 11.5)
+        fig.set_size_inches(9.25, 5.75)
         plt.savefig(outfile7,dpi=300)
     else:
         plt.show()
