@@ -1620,6 +1620,320 @@ do
 done
 
 
+# Gibraltar
+
+# used to notify us that something went wrong
+CANARY="$ARCHIVE/ukgi-canary"
+GI_RTFILE="$HOME/ukgi-refreshToken.txt"
+GI_BASE="https://app.beatcovid19.gov.gi/api"
+GI_CONFIG="$GI_BASE/settings/"
+
+$CURL --output ukgi-cfg.json -L $GI_CONFIG
+
+echo "======================"
+echo "Gibraltar TEKs"
+
+if [ ! -f $GI_RTFILE ]
+then
+    if [ ! -f $CANARY ]
+    then
+        echo "<p>Skipping Gibraltar because refreshToken access failed at $NOW.</p>" >$CANARY
+    fi
+    echo "Skipping Gibraltar because refreshToken access failed at $NOW.</p>" 
+else 
+
+	refreshToken=`cat $GI_RTFILE`
+	tok_json=`$CURL -s -L $GI_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
+	if [[ "$?" != 0 ]]
+	then
+	    if [ ! -f $CANARY ]
+	    then
+	        echo "<p>Skipping Gibraltar because refreshToken use failed at $NOW.</p>" >$CANARY
+	    fi
+	    echo "Skipping Gibraltar because refreshToken use failed at $NOW."
+    else
+		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+		if [[ "$newtoken" == "" ]]
+		then
+		    echo "No sign of an authToken, sorry - Skipping Gibraltar"
+        else
+			index_str=`$CURL -s -L "$GI_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
+			echo "Gibraltar index string: $index_str"
+			gifiles=""
+			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+			do
+                check401=`echo ${row} | base64 --decode`
+                if [[ "$check401" == "401" ]]
+                then
+                    echo "401 detected in JSON answer - oops"
+                    break
+                fi
+			    _jq() {
+			             echo ${row} | base64 --decode | jq -r ${1}
+			    }
+			    gifiles="$gifiles $(_jq '.path')"
+			done
+			for gifile in $gifiles
+			do
+			    echo "Getting $gifile"
+			    gibname=`basename $gifile`
+			    $CURL -s -L "$GI_BASE/data/$gifile" --output ukgi-$gibname -H "Authorization: Bearer $newtoken"
+			    if [[ $? == 0 ]]
+			    then
+                    # we should be good now, so remove canary
+                    rm -f $CANARY
+			        echo "Got ukgi-$gibname"
+			        if [ ! -f $ARCHIVE/ukgi-$gibname ]
+			        then
+			            cp ukgi-$gibname $ARCHIVE
+			        fi
+			        # try unzip and decode
+			        $UNZIP "ukgi-$gibname" >/dev/null 2>&1
+			        if [[ $? == 0 ]]
+			        then
+			            $TEK_DECODE
+			            new_keys=$?
+			            total_keys=$((total_keys+new_keys))
+			        fi
+			        rm -f export.bin export.sig
+			        chunks_down=$((chunks_down+1))
+			    else
+			        echo "Error decoding ukgi-$gibname"
+			    fi
+			done
+	
+		fi
+	fi
+fi
+
+# Malta
+
+MT_BASE="https://mt-dpppt-ws.azurewebsites.net/v1/gaen/exposed"
+MT_CONFIG="https://mt-dpppt-config.azurewebsites.net/v1/config?appversion=android-1.2.8&osversion=android28&buildnr=1599138353411"
+$CURL -L $MT_CONFIG --output mt-cfg.json
+
+now=`date +%s`
+today_midnight="`date -d "00:00:00Z" +%s`000"
+
+# one day in milliseconds
+day=$((60*60*24*1000))
+
+echo "======================"
+echo ".mt TEKs"
+for fno in {0..14}
+do
+	echo "Doing .mt file $fno" 
+	midnight=$((today_midnight-fno*day))
+	$CURL -L "$MT_BASE/$midnight" --output mt-$midnight.zip
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .mt sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s mt-$midnight.zip ]
+		then
+			echo "Empty or non-existent downloaded Maltese file: mt-$midnight.zip ($fno)"
+		else
+    		if [ ! -f $ARCHIVE/mt-$midnight.zip ]
+    		then
+				echo "New .mt file $fno mt-$midnight" 
+        		cp mt-$midnight.zip $ARCHIVE
+			elif ((`stat -c%s "mt-$midnight.zip"`>`stat -c%s "$ARCHIVE/mt-$midnight.zip"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .mt file $fno mt-$midnight" 
+        		cp mt-$midnight.zip $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "mt-$midnight.zip" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading mt-$midnight.zip (file $fno)"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+# Portugal
+
+PT_BASE="https://stayaway.incm.pt/v1/gaen/exposed"
+PT_CONFIG="https://stayaway.incm.pt/config/defaults.json"
+
+$CURL -L $PT_CONFIG --output pt-cfg.json
+
+now=`date +%s`
+today_midnight="`date -d "00:00:00Z" +%s`000"
+
+# one day in milliseconds
+day=$((60*60*24*1000))
+
+echo "======================"
+echo ".pt TEKs"
+for fno in {0..14}
+do
+	echo "Doing .pt file $fno" 
+	midnight=$((today_midnight-fno*day))
+	$CURL -L "$PT_BASE/$midnight" --output pt-$midnight.zip
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .pt sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s pt-$midnight.zip ]
+		then
+			echo "Empty or non-existent downloaded Portugese file: pt-$midnight.zip ($fno)"
+		else
+    		if [ ! -f $ARCHIVE/pt-$midnight.zip ]
+    		then
+				echo "New .pt file $fno pt-$midnight" 
+        		cp pt-$midnight.zip $ARCHIVE
+			elif ((`stat -c%s "pt-$midnight.zip"`>`stat -c%s "$ARCHIVE/pt-$midnight.zip"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .pt file $fno pt-$midnight" 
+        		cp pt-$midnight.zip $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "pt-$midnight.zip" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading pt-$midnight.zip (file $fno)"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+# Ecuador
+
+EC_BASE="https://contacttracing.covidanalytics.ai/v1/gaen/exposed"
+EC_CONFIG="https://contacttracing.covidanalytics.ai/v1/config?appversion=android-0.0.12-pilot&osversion=android28&buildnr=1598659886251"
+
+$CURL -L $EC_CONFIG --output ec-cfg.json
+
+now=`date +%s`
+today_midnight="`date -d "00:00:00Z" +%s`000"
+
+# one day in milliseconds
+day=$((60*60*24*1000))
+
+echo "======================"
+echo ".ec TEKs"
+for fno in {0..14}
+do
+	echo "Doing .ec file $fno" 
+	midnight=$((today_midnight-fno*day))
+	$CURL -L "$EC_BASE/$midnight" --output ec-$midnight.zip
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .ec sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s ec-$midnight.zip ]
+		then
+			echo "Empty or non-existent downloaded Portugese file: ec-$midnight.zip ($fno)"
+		else
+    		if [ ! -f $ARCHIVE/ec-$midnight.zip ]
+    		then
+				echo "New .ec file $fno ec-$midnight" 
+        		cp ec-$midnight.zip $ARCHIVE
+			elif ((`stat -c%s "ec-$midnight.zip"`>`stat -c%s "$ARCHIVE/ec-$midnight.zip"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .ec file $fno ec-$midnight" 
+        		cp ec-$midnight.zip $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "ec-$midnight.zip" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading ec-$midnight.zip (file $fno)"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+# Belgium
+
+CANARY="$ARCHIVE/be-canary"
+BE_BASE="https://c19distcdn-prd.ixor.be/version/v1/diagnosis-keys/country/BE/date"
+BE_CONFIG="https://c19distcdn-prd.ixor.be/version/v1/configuration/country/BE/app_config"
+BE_STATS="https://c19statcdn-prd.ixor.be/statistics/statistics.json"
+
+$CURL -L $BE_CONFIG --output be-cfg.json
+$CURL -L $BE_STATS --output be-stats.json
+
+if [ ! -f $CANARY ]
+then
+	be_index=`$CURL -L "$BE_BASE"`
+	if [[ "$?" == "0" ]]
+	then
+        echo "Belgian index: $be_index"
+        batches=`echo $be_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
+        for batch in $batches
+        do
+            $CURL -o be-$batch.zip -L "$BE_BASE/$batch"
+            if [[ $? == 0 ]]
+            then
+                # we do see zero sized files from .es sometimes
+                # which is odd but whatever (could be their f/w
+                # doing that but what'd be the effect on the 
+                # app?) 
+                if [ ! -s be-$batch.zip ]
+                then
+                    echo "Empty or non-existent downloaded Belgian file: be-$batch.zip"
+                else
+                    if [ ! -f $ARCHIVE/be-$batch.zip ]
+                    then
+                        echo "New .be file be-$batch" 
+                        cp be-$batch.zip $ARCHIVE
+                    elif ((`stat -c%s "be-$batch.zip"`>`stat -c%s "$ARCHIVE/be-$batch.zip"`));then
+                        # if the new one is bigger than archived, then archive new one
+                        echo "Updated/bigger .be file be-$batch" 
+                        cp be-$batch.zip $ARCHIVE
+                    fi
+                    # try unzip and decode
+                    $UNZIP "be-$batch.zip" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE >/dev/null
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
+                fi
+            else
+                echo "curl - error downloading be-$batch.zip (file $fno)"
+            fi
+        done
+	fi
+fi
+
+
 ## now count 'em and push to web DocRoot
 
 echo "Counting 'em..."
