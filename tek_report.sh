@@ -46,7 +46,7 @@ vlink="#000080" alink="#FF0000">
 that are visible on the Internet, to allow for comparisons for each day, for
 these regions running GAEN apps:
 </p>  
-<ul> 
+<ol> 
 EOF
 
 for country in $COUNTRY_LIST
@@ -56,7 +56,7 @@ done
 
 cat >>$TARGET <<EOF
 
-</ul>
+</ol>
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple

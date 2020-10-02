@@ -1933,6 +1933,106 @@ then
 	fi
 fi
 
+# Czechia
+
+CZ_BASE="https://storage.googleapis.com/exposure-notification-export-qhqcx"
+
+echo "======================"
+echo ".cz TEKs"
+cz_index=`$CURL -L "$CZ_BASE/erouska/index.txt"`
+echo "CZ index at $NOW: $cz_index"
+for fno in $cz_index
+do
+	echo "Doing .cz file $fno" 
+    bfno=`basename $fno`
+	$CURL -L "$CZ_BASE/$fno" --output cz-$bfno
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .cz sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s cz-$bfno ]
+		then
+			echo "Empty or non-existent downloaded Portugese file: cz-$bfno"
+		else
+    		if [ ! -f $ARCHIVE/cz-$bfno ]
+    		then
+				echo "New .cz file cz-$bfno" 
+        		cp cz-$bfno $ARCHIVE
+			elif ((`stat -c%s "cz-$bfno"`>`stat -c%s "$ARCHIVE/cz-$bfno"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .cz file cz-$bfno" 
+        		cp cz-$bfno $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "cz-$bfno" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading cz-$bfno"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+# South Africa
+
+ZA_BASE="https://files.ens.connect.sacoronavirus.co.za"
+
+echo "======================"
+echo ".za TEKs"
+za_index=`$CURL -L "$ZA_BASE/exposureKeyExport-ZA/index.txt"`
+echo "ZA index at $NOW: $za_index"
+for fno in $za_index
+do
+	echo "Doing .za file $fno" 
+    bfno=`basename $fno`
+	$CURL -L "$ZA_BASE/$fno" --output za-$bfno
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .za sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s za-$bfno ]
+		then
+			echo "Empty or non-existent downloaded Portugese file: za-$bfno"
+		else
+    		if [ ! -f $ARCHIVE/za-$bfno ]
+    		then
+				echo "New .za file za-$bfno" 
+        		cp za-$bfno $ARCHIVE
+			elif ((`stat -c%s "za-$bfno"`>`stat -c%s "$ARCHIVE/za-$bfno"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .za file za-$bfno" 
+        		cp za-$bfno $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "za-$bfno" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading za-$bfno"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
 
 ## now count 'em and push to web DocRoot
 

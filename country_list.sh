@@ -2,7 +2,7 @@
 
 # countries to do by default, or just one if given on command line
 
-COUNTRY_LIST="at be br ca ch de dk ec ee es fi ie it lv pl pt mt ukenw ukgi ukni uksc usva usal usde usnv uswy"
+COUNTRY_LIST="at be br ca ch cz de dk ec ee es fi ie it lv pl pt mt ukenw ukgi ukni uksc usva usal usde usnv uswy za"
 
 declare -A COUNTRY_NAMES=(\
                ["at"]="Austria" \
@@ -10,6 +10,7 @@ declare -A COUNTRY_NAMES=(\
                ["br"]="Brazil" \
                ["ca"]="Canada" \
                ["ch"]="Switzerland" \
+               ["cz"]="Czechia" \
                ["de"]="Germany" \
                ["dk"]="Denmark" \
                ["ec"]="Ecuador" \
@@ -31,4 +32,5 @@ declare -A COUNTRY_NAMES=(\
                ["usde"]="Delaware" \
                ["usnv"]="Nevada" \
                ["uswy"]="Wyoming" \
+               ["za"]="South Africa" \
            )
