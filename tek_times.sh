@@ -4,7 +4,7 @@
 # comparing the number of TEKs available per day to the 
 # number of cases declared per day
 
-set -x
+# set -x
 
 # For a cronjob set HOME as needed in the crontab
 # and then the rest should be ok, but you can override
