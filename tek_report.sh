@@ -174,7 +174,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     for (at least) these US states: Delaware, North Carolina, Wyoming, North Dakota, Pennsylvania</li>
     <li>20201002: Added a pile more regions: Belgium, Brazil, England-and-Wales, Malta, Portugal, Ecuador</li>
     <li>20201002: Added Gibraltar even though we've never seen a TEK from there too.</li>
-    <li>20201002: Added Czechia, South Africa</li>
+    <li>20201002: Added Czechia, South Africa, Hungary, Netherlands</li>
 
 </ul>
 
