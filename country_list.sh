@@ -1,8 +1,5 @@
 
-
 # countries to do by default, or just one if given on command line
-
-COUNTRY_LIST="at be br ca ch cz de dk ec ee es fi ie it lv pl pt mt ukenw ukgi ukni uksc usva usal usde usnv uswy za"
 
 declare -A COUNTRY_NAMES=(\
                ["at"]="Austria" \
@@ -17,10 +14,12 @@ declare -A COUNTRY_NAMES=(\
                ["ee"]="Estonia" \
                ["es"]="Spain" \
                ["fi"]="Finland" \
+               ["hu"]="Hungary" \
                ["ie"]="Ireland" \
                ["it"]="Italy" \
                ["lv"]="Latvia" \
                ["mt"]="Malta" \
+               ["nl"]="Netherlands" \
                ["pl"]="Poland" \
                ["pt"]="Portugal" \
                ["ukenw"]="England and Wales" \
@@ -34,3 +33,6 @@ declare -A COUNTRY_NAMES=(\
                ["uswy"]="Wyoming" \
                ["za"]="South Africa" \
            )
+
+COUNTRY_LIST=`echo "${!COUNTRY_NAMES[@]}" | tr ' ' '\n' | sort | tr '\n' ' '`
+

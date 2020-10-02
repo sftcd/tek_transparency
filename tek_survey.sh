@@ -1847,7 +1847,7 @@ do
 		# app?) 
 		if [ ! -s ec-$midnight.zip ]
 		then
-			echo "Empty or non-existent downloaded Portugese file: ec-$midnight.zip ($fno)"
+			echo "Empty or non-existent downloaded Ecuadorian file: ec-$midnight.zip ($fno)"
 		else
     		if [ ! -f $ARCHIVE/ec-$midnight.zip ]
     		then
@@ -1954,7 +1954,7 @@ do
 		# app?) 
 		if [ ! -s cz-$bfno ]
 		then
-			echo "Empty or non-existent downloaded Portugese file: cz-$bfno"
+			echo "Empty or non-existent downloaded Czech file: cz-$bfno"
 		else
     		if [ ! -f $ARCHIVE/cz-$bfno ]
     		then
@@ -2004,7 +2004,7 @@ do
 		# app?) 
 		if [ ! -s za-$bfno ]
 		then
-			echo "Empty or non-existent downloaded Portugese file: za-$bfno"
+			echo "Empty or non-existent downloaded South African file: za-$bfno"
 		else
     		if [ ! -f $ARCHIVE/za-$bfno ]
     		then
@@ -2032,6 +2032,117 @@ do
 	# don't appear to be too keen:-)
 	sleep 1
 done
+
+# Hungary
+
+HU_BASE="https://en.apis-it.hr/submission/diagnosis-key-file-urls"
+
+echo "======================"
+echo ".HU TEKs"
+hu_urls=`$CURL -L "$HU_BASE" | json_pp | grep https | sed -e 's/"//g' | sed -e 's/,//g'`
+echo "HU URLs at $NOW: $hu_urls"
+for url in $hu_urls
+do
+	echo "Doing .hu file $url" 
+    burl=`basename $url`
+	$CURL -L "$url" --output hu-$burl
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .hu sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s hu-$burl ]
+		then
+			echo "Empty or non-existent downloaded Hungarian file: hu-$burl"
+		else
+    		if [ ! -f $ARCHIVE/hu-$burl ]
+    		then
+				echo "New .hu file hu-$burl" 
+        		cp hu-$burl $ARCHIVE
+			elif ((`stat -c%s "hu-$burl"`>`stat -c%s "$ARCHIVE/hu-$burl"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .hu file hu-$burl" 
+        		cp hu-$burl $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "hu-$burl" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading hu-$burl"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+# Netherlands
+
+echo "======================"
+echo ".NL TEKs"
+NL_BASE="https://productie.coronamelder-dist.nl/v1"
+rm -f content.bin content.sig export.bin export.sig
+$CURL -L "$NL_BASE/manifest" -o nl-mani.zip
+$UNZIP -u nl-mani.zip 2>/dev/null
+if [ ! -f content.bin ]
+then
+    echo "Failed to unzip nl-mani.zip"
+    exit 
+fi
+nl_keys=`cat content.bin | jq ".exposureKeySets?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+nl_cfg=`cat content.bin | jq ".appConfig?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+nl_rcp=`cat content.bin | jq ".riskCalculationParameters?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+
+$CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip
+$CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip
+
+for key in $nl_keys
+do
+	echo "Getting .nl file $key" 
+	$CURL -L "$NL_BASE/exposurekeyset/$key" --output nl-$key.zip
+	if [[ $? == 0 ]]
+	then
+		if [ ! -s nl-$key.zip ]
+		then
+			echo "Empty or non-existent downloaded Dutch file: nl-$key.zip"
+		else
+    		if [ ! -f $ARCHIVE/nl-$key.zip ]
+    		then
+				echo "New .nl file nl-$key.zip" 
+        		cp nl-$key.zip $ARCHIVE
+			elif ((`stat -c%s "nl-$key.zip"`>`stat -c%s "$ARCHIVE/nl-$key.zip"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .nl file nl-$key.zip" 
+        		cp nl-$key.zip $ARCHIVE
+    		fi
+    		# try unzip and decode
+            rm -f content.bin content.sig export.bin export.sig
+    		$UNZIP "nl-$key.zip" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+            rm -f content.bin content.sig export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "error downloading nl-$key.zip"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+
+
 
 
 ## now count 'em and push to web DocRoot

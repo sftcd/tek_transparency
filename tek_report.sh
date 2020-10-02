@@ -174,6 +174,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     for (at least) these US states: Delaware, North Carolina, Wyoming, North Dakota, Pennsylvania</li>
     <li>20201002: Added a pile more regions: Belgium, Brazil, England-and-Wales, Malta, Portugal, Ecuador</li>
     <li>20201002: Added Gibraltar even though we've never seen a TEK from there too.</li>
+    <li>20201002: Added Czechia, South Africa</li>
 
 </ul>
 
@@ -205,7 +206,7 @@ for country in $COUNTRY_LIST
 do
 	cfile="$ARCHIVE/$country-tek-times.csv"
 	echo '<td valign="top">' >>$TARGET
-	echo '<p><a href="'$country'-tek-times.csv">csv file</a></p>' >>$TARGET
+	echo '<p>'${COUNTRY_NAMES[$country]} <a href="'$country'-tek-times.csv">csv file</a></p>' >>$TARGET
 	echo '<table border="1">' >>$TARGET
 	awk -F, '{print "<TR>"; for(i=1;i<=NF;i++) {print "<TD>"$i"</TD>"} print "</TR>"}' $cfile >>$TARGET
 	echo '</table>' >>$TARGET
