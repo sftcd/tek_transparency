@@ -1,24 +1,29 @@
 
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni uksc it de ch pl dk at fi ee lv es usva usal usde usnv uswy ca"
 
-declare -A COUNTRY_NAMES=(["ie"]="Ireland" \
-               ["ukni"]="Northern Ireland" \
-               ["uksc"]="Scotland" \
-               ["it"]="Italy" \
-               ["de"]="Germany" \
-               ["ch"]="Switzerland" \
-               ["pl"]="Poland" \
+COUNTRY_LIST="at br ca ch de dk ee es fi ie it lv pl ukenw ukni uksc usva usal usde usnv uswy"
+
+declare -A COUNTRY_NAMES=(\
                ["at"]="Austria" \
+               ["br"]="Brazil" \
+               ["ca"]="Canada" \
+               ["ch"]="Switzerland" \
+               ["de"]="Germany" \
                ["dk"]="Denmark" \
-               ["lv"]="Latvia" \
-               ["fi"]="Finland" \
                ["ee"]="Estonia" \
                ["es"]="Spain" \
+               ["fi"]="Finland" \
+               ["ie"]="Ireland" \
+               ["it"]="Italy" \
+               ["lv"]="Latvia" \
+               ["pl"]="Poland" \
+               ["ukenw"]="England and Wales" \
+               ["ukni"]="Northern Ireland" \
+               ["uksc"]="Scotland" \
                ["usva"]="Virginia" \
                ["usal"]="Alabama" \
                ["usde"]="Delaware" \
                ["usnv"]="Nevada" \
                ["uswy"]="Wyoming" \
-               ["ca"]="Canada" )
+           )

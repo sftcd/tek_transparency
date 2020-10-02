@@ -11,6 +11,7 @@ import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import numpy as np
+import math
 import gif,datetime
 
 # colours for different cteks
@@ -39,6 +40,12 @@ if __name__ == "__main__":
                     help='file for resulting plot')
     parser.add_argument('-v','--verbose',     
                     help='additional output',
+                    action='store_true')
+    parser.add_argument('-a','--absolute',     
+                    help='plot consistent y axis regardless of max',
+                    action='store_true')
+    parser.add_argument('-l','--log',     
+                    help='logrithmic y-axis',
                     action='store_true')
     parser.add_argument('-n','--nolegend',     
                     help='don\'t add legend to figure',
@@ -80,10 +87,15 @@ if __name__ == "__main__":
     country_teks={}
     country_cases={}
 
+    # where we map to from zero with log plot
+    logmin=0.01
+
     if args.infile is not None:
         with open(args.infile) as csvfile: 
+            rowind=0
             readCSV = csv.reader(csvfile, delimiter=',')
             for row in readCSV:
+                rowind+=1
                 country=row[0]
                 if args.countries is not None and country not in sel_countries:
                     continue
@@ -98,10 +110,36 @@ if __name__ == "__main__":
                     country_cases[country]=[]
                     country_teksncases[country+'-teks']=[]
                     country_teksncases[country+'-cases']=[]
-                country_teks[country].append(int(row[2]))
-                country_cases[country].append(int(row[3]))
-                country_teksncases[country+'-teks'].append(int(row[2]))
-                country_teksncases[country+'-cases'].append(int(row[3]))
+                if not args.log:
+                    country_teks[country].append(int(row[2]))
+                    country_cases[country].append(int(row[3]))
+                    country_teksncases[country+'-teks'].append(int(row[2]))
+                    country_teksncases[country+'-cases'].append(int(row[3]))
+                else:
+                    ir2=int(row[2])
+                    if ir2 > 0:
+                        try:
+                            country_teks[country].append(math.log(ir2))
+                            country_teksncases[country+'-teks'].append(math.log(ir2))
+                        except Exception as e:
+                            print("ir2 Exception",e,"for",country,"line",rowind,"value",row[2])
+                            country_teks[country].append(logmin)
+                            country_teksncases[country+'-teks'].append(logmin)
+                    else:
+                        country_teks[country].append(logmin)
+                        country_teksncases[country+'-teks'].append(logmin)
+                    ir3=int(row[3])
+                    if ir3 > 0:
+                        try:
+                            country_cases[country].append(math.log(ir3))
+                            country_teksncases[country+'-cases'].append(math.log(ir3))
+                        except Exception as e:
+                            print("ir3 Exception",e,"for",country,"line",rowind,"value",row[3])
+                            country_cases[country].append(logmin)
+                            country_teksncases[country+'-cases'].append(logmin)
+                    else:
+                        country_cases[country].append(logmin)
+                        country_teksncases[country+'-cases'].append(logmin)
 
 
     # the 7 and 14 day averages
@@ -136,9 +174,7 @@ if __name__ == "__main__":
     #ax.tick_params(axis='y', which='major', labelsize=16)
     plt.yticks([])
     ax.set_xlabel("Date")
-    ax.set_ylabel("Estimated Uploads/Cases")
-    ax.xaxis.label.set_size(16)
-    ax.yaxis.label.set_size(16)
+    ax.xaxis.label.set_size(24)
     #ax.tick_params(axis='both', which='minor', labelsize=12)
     dmintime=dates[0]
     dmaxtime=dates[-1]
@@ -147,9 +183,25 @@ if __name__ == "__main__":
     if args.end:
         dmaxtime=maxtime
     ax.set_xlim(dmintime,dmaxtime)
+    if args.log:
+        ax.set_yscale('log')
+    if args.absolute:
+        if not args.log:
+            ax.set_ylim(0,1500)
+        else:
+            ax.set_ylim(logmin,math.log(10000))
 
     ax2=ax.twinx()
     ax2.tick_params(axis='y', which='major', labelsize=24)
+    ax2.set_ylabel("Est. Uploads/Cases")
+    ax2.yaxis.label.set_size(24)
+    if args.log:
+        ax2.set_yscale('log')
+    if args.absolute:
+        if not args.log:
+            ax2.set_ylim(0,1500)
+        else:
+            ax2.set_ylim(logmin,math.log(10000))
 
     bar_width=0.8/(2*len(countries))
     for c in countries:
@@ -162,11 +214,11 @@ if __name__ == "__main__":
         if args.seven:
             ax2.plot([d+bwm for d in dates[7:]],c7_tek[c],marker='o',color=colours[(2*countries.index(c))%len(colours)])
             ax2.plot([d+bwm for d in dates[7:]],c7_case[c],marker='^',color=colours[(2*countries.index(c)+1)%len(colours)])
-            ax2.plot([d+bwm for d in dates[7:]],c7_ratio[c],linestyle='dashed',color=colours[(2*countries.index(c))%len(colours)])
+            #ax2.plot([d+bwm for d in dates[7:]],c7_ratio[c],linestyle='dashed',color=colours[(2*countries.index(c))%len(colours)])
         if args.fourteen:
             ax2.plot([d+bwm for d in dates[14:]],c14_tek[c],marker='o',color=colours[(2*countries.index(c))%len(colours)])
             ax2.plot([d+bwm for d in dates[14:]],c14_case[c],marker='^',color=colours[(2*countries.index(c)+1)%len(colours)])
-            ax2.plot([d+bwm for d in dates[14:]],c14_ratio[c],linestyle='dashed',color=colours[(2*countries.index(c))%len(colours)])
+            #ax2.plot([d+bwm for d in dates[14:]],c14_ratio[c],linestyle='dashed',color=colours[(2*countries.index(c))%len(colours)])
 
     if not args.notitle:
         plt.suptitle("Estimated uploads versus cases for "+str(countries))

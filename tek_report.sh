@@ -158,6 +158,9 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
 	<li>20200919: had a bug due to grep for de also matching usde, fixed now, and only
     affected presentation (not stored data); also need to investigate if it's correct that usde and uswy are
 	the same - could be correct or maybe I mucked up a URL configuration</li>
+    <li>20201002: Just to note that the same TEK publication endpoint is used
+    for (at least) these US states: Delaware, North Carolina, Wyoming, North Dakota, Pennsylvania</li>
+    <li>20201002: Added a pile more regions: Brazil, England-and-Wales</li>
 
 </ul>
 

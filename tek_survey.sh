@@ -115,7 +115,7 @@ else
 			        if [[ $? == 0 ]]
 			        then
                         tderr=`mktemp /tmp/tderrXXXX`
-			            $TEK_DECODE 2>$tderr
+			            $TEK_DECODE >/dev/null 2>$tderr 
 			            new_keys=$?
 			            total_keys=$((total_keys+new_keys))
                         tderrsize=`stat -c%s $tderr`
@@ -216,7 +216,7 @@ else
 			        $UNZIP "ukni-$nibname" >/dev/null 2>&1
 			        if [[ $? == 0 ]]
 			        then
-			            $TEK_DECODE
+			            $TEK_DECODE >/dev/null
 			            new_keys=$?
 			            total_keys=$((total_keys+new_keys))
 			        fi
@@ -261,7 +261,7 @@ do
         $UNZIP "it-$chunk_no.zip" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            $TEK_DECODE
+            $TEK_DECODE >/dev/null
             new_keys=$?
             total_keys=$((total_keys+new_keys))
         fi
@@ -313,7 +313,7 @@ do
         $UNZIP "de-$dedate.zip" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            $TEK_DECODE
+            $TEK_DECODE >/dev/null
             new_keys=$?
             total_keys=$((total_keys+new_keys))
         fi
@@ -350,7 +350,7 @@ do
             $UNZIP "de-$dedate-$dehour.zip" >/dev/null 2>&1
             if [[ $? == 0 ]]
             then
-                $TEK_DECODE
+                $TEK_DECODE >/dev/null
                 new_keys=$?
                 total_keys=$((total_keys+new_keys))
             fi
@@ -396,7 +396,7 @@ do
         $UNZIP "de-$today-$dehour.zip" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            $TEK_DECODE
+            $TEK_DECODE >/dev/null
             new_keys=$?
             total_keys=$((total_keys+new_keys))
         fi
@@ -487,7 +487,7 @@ do
     		$UNZIP "ch-$midnight.zip" >/dev/null 2>&1
     		if [[ $? == 0 ]]
     		then
-        		$TEK_DECODE
+        		$TEK_DECODE >/dev/null
         		new_keys=$?
         			total_keys=$((total_keys+new_keys))
     		fi
@@ -543,7 +543,7 @@ do
     	    $UNZIP "pl-$plzip" >/dev/null 2>&1
     	    if [[ $? == 0 ]]
     	    then
-        	    $TEK_DECODE
+        	    $TEK_DECODE >/dev/null
         	    new_keys=$?
         	    total_keys=$((total_keys+new_keys))
     	    fi
@@ -647,7 +647,7 @@ do
                 $UNZIP "$the_local_zip_name" >/dev/null 2>&1
                 if [[ $? == 0 ]]
                 then
-                    $TEK_DECODE
+                    $TEK_DECODE >/dev/null
                     new_keys=$?
                         total_keys=$((total_keys+new_keys))
                 fi
@@ -718,7 +718,7 @@ do
             $UNZIP "$the_local_zip_name" >/dev/null 2>&1
             if [[ $? == 0 ]]
             then
-                $TEK_DECODE
+                $TEK_DECODE >/dev/null
                 new_keys=$?
                 total_keys=$((total_keys+new_keys))
             fi
@@ -783,7 +783,7 @@ then
                     $UNZIP "$the_local_zip_name" >/dev/null 2>&1
                     if [[ $? == 0 ]]
                     then
-                        $TEK_DECODE
+                        $TEK_DECODE >/dev/null
                         new_keys=$?
                         total_keys=$((total_keys+new_keys))
                     fi
@@ -853,7 +853,7 @@ do
     		$UNZIP "es-$midnight.zip" >/dev/null 2>&1
     		if [[ $? == 0 ]]
     		then
-        		$TEK_DECODE
+        		$TEK_DECODE >/dev/null
         		new_keys=$?
         			total_keys=$((total_keys+new_keys))
     		fi
@@ -924,7 +924,7 @@ else
             $UNZIP "$lpath" >/dev/null 2>&1
             if [[ $? == 0 ]]
             then
-                $TEK_DECODE
+                $TEK_DECODE >/dev/null
                 new_keys=$?
                 total_keys=$((total_keys+new_keys))
             fi
@@ -1022,7 +1022,7 @@ do
             $UNZIP "$lpath" >/dev/null 2>&1
             if [[ $? == 0 ]]
             then
-                $TEK_DECODE
+                $TEK_DECODE >/dev/null
                 new_keys=$?
                 total_keys=$((total_keys+new_keys))
             fi
@@ -1085,7 +1085,7 @@ else
             $UNZIP "$lpath" >/dev/null 2>&1
             if [[ $? == 0 ]]
             then
-                $TEK_DECODE
+                $TEK_DECODE >/dev/null
                 new_keys=$?
                 total_keys=$((total_keys+new_keys))
             fi
@@ -1137,7 +1137,7 @@ do
     		$UNZIP "ee-$midnight.zip" >/dev/null 2>&1
     		if [[ $? == 0 ]]
     		then
-        		$TEK_DECODE
+        		$TEK_DECODE >/dev/null
         		new_keys=$?
         			total_keys=$((total_keys+new_keys))
     		fi
@@ -1208,7 +1208,7 @@ then
                     $UNZIP "fi-$batch.zip" >/dev/null 2>&1
                     if [[ $? == 0 ]]
                     then
-                        $TEK_DECODE
+                        $TEK_DECODE >/dev/null
                         new_keys=$?
                         total_keys=$((total_keys+new_keys))
                     fi
@@ -1308,7 +1308,7 @@ else
                     $UNZIP "uksc-$ukscname" >/dev/null 2>&1
                     if [[ $? == 0 ]]
                     then
-                        $TEK_DECODE
+                        $TEK_DECODE >/dev/null
                         new_keys=$?
                         total_keys=$((total_keys+new_keys))
                     fi
@@ -1399,7 +1399,7 @@ do
         $UNZIP "usde-$usdename" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            $TEK_DECODE
+            $TEK_DECODE >/dev/null
             new_keys=$?
             total_keys=$((total_keys+new_keys))
         fi
@@ -1448,7 +1448,7 @@ do
         $UNZIP "usnv-$usnvname" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            $TEK_DECODE
+            $TEK_DECODE >/dev/null
             new_keys=$?
             total_keys=$((total_keys+new_keys))
         fi
@@ -1500,7 +1500,7 @@ do
         $UNZIP "uswy-$uswyname" >/dev/null 2>&1
         if [[ $? == 0 ]]
         then
-            $TEK_DECODE
+            $TEK_DECODE >/dev/null
             new_keys=$?
             total_keys=$((total_keys+new_keys))
         fi
@@ -1511,6 +1511,113 @@ do
     fi
 done
 
+# Brasil
+
+CANARY="$ARCHIVE/br-canary"
+BR_INDEX="https://exposure-notification.saude.gov.br/exposureKeyExport-BR/index.txt"
+BR_BASE="https://exposure-notification.saude.gov.br"
+
+# used to notify us that something went wrong
+CANARY="$ARCHIVE/br-canary"
+
+echo "======================"
+echo "Brazil TEKs"
+
+index_str=`$CURL -s -L "$BR_INDEX"` 
+if [[ $? != 0 ]]
+then
+    echo "Error getting index string: $index_str ($?)"
+    exit 1
+fi
+echo "Brazil index string: $index_str"
+for brfile in $index_str
+do
+    echo "Getting $brfile"
+    brname=`basename $brfile`
+    $CURL -s -L "$BR_BASE/$brfile" --output br-$brname 
+    if [[ $? == 0 ]]
+    then
+        # we should be good now, so remove canary
+        rm -f $CANARY
+        echo "Got br-$brname"
+        if [ ! -f $ARCHIVE/br-$brname ]
+        then
+            cp br-$brname $ARCHIVE
+        fi
+        # try unzip and decode
+        $UNZIP "br-$brname" >/dev/null 2>&1
+        if [[ $? == 0 ]]
+        then
+            $TEK_DECODE >/dev/null
+            new_keys=$?
+            total_keys=$((total_keys+new_keys))
+        fi
+        rm -f export.bin export.sig
+        chunks_down=$((chunks_down+1))
+    else
+        echo "Error decoding br-$brname"
+    fi
+done
+
+CANARY="$ARCHIVE/ukenw-canary"
+# There is also an hourly endpoint but we don't really need that I guess
+UKEN_BASE="https://distribution-te-prod.prod.svc-test-trace.nhs.uk/distribution/daily"
+UKEN_CONFIG="https://distribution-te-prod.prod.svc-test-trace.nhs.uk/distribution/exposure-configuration"
+DAYSECS=$((24*60*60))
+
+$CURL -o ukenw-cfg.json -L $UKEN_CONFIG 
+
+# We'll download the last three days in case we miss some runs and/or
+# get errors - hopefully that'll be enough to catch up on any misses
+
+nowsecs=`date +%s`
+# now less 3 days
+nowdm3="`date +%Y%m%d -d@$((nowsecs-3*DAYSECS))`00"
+nowdm2="`date +%Y%m%d -d@$((nowsecs-2*DAYSECS))`00"
+nowdm1="`date +%Y%m%d -d@$((nowsecs-DAYSECS))`00"
+nowd="`date +%Y%m%d -d@$nowsecs`00"
+dlist="$nowd $nowdm1 $nowdm2 $nowdm3"
+
+echo "Downloading UK (England/Wales) files for: $dlist"
+for batch in $dlist
+do
+
+    $CURL -o ukenw-$batch.zip -L "$UKEN_BASE/$batch.zip"
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .es sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s ukenw-$batch.zip ]
+        then
+            echo "Empty or non-existent downloaded UK file: ukenw-$batch.zip"
+        else
+            if [ ! -f $ARCHIVE/ukenw-$batch.zip ]
+            then
+                echo "New ukenw file ukenw-$batch" 
+                cp ukenw-$batch.zip $ARCHIVE
+            elif ((`stat -c%s "ukenw-$batch.zip"`>`stat -c%s "$ARCHIVE/ukenw-$batch.zip"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger ukenw file ukenw-$batch" 
+                cp ukenw-$batch.zip $ARCHIVE
+            fi
+            # try unzip and decode
+            $UNZIP "ukenw-$batch.zip" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
+        fi
+    else
+        echo "curl - error downloading ukenw-$batch.zip (file $fno)"
+    fi
+
+done
 
 
 ## now count 'em and push to web DocRoot
