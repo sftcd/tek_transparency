@@ -206,7 +206,7 @@ for country in $COUNTRY_LIST
 do
 	cfile="$ARCHIVE/$country-tek-times.csv"
 	echo '<td valign="top">' >>$TARGET
-	echo '<p>'${COUNTRY_NAMES[$country]} <a href="'$country'-tek-times.csv">csv file</a></p>' >>$TARGET
+	echo '<p>'${COUNTRY_NAMES[$country]} '<a href="'$country'-tek-times.csv">csv file</a></p>' >>$TARGET
 	echo '<table border="1">' >>$TARGET
 	awk -F, '{print "<TR>"; for(i=1;i<=NF;i++) {print "<TD>"$i"</TD>"} print "</TR>"}' $cfile >>$TARGET
 	echo '</table>' >>$TARGET
