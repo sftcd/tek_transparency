@@ -2148,7 +2148,7 @@ GU_BASE="https://cdn.projectaurora.cloud"
 echo "======================"
 echo ".gu TEKs"
 gu_index=`$CURL -L "$GU_BASE/guam/teks/index.txt"`
-echo "ZA index at $NOW: $gu_index"
+echo "GU index at $NOW: $gu_index"
 for fno in $gu_index
 do
 	echo "Doing .gu file $fno" 

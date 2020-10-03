@@ -58,6 +58,8 @@ cat >>$TARGET <<EOF
 
 </ol>
 
+<p>As of 20201003, we see no keys from Gibraltar, Hungary or Puerto Rico.</p>
+
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
 Exposure Notification (GAEN) API (if they do!). The code that produces this is
@@ -176,7 +178,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     <li>20201002: Added Gibraltar even though we've never seen a TEK from there too.</li>
     <li>20201002: Added Czechia, South Africa, Hungary, Netherlands</li>
     <li>20201003: Turns out the California, New York and New Jersey apps also use the same source for TEKs</li>
-    <li>20201003: Added Guam</li>
+    <li>20201003: Added Guam and Puerto Rico (the latter has no TEKs yet)</li>
 
 </ul>
 
@@ -191,15 +193,9 @@ touch.</p>
 EOF
 
 # Check for canaries, these get dropped if bad happens
-IE_CANARY="ie-canary"
-UKNI_CANARY="ukni-canary"
-USVA_CANARY="usva-canary"
-for canary in $IE_CANARY $UKNI_CANARY $USVA_CANARY
+for canary in $ARCHIVE/*-canary
 do
-    if [ -f $ARCHIVE/$canary ]
-    then
-        cat $ARCHIVE/$canary >>$TARGET
-    fi 
+    cat $ARCHIVE/$canary >>$TARGET
 done
 
 # table of tables with 1 row only 
