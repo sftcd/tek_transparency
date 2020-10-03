@@ -2089,7 +2089,7 @@ echo "======================"
 echo ".NL TEKs"
 NL_BASE="https://productie.coronamelder-dist.nl/v1"
 rm -f content.bin content.sig export.bin export.sig
-$CURL -L "$NL_BASE/manifest" -o nl-mani.zip
+$CURL -L "$NL_BASE/manifest" -o nl-mani.zip-but-dont-call-it-that
 $UNZIP -u nl-mani.zip 2>/dev/null
 if [ ! -f content.bin ]
 then
@@ -2100,8 +2100,8 @@ nl_keys=`cat content.bin | jq ".exposureKeySets?" | grep \" | sed -e 's/"//g' | 
 nl_cfg=`cat content.bin | jq ".appConfig?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
 nl_rcp=`cat content.bin | jq ".riskCalculationParameters?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
 
-$CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip
-$CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip
+$CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip-but-dont-call-it-that
+$CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip-but-dont-call-it-that
 
 for key in $nl_keys
 do
@@ -2140,6 +2140,57 @@ do
 	# don't appear to be too keen:-)
 	sleep 1
 done
+
+# Guam
+
+GU_BASE="https://cdn.projectaurora.cloud"
+
+echo "======================"
+echo ".gu TEKs"
+gu_index=`$CURL -L "$GU_BASE/guam/teks/index.txt"`
+echo "ZA index at $NOW: $gu_index"
+for fno in $gu_index
+do
+	echo "Doing .gu file $fno" 
+    bfno=`basename $fno`
+	$CURL -L "$GU_BASE/$fno" --output gu-$bfno
+	if [[ $? == 0 ]]
+	then
+		# we do see zero sized files from .gu sometimes
+		# which is odd but whatever (could be their f/w
+		# doing that but what'd be the effect on the 
+		# app?) 
+		if [ ! -s gu-$bfno ]
+		then
+			echo "Empty or non-existent downloaded Guam file: gu-$bfno"
+		else
+    		if [ ! -f $ARCHIVE/gu-$bfno ]
+    		then
+				echo "New .gu file gu-$bfno" 
+        		cp gu-$bfno $ARCHIVE
+			elif ((`stat -c%s "gu-$bfno"`>`stat -c%s "$ARCHIVE/gu-$bfno"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .gu file gu-$bfno" 
+        		cp gu-$bfno $ARCHIVE
+    		fi
+    		# try unzip and decode
+    		$UNZIP "gu-$bfno" >/dev/null 2>&1
+    		if [[ $? == 0 ]]
+    		then
+        		$TEK_DECODE >/dev/null
+        		new_keys=$?
+                total_keys=$((total_keys+new_keys))
+    		fi
+    		rm -f export.bin export.sig
+    		chunks_down=$((chunks_down+1))
+		fi
+	else
+    	echo "curl - error downloading gu-$bfno"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
 
 
 

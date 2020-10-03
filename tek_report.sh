@@ -175,6 +175,8 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     <li>20201002: Added a pile more regions: Belgium, Brazil, England-and-Wales, Malta, Portugal, Ecuador</li>
     <li>20201002: Added Gibraltar even though we've never seen a TEK from there too.</li>
     <li>20201002: Added Czechia, South Africa, Hungary, Netherlands</li>
+    <li>20201003: Turns out the California, New York and New Jersey apps also use the same source for TEKs</li>
+    <li>20201003: Added Guam</li>
 
 </ul>
 
