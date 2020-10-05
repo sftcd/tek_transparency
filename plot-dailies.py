@@ -187,6 +187,8 @@ if __name__ == "__main__":
         ax.set_yscale('log')
     if args.absolute:
         if not args.log:
+            # Irish special case, hand-coded
+            # ax.set_ylim(0,400)
             ax.set_ylim(0,1500)
         else:
             ax.set_ylim(logmin,math.log(10000))
@@ -199,6 +201,8 @@ if __name__ == "__main__":
         ax2.set_yscale('log')
     if args.absolute:
         if not args.log:
+            # Irish special case
+            #ax2.set_ylim(0,400)
             ax2.set_ylim(0,1500)
         else:
             ax2.set_ylim(logmin,math.log(10000))
