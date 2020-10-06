@@ -75,7 +75,7 @@ do
         $TOP/plot-dailies.py -nt -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country.png
         #$TOP/plot-dailies.py -nt -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country.png
         # log plot
-        $TOP/plot-dailies.py -ntl -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-log.png
+        $TOP/plot-dailies.py -ntl -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country-log.png
         # abs log plot
         $TOP/plot-dailies.py -antl -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-abs-log.png
         # abs plot
