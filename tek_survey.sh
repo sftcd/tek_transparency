@@ -185,6 +185,9 @@ else
 		then
 		    echo "No sign of an authToken, sorry - Skipping Northern Ireland"
         else
+            # grab stats
+            $CURL -s -L "$NI_BASE/stats" -o ukni-stats.json -H "Authorization: Bearer $newtoken"
+
 			index_str=`$CURL -s -L "$NI_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
 			echo "Northern Irish index string: $index_str"
 			nifiles=""
