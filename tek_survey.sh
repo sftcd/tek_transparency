@@ -2090,56 +2090,57 @@ echo ".NL TEKs"
 NL_BASE="https://productie.coronamelder-dist.nl/v1"
 rm -f content.bin content.sig export.bin export.sig
 $CURL -L "$NL_BASE/manifest" -o nl-mani.zip-but-dont-call-it-that
-$UNZIP -u nl-mani.zip 2>/dev/null
+$UNZIP -u nl-mani.zip-but-dont-call-it-that 2>/dev/null
 if [ ! -f content.bin ]
 then
     echo "Failed to unzip nl-mani.zip"
-    exit 
-fi
-nl_keys=`cat content.bin | jq ".exposureKeySets?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
-nl_cfg=`cat content.bin | jq ".appConfig?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
-nl_rcp=`cat content.bin | jq ".riskCalculationParameters?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+else
+	nl_keys=`cat content.bin | jq ".exposureKeySets?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+	nl_cfg=`cat content.bin | jq ".appConfig?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+	nl_rcp=`cat content.bin | jq ".riskCalculationParameters?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
 
-$CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip-but-dont-call-it-that
-$CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip-but-dont-call-it-that
+	$CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip-but-dont-call-it-that
+	$CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip-but-dont-call-it-that
 
-for key in $nl_keys
-do
-	echo "Getting .nl file $key" 
-	$CURL -L "$NL_BASE/exposurekeyset/$key" --output nl-$key.zip
-	if [[ $? == 0 ]]
-	then
-		if [ ! -s nl-$key.zip ]
+	for key in $nl_keys
+	do
+		echo "Getting .nl file $key" 
+		$CURL -L "$NL_BASE/exposurekeyset/$key" --output nl-$key.zip
+		if [[ $? == 0 ]]
 		then
-			echo "Empty or non-existent downloaded Dutch file: nl-$key.zip"
+			if [ ! -s nl-$key.zip ]
+			then
+				echo "Empty or non-existent downloaded Dutch file: nl-$key.zip"
+			else
+	    		if [ ! -f $ARCHIVE/nl-$key.zip ]
+	    		then
+					echo "New .nl file nl-$key.zip" 
+	        		cp nl-$key.zip $ARCHIVE
+				elif ((`stat -c%s "nl-$key.zip"`>`stat -c%s "$ARCHIVE/nl-$key.zip"`));then
+					# if the new one is bigger than archived, then archive new one
+					echo "Updated/bigger .nl file nl-$key.zip" 
+	        		cp nl-$key.zip $ARCHIVE
+	    		fi
+	    		# try unzip and decode
+	            rm -f content.bin content.sig export.bin export.sig
+	    		$UNZIP "nl-$key.zip" >/dev/null 2>&1
+	    		if [[ $? == 0 ]]
+	    		then
+	        		$TEK_DECODE >/dev/null
+	        		new_keys=$?
+	                total_keys=$((total_keys+new_keys))
+	    		fi
+	            rm -f content.bin content.sig export.bin export.sig
+	    		chunks_down=$((chunks_down+1))
+			fi
 		else
-    		if [ ! -f $ARCHIVE/nl-$key.zip ]
-    		then
-				echo "New .nl file nl-$key.zip" 
-        		cp nl-$key.zip $ARCHIVE
-			elif ((`stat -c%s "nl-$key.zip"`>`stat -c%s "$ARCHIVE/nl-$key.zip"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .nl file nl-$key.zip" 
-        		cp nl-$key.zip $ARCHIVE
-    		fi
-    		# try unzip and decode
-            rm -f content.bin content.sig export.bin export.sig
-    		$UNZIP "nl-$key.zip" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-            rm -f content.bin content.sig export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+	    	echo "error downloading nl-$key.zip"
 		fi
-	else
-    	echo "error downloading nl-$key.zip"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
-done
+		# don't appear to be too keen:-)
+		sleep 1
+	done
+	
+fi
 
 # Guam
 
