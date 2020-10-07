@@ -8,7 +8,7 @@ x=${TOP:="$HOME/code/tek_transparency"}
 x=${IEF:="new-iefirsts"}
 x=${UKNIF:="new-uknifirsts"}
 x=${DODGY:="new-notieuknifirsts"}
-x=${DATADIR:="$TOP/dailies2"}
+x=${CSVDIR:="`/bin/pwd`"}
 
 tmpf=`mktemp /tmp/newsortXXXX`
 tmpf1=`mktemp /tmp/newsortXXXX`
@@ -37,7 +37,7 @@ fi
 maxfdate=0
 
 # build list of files newer than our outputs
-iflist=$DATADIR/202*.csv
+iflist=$CSVDIR/202*.csv
 oflist=""
 for f in $iflist
 do
@@ -59,6 +59,8 @@ then
     echo "Nothing to do - exiting - newewst CSV ($mstr) older than output ($istr)"
     exit 0
 fi
+
+echo "Will search $oflist"
 
 # grep entire lines
 grep ",ie," $oflist >$tmpf1

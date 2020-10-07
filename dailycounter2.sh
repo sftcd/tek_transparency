@@ -295,7 +295,7 @@ then
 	if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
 	then
 	    echo "Reducing ie/unki prep..."
-	    $TOP/new-ie-ukni-sort.sh 
+	    CSVDIR=$OUTDIR $TOP/new-ie-ukni-sort.sh 
 	else
 	    iemtime=`date -r $IETEKS +%s`
 	    uknimtime=`date -r $UKNITEKS +%s`
@@ -308,7 +308,7 @@ then
 	        cp $IETEKS $IETEKS.backup.$NOW
 	        cp $UKNITEKS $UKNITEKS.backup.$NOW
 	        echo "Re-checking ie/unki prep as files older than $IETEKFREQ seconds..."
-	        $TOP/new-ie-ukni-sort.sh 
+	        CSVDIR=$OUTDIR $TOP/new-ie-ukni-sort.sh 
 	    fi
 	fi
 fi

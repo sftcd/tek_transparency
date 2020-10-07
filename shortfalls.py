@@ -76,7 +76,10 @@ if __name__ == "__main__":
                 country_teks[country]=[]
                 country_cases[country]=[]
             country_teks[country].append(int(row[2]))
-            country_cases[country].append(int(row[3]))
+            if row[3]=='':
+                country_cases[country].append(0)
+            else:
+                country_cases[country].append(int(row[3]))
     
     country_pops={}
     country_actives={}

@@ -86,6 +86,9 @@ else
 		then
 		    echo "No sign of an authToken, sorry - Skipping .ie"
         else
+            # get stats
+            $CURL -s -L "$IE_BASE/stats" -o ie-stats.json -H "Authorization: Bearer $newtoken"
+
 			index_str=`$CURL -s -L "$IE_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
 			echo "Irish index string: $index_str"
 			iefiles=""
