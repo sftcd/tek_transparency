@@ -160,6 +160,12 @@ if __name__ == "__main__":
             tline.append(dates[zerodays].strftime("%Y-%m-%d"))
         else:
             tline.append("-")
+        # expected
+        if country_pops[country]!=0:
+            exp=casetot*country_actives[country]/country_pops[country]
+            tline.append(str(int(exp)))
+        else:
+            tline.append("-")
         table_lines.append(tline)
 
     if args.HTML:
@@ -177,29 +183,24 @@ if __name__ == "__main__":
         sys.exit(0)
 
     if args.nolatex:
+        print("{")
         for tline in table_lines:
-            print(tline)
+            print("    "+str(tline)+",")
+        print("}")
         sys.exit(0)
 
     # footnote stanzas
     fsts=[]
     for tline in table_lines:
-        if args.rampup:
-            print("\t\\hline",tline[0],
-                " & ",tline[1],
-                " & ",tline[2],
-                " & ",tline[6],
-                " & ",tline[3],
-                " & ",tline[4],
-                " & ",tline[5]+"\\%",
-                "\\\\")
-        else:
-            print("\t\\hline",tline[0],
-                " & ",tline[1],
-                " & ",tline[2],
-                " & ",tline[3],
-                " & ",tline[4],
-                " & ",tline[5]+"\\%",
+        print("\t\\hline",tline[0], # country
+                " & ",tline[1], # pop
+                " & ",tline[2], # actives
+                " & ",tline[6], # start 
+                " & ",dates[-1].strftime("%Y-%m-%d"), # end
+                " & ",tline[4], # cases
+                " & ",tline[3], # uploads
+                " & ",tline[7], # expected
+                " & ",tline[5]+"\\%", # shortfall
                 "\\\\")
 
     for country in countries:

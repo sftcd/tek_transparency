@@ -2198,8 +2198,63 @@ do
 	sleep 1
 done
 
+# Slovenia
 
+CANARY="$ARCHIVE/si-canary"
+SI_BASE="https://svc90.cwa.gov.si/version/v1/diagnosis-keys/country/SI/date"
+SI_CONFIG="https://svc90.cwa.gov.si/version/v1/configuration/country/SI/app_config"
+# endpoing doesn't seem to exist in .si
+#SI_STATS=""
 
+$CURL -L $SI_CONFIG --output si-cfg.json
+#$CURL -L $SI_STATS --output si-stats.json
+
+if [ ! -f $CANARY ]
+then
+	si_index=`$CURL -L "$SI_BASE"`
+	if [[ "$?" == "0" ]]
+	then
+        echo "Slovenian index: $si_index"
+        batches=`echo $si_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
+        for batch in $batches
+        do
+            $CURL -o si-$batch.zip -L "$SI_BASE/$batch"
+            if [[ $? == 0 ]]
+            then
+                # we do see zero sized files from .es sometimes
+                # which is odd but whatever (could be their f/w
+                # doing that but what'd be the effect on the 
+                # app?) 
+                if [ ! -s si-$batch.zip ]
+                then
+                    echo "Empty or non-existent downloaded Slovenian file: si-$batch.zip"
+                else
+                    if [ ! -f $ARCHIVE/si-$batch.zip ]
+                    then
+                        echo "New .si file si-$batch" 
+                        cp si-$batch.zip $ARCHIVE
+                    elif ((`stat -c%s "si-$batch.zip"`>`stat -c%s "$ARCHIVE/si-$batch.zip"`));then
+                        # if the new one is bigger than archived, then archive new one
+                        echo "Updated/bigger .si file si-$batch" 
+                        cp si-$batch.zip $ARCHIVE
+                    fi
+                    # try unzip and decode
+                    $UNZIP "si-$batch.zip" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE >/dev/null
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
+                fi
+            else
+                echo "curl - error downloading si-$batch.zip (file $fno)"
+            fi
+        done
+	fi
+fi
 
 
 

@@ -24,6 +24,7 @@ declare -A COUNTRY_NAMES=(\
                ["pl"]="Poland" \
                ["pr"]="Puerto Rico" \
                ["pt"]="Portugal" \
+               ["si"]="Slovenia" \
                ["ukenw"]="England and Wales" \
                ["ukgi"]="Gibraltar" \
                ["ukni"]="Northern Ireland" \
