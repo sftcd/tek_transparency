@@ -58,7 +58,7 @@ cat >>$TARGET <<EOF
 
 </ol>
 
-<p>As of 20201003, we see no keys from Gibraltar, Hungary or Puerto Rico.</p>
+<p>As of 20201003, we see no keys from Hungary or Puerto Rico.</p>
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -179,6 +179,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     <li>20201002: Added Czechia, South Africa, Hungary, Netherlands</li>
     <li>20201003: Turns out the California, New York and New Jersey apps also use the same source for TEKs</li>
     <li>20201003: Added Guam and Puerto Rico (the latter has no TEKs yet)</li>
+    <li>20201009: Added Slovenia.</li>
 
 </ul>
 

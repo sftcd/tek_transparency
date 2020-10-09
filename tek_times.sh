@@ -224,6 +224,7 @@ then
         # the daily values
         for country in $COUNTRY_LIST
         do
+
             if [[ "$country" == "ukenw" ]]
             then
                 # special case - we need to count England and Wales (and not Scotland/NI)
@@ -257,8 +258,8 @@ then
                 cat $tmpf1 | awk -F, '{array[$1]+=$2} END { for (i in array) {print i"," array[i]}}' | sort  >$tmpf2
                 cat $tmpf2 | awk -F, 'BEGIN {last=0} {print "'$country',"$1","$2","$2-last; last=$2}' >>$JHU_WORLD_CASES
                 rm -f $tmpf $tmpf1 $tmpf2 
-
             fi
+
         done
     fi
 fi

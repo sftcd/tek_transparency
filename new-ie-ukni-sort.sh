@@ -94,3 +94,9 @@ done
 
 rm -f $tmpf $tmpf1
 
+# Now reduce size in case there're dups
+cat $IEF | sort | uniq >$tmpf
+mv $tmpf $IEF
+cat $UKNIF | sort | uniq >$tmpf1
+mv $tmpf1 $UKNIF
+

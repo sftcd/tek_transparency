@@ -76,24 +76,27 @@ do
     if [[ "$sdate" == "" ]]
     then
         echo "No sign of start date for $country"
+        sdate="2020-06-22"
     elif [[ "$sdate" == "-" ]]
     then
         echo "No sign of start date (-) for $country"
-    else
-        # linear plots
-        $TOP/plot-dailies.py -nt -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country.png $endstr
-        # log plot
-        $TOP/plot-dailies.py -ntl -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country-log.png $endstr
-        # abs log plot
-        $TOP/plot-dailies.py -antl -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-abs-log.png $endstr
-        # abs plot
-        $TOP/plot-dailies.py -ant -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-abs.png $endstr
-        convert $THEDIR/$country.png -resize 115x71 $THEDIR/$country-small.png
-        if [ -d $DOCROOT ]
-        then
-            cp $THEDIR/$country.png $THEDIR/$country-small.png $DOCROOT
-        fi
+        sdate="2020-06-22"
     fi
+
+    # linear plots
+    $TOP/plot-dailies.py -nt -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country.png $endstr
+    # log plot
+    $TOP/plot-dailies.py -ntl -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country-log.png $endstr
+    # abs log plot
+    $TOP/plot-dailies.py -antl -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-abs-log.png $endstr
+    # abs plot
+    $TOP/plot-dailies.py -ant -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-abs.png $endstr
+    convert $THEDIR/$country.png -resize 115x71 $THEDIR/$country-small.png
+    if [ -d $DOCROOT ]
+    then
+        cp $THEDIR/$country.png $THEDIR/$country-small.png $DOCROOT
+    fi
+
 done
 
 

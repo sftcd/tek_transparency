@@ -112,9 +112,14 @@ if __name__ == "__main__":
                     country_teksncases[country+'-cases']=[]
                 if not args.log:
                     country_teks[country].append(int(row[2]))
-                    country_cases[country].append(int(row[3]))
-                    country_teksncases[country+'-teks'].append(int(row[2]))
-                    country_teksncases[country+'-cases'].append(int(row[3]))
+                    if row[3]!='':
+                        country_cases[country].append(int(row[3]))
+                        country_teksncases[country+'-teks'].append(int(row[2]))
+                        country_teksncases[country+'-cases'].append(int(row[3]))
+                    else:
+                        country_cases[country].append(0)
+                        country_teksncases[country+'-teks'].append(int(row[2]))
+                        country_teksncases[country+'-cases'].append(0)
                 else:
                     ir2=int(row[2])
                     if ir2 > 0:
@@ -128,7 +133,10 @@ if __name__ == "__main__":
                     else:
                         country_teks[country].append(logmin)
                         country_teksncases[country+'-teks'].append(logmin)
-                    ir3=int(row[3])
+                    if row[3]!='':
+                        ir3=int(row[3])
+                    else:
+                        ir3=0
                     if ir3 > 0:
                         try:
                             country_cases[country].append(math.log(ir3))
