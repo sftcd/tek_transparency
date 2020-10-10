@@ -19,7 +19,7 @@ END=""
 
 function usage()
 {
-    echo "$0 [-cdhoOrsv] - plot daily upload esimates/cases"
+    echo "$0 [-hdefv] - plot daily upload esimates/cases"
     echo "  -h means print this"
     echo "  -d specifies the input directory (default: $THEDIR)"
     echo "  -e specifies the end date to use"
@@ -59,14 +59,27 @@ NOW=$(whenisitagain)
 
 echo "At $NOW: Running $0 $*"
 
+if [[ "$verbose" == "yes" ]]
+then
+    echo "Sorry, I'm not really that verbose;-)"
+fi
+
 endstr=""
 if [[ "$END" != "" ]]
 then
     endstr="-e $END"
 fi
 
+# check if THEFILE is abs name or rel
+thefile=$THEDIR/$THEFILE
+if [[ "${THEFILE:0:1}" == "/" ]]
+then
+    thefile=$THEFILE
+fi
+
+
 # and finally some pictures
-cdate_list=`$TOP/shortfalls.py -rn -t $THEDIR/$THEFILE -d $TOP/country-pops.csv | \
+cdate_list=`$TOP/shortfalls.py -rn -t $thefile -d $TOP/country-pops.csv | \
      awk -F, '{print $1$7}' | grep -v "}" | grep -v "{" | \
      sed -e 's/.*\[//' | sed -e "s/'//g" | sed -e 's/ /,/'`
 for cdate in $cdate_list
@@ -84,13 +97,13 @@ do
     fi
 
     # linear plots
-    $TOP/plot-dailies.py -nt -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country.png $endstr
+    $TOP/plot-dailies.py -nt -c $country -1 -i $thefile -s $sdate -o $THEDIR/$country.png $endstr
     # log plot
-    $TOP/plot-dailies.py -ntl -c $country -1 -i $THEDIR/$THEFILE -s $sdate -o $THEDIR/$country-log.png $endstr
+    $TOP/plot-dailies.py -ntl -c $country -1 -i $thefile -s $sdate -o $THEDIR/$country-log.png $endstr
     # abs log plot
-    $TOP/plot-dailies.py -antl -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-abs-log.png $endstr
+    $TOP/plot-dailies.py -antl -c $country -1 -i $thefile -s 2020-06-22 -o $THEDIR/$country-abs-log.png $endstr
     # abs plot
-    $TOP/plot-dailies.py -ant -c $country -1 -i $THEDIR/$THEFILE -s 2020-06-22 -o $THEDIR/$country-abs.png $endstr
+    $TOP/plot-dailies.py -ant -c $country -1 -i $thefile -s 2020-06-22 -o $THEDIR/$country-abs.png $endstr
     convert $THEDIR/$country.png -resize 115x71 $THEDIR/$country-small.png
     if [ -d $DOCROOT ]
     then

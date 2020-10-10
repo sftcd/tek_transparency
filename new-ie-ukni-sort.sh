@@ -39,6 +39,7 @@ maxfdate=0
 # build list of files newer than our outputs
 iflist=$CSVDIR/202*.csv
 oflist=""
+ofcount=0
 for f in $iflist
 do
     fdate=`stat -c %Y $f`
@@ -49,6 +50,7 @@ do
     if (( fdate >= early ))
     then
         oflist="$oflist $f"
+        ofcount=$((ofcount+1))
     fi
 done
 
@@ -60,13 +62,42 @@ then
     exit 0
 fi
 
-echo "Will search $oflist"
+echo "Will search $ofcount CSVs"
 
 # grep entire lines
 grep ",ie," $oflist >$tmpf1
 grep ",ukni," $oflist >>$tmpf1
 sort $tmpf1 >$tmpf2
 mv $tmpf2 $tmpf1
+
+# ditch any TEKs we've already assigned - can happen if
+# some manual messing with files or modification times
+somdels="False"
+if [ -f $IEF ]
+then
+    b4ie=`wc -l $tmpf1 | awk '{print $1}'`
+    grep -v -f $IEF $tmpf1 >$tmpf2
+    mv $tmpf2 $tmpf2
+    aftrie=`wc -l $tmpf1 | awk '{print $1}'`
+    somedels="True"
+fi
+if [ -f $UKNIF ]
+then
+    b4ukni=`wc -l $tmpf1 | awk '{print $1}'`
+    grep -v -f $UKNIF $tmpf1 >$tmpf2
+    mv $tmpf2 $tmpf2
+    aftrukni=`wc -l $tmpf1 | awk '{print $1}'`
+    somedels="True"
+fi
+if [[ "$somedels" != "False" ]]
+then
+    echo "Ditched some already-known TEKS:"
+    echo "\tWe started with $b4ie apparently new TEKs"
+    echo "\tThere were $((b4ie-aftrie)) already known in .ie out of $b4ie"
+    echo "\tThere were $((b4ukni-aftrukni)) already known in .ukni out of $b4ukni"
+    echo "\tWe ended with $aftrukni apparently new TEKs"
+fi
+
 # grep tek values
 cat $tmpf1 | awk -F, '{print $9}' | sort | uniq >$tmpf
 
