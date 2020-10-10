@@ -14,6 +14,12 @@ x=${TOP:="$HOME/code/tek_transparency"}
 TEK_COUNT="$TOP/tek_count.sh"
 CURL="/usr/bin/curl -s"
 
+function whenisitagain()
+{
+	date -u +%Y%m%d-%H%M%S
+}
+NOW=$(whenisitagain)
+
 
 . $TOP/country_list.sh
 
@@ -48,6 +54,9 @@ de10xtill=`date -d "2020-07-04" +%s`
 IETEKS="$DATADIR/iefirstteks"
 UKNITEKS="$DATADIR/uknifirstteks"
 
+# whether to do a full re-count or not
+dofull="False"
+
 if [[ "$REDUCE" == "yes" ]]
 then 
     if [[ ! -f $IETEKS || ! -f $UKNITEKS ]]
@@ -70,7 +79,7 @@ fi
 
 function usage()
 {
-    echo "$0 [-chiov] - test HPKE test vectors"
+    echo "$0 [-chiovF] - test HPKE test vectors"
     echo "  -c [country-list] specifies which countries to process (defailt: all)"
     echo "      provide the country list as a space separatead lsit of 2-letter codes"
     echo "      e.g. '-c \"$COUNTRY_LIST\"'"
@@ -78,12 +87,13 @@ function usage()
     echo "  -h means print this"
     echo "  -o specifies the output directory (default: $OUTDIR)"
     echo "  -r means to reduce TEK numbers calculated based on known oddities (default: "no" - report raw numbers)"
+    echo "  -F means to do a full count, not incremental"
     echo "  -v means be verbose"
     exit 99
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(/usr/bin/getopt -s bash -o c:d:ho:rv -l countries:,dir:,help,outdir:,reduce,verbose -- "$@")
+if ! options=$(/usr/bin/getopt -s bash -o Fc:d:ho:rv -l full,countries:,dir:,help,outdir:,reduce,verbose -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -98,6 +108,7 @@ do
         -h|--help) usage;;
         -o|--outdir) OUTDIR=$2; shift;;
         -r|--reduce) REDUCE="yes";; 
+        -F|--full) dofull="True";; 
         -v|--verbose) verbose="yes" ;;
         (--) shift; break;;
         (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
@@ -150,7 +161,6 @@ JHU_WORLD_CASES="$OUTDIR/jhu.csv"
 # we'll use it...
 WHO_WORLD_CASES="$OUTDIR/WHO-COVID-19-global-data.csv"
 
-
 # If not, we'll grab one that kinda works via curl 
 CASES_URL="https://opendata.ecdc.europa.eu/covid19/casedistribution/csv"
 # local copy - refreshed if > 1 day old
@@ -163,6 +173,8 @@ TARGET="tek-times.csv"
 T2="t2.tmp"
 T2p5="t2.5.tmp"
 T3="t3.tmp"
+T4="t4.tmp"
+T5="t5.tmp"
 
 # use a WHO file is it's fresh enough
 if [[ "$do_who" == "yes" ]]
@@ -266,12 +278,17 @@ fi
 
 for country in $COUNTRY_LIST
 do
+
+    # did I do all zips or just the last few weeks worth? If the
+    # latter I'll need to splice things together at the end so I
+    # need to remember that
+    dosplice="False"
+
     if [ -f $country-canary ]
     then
         echo "Skipping $country"
         continue
     fi
-    echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
     # upper case variant
     ucountry=${country^^}
     if [[ "$REDUCE" != "yes" ]]
@@ -279,7 +296,46 @@ do
         # be a bit quieter then:-)
         echo "Doing $country"
     fi
-    $TEK_COUNT $country-*.zip >$T2
+
+    # If a $country-$TARGET output exists already we'll only process 
+    # zips that post-date two weeks before the last date in that
+    # $country-$TARGET file
+    if [[ "$dofull" == "False" && -f $country-$TARGET ]]
+    then
+        ldatestr=`tail -1 $country-$TARGET | awk -F, '{print $2}'`
+        if [[ "$ldatestr" != "Date" ]]
+        then
+            # backup
+            dosplice="True"
+            mv $country-$TARGET $country-$TARGET-b4-$NOW 
+            echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
+            ldate=`date +%s -d $ldatestr`
+            sdate=$((ldate-(14*24*60*60)))
+            zipplist=""
+            zcount=0
+            skipcount=0
+            for zipf in $country-*.zip 
+            do
+                ztime=`stat -c %Y $zipf`
+            if (( ztime >= sdate ))
+                then
+                    ziplist="$ziplist $zipf"
+                    zcount=$((zcount+1))
+                else
+                    skipcount=$((skipcount+1))
+                fi
+            done
+            echo "Will do $zcount zips (skipping $skipcount) from $sdate (`date -d @$sdate`), which is two weeks before $ldatestr"
+            $TEK_COUNT $ziplist >$T2
+        else
+            # do the lot
+            echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
+            $TEK_COUNT $country-*.zip >$T2
+        fi
+    else
+        echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
+        $TEK_COUNT $country-*.zip >$T2
+    fi
 
     # TODO: figure out if this is correct or not! (Likely requires contact to .at)
     # experimental Austrian pruning - it seems that almost all TEKs from .at 
@@ -405,7 +461,7 @@ do
                 grep "^$country,$year-$month-$day" $JHU_WORLD_CASES | \
                     awk -F, '{print "'$country','$td','$cnt',"$4}' >>$OUTDIR/$country-$TARGET
             else
-                    echo "$country,$td,$cnt,0" >>$OUTDIR/$country-$TARGET
+                echo "$country,$td,$cnt,0" >>$OUTDIR/$country-$TARGET
             fi
         else
             echo "No idea what country count to use - exiting"
@@ -426,6 +482,17 @@ do
         then
         echo "$country,$td,$cnt," >>$OUTDIR/$country-$TARGET
         fi
+    fi
+
+    if [[ "$dosplice" == "True" ]]
+    then
+        # take the 14 last lines of new file and everything 
+        # earlier from old file
+        head -n -14 $country-$TARGET-b4-$NOW >$T4
+        cp $country-$TARGET $country-$TARGET-aftr-$NOW
+        tail -14 $country-$TARGET >$T5
+        cat $T4 $T5 >$country-$TARGET
+        rm -f $T4 $T5
     fi
 
 done
