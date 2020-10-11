@@ -186,7 +186,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
         inefficient. Recently, this page is being updated about 50 mins past the hour which could cause
         issues if that goes over 60 and the next download and count happens. I'll re-implement sometime
         but this should be ok for now - while some counts, e.g. of South Africa (.za being the 
-        last on the list) might reflect and hour later than those for Austria (.at, first on
+        last on the list) might reflect an hour later than those for Austria (.at, first on
         the list), that's ok, and we won't end up with loads of counting processes running on
         this quite ancient server:-).</li>
 
