@@ -2260,6 +2260,20 @@ fi
 
 ## now count 'em and push to web DocRoot
 
+# Now that we're hitting 0.5M or more TEKS per hour (i.e. downloading
+# that many - they aren't all new though), the counting stuff takes
+# more than 40 minutes. So rather than re-implement it now to be more
+# efficient, I'll just do the count every two hours rather than one.
+# We still collect data every hour (that takes <15 mins)
+
+hour=`date +%H`
+even=$((hour%2))
+if [[ "$even" == "0" ]]
+then
+    echo "Will only count TEKS on odd hours - it's now $hour"
+    exit 0
+fi
+
 echo "Counting 'em..."
 cd $ARCHIVE
 $TEK_TIMES -F

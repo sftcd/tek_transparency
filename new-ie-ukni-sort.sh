@@ -77,7 +77,7 @@ if [ -f $IEF ]
 then
     b4ie=`wc -l $tmpf1 | awk '{print $1}'`
     grep -v -f $IEF $tmpf1 >$tmpf2
-    mv $tmpf2 $tmpf2
+    mv $tmpf2 $tmpf1
     aftrie=`wc -l $tmpf1 | awk '{print $1}'`
     somedels="True"
 fi
@@ -85,7 +85,7 @@ if [ -f $UKNIF ]
 then
     b4ukni=`wc -l $tmpf1 | awk '{print $1}'`
     grep -v -f $UKNIF $tmpf1 >$tmpf2
-    mv $tmpf2 $tmpf2
+    mv $tmpf2 $tmpf1
     aftrukni=`wc -l $tmpf1 | awk '{print $1}'`
     somedels="True"
 fi

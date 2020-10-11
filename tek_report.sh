@@ -180,6 +180,15 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     <li>20201003: Turns out the California, New York and New Jersey apps also use the same source for TEKs</li>
     <li>20201003: Added Guam and Puerto Rico (the latter has no TEKs yet)</li>
     <li>20201009: Added Slovenia.</li>
+    <li>20201011: I changed the process so that we still download hourly, but only update this page
+        every two hours - we're seeing more than 0.5M TEKs per download (note: those are far from all
+        new ones) and the "counting" code is pretty
+        inefficient. Recently, this page is being updated about 50 mins past the hour which could cause
+        issues if that goes over 60 and the next download and count happens. I'll re-implement sometime
+        but this should be ok for now - while some counts, e.g. of South Africa (.za being the 
+        last on the list) might reflect and hour later than those for Austria (.at, first on
+        the list), that's ok, and we won't end up with loads of counting processes running on
+        this quite ancient server:-).</li>
 
 </ul>
 
