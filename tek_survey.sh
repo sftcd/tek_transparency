@@ -2262,7 +2262,7 @@ fi
 
 echo "Counting 'em..."
 cd $ARCHIVE
-$TEK_TIMES
+$TEK_TIMES -F
 if [ -d  $DOCROOT ]
 then
     cp *.csv $DOCROOT
