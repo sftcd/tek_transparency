@@ -70,6 +70,8 @@ def weekly_shortfall(country,thedir,dates,teks,cases,pop):
         print("weekly error:",str(e))
         return(None,0)
 
+    if expected==0:
+        return(None,0)
     wsf=100*short/expected
     print("shortfall",wsf,"expected",expected)
     return wsf,expected

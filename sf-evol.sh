@@ -23,13 +23,15 @@ x=${PNGFILE="shortfall-evol.png"}
 
 # default values for parameters
 verbose="no"
-START=`date +%s -d 2020-06-25T$RUNHOUR:00:00Z`
+START=`date +%s -d 2020-06-25T00:00:00Z`
 STARTGIVEN="no"
 END=`date +%s`
+AUCSTR=""
 
 function usage()
 {
-    echo "$0 [-cCehoOsv] - track evolution of shortfall"
+    echo "$0 [-acehiopsv] - track evolution of shortfall"
+    echo "  -a use daily/weekly counts where possible"
     echo "  -c [country-list] specifies which countries to process (defailt: all)"
     echo "      provide the country list as a space separatead lsit of 2-letter codes"
     echo "      e.g. '-c \"$COUNTRY_LIST\"'"
@@ -44,7 +46,7 @@ function usage()
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(/usr/bin/getopt -s bash -o c:e:hi:o:p:s:v -l countries:,end:,help,infile:,outfile:,pngfile:,start:,verbose -- "$@")
+if ! options=$(/usr/bin/getopt -s bash -o ac:e:hi:o:p:s:v -l actives,countries:,end:,help,infile:,outfile:,pngfile:,start:,verbose -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -54,6 +56,7 @@ eval set -- "$options"
 while [ $# -gt 0 ]
 do
     case "$1" in
+        -a|--actives) AUCSTR="-D $TOP/aucs ";;
         -c|--countries) COUNTRY_LIST=$2; shift;;
         -e|--end) END=$2; shift;;
         -h|--help) usage;;
@@ -153,7 +156,7 @@ do
     do
         sstr=`date +%Y-%m-%d -d @$sdtt`
         estr=`date +%Y-%m-%d -d @$((sdtt+WKSECS))`
-        sfo=`$TOP/shortfalls.py -c $country -t $INCSVFILE -d $TOP/country-pops.csv -rn -s $sstr -e $estr`
+        sfo=`$TOP/shortfalls.py -c $country -t $INCSVFILE -d $TOP/country-pops.csv -rn -s $sstr -e $estr $AUCSTR`
         sfr=`echo $sfo | awk -F, '{print $6}' | sed -e "s/'//g" | sed -e 's/ //g'`
         if [[ "$gotone" == "False" ]] 
         then
@@ -219,7 +222,7 @@ do
     do
         sstr=`date +%Y-%m-%d -d @$sdtt`
         estr=`date +%Y-%m-%d -d @$((sdtt+2*WKSECS))`
-        sfo=`$TOP/shortfalls.py -c $country -t $INCSVFILE -d $TOP/country-pops.csv -rn -s $sstr -e $estr`
+        sfo=`$TOP/shortfalls.py -c $country -t $INCSVFILE -d $TOP/country-pops.csv -rn -s $sstr -e $estr $AUCSTR`
         sfr=`echo $sfo | awk -F, '{print $6}' | sed -e "s/'//g" | sed -e 's/ //g'`
         if [[ "$gotone" == "False" ]] 
         then
@@ -278,7 +281,7 @@ do
     do
         sstr=`date +%Y-%m-%d -d @$sdtt`
         estr=`date +%Y-%m-%d -d @$((sdtt+WKSECS))`
-        sfo=`$TOP/shortfalls.py -c $country -t $INCSVFILE -d $TOP/country-pops.csv -rn -s $sdate -e $estr`
+        sfo=`$TOP/shortfalls.py -c $country -t $INCSVFILE -d $TOP/country-pops.csv -rn -s $sdate -e $estr $AUCSTR`
         sfr=`echo $sfo | awk -F, '{print $6}' | sed -e "s/'//g" | sed -e 's/ //g'`
         if [[ "$gotone" == "False" ]] 
         then
