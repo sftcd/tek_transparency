@@ -6,6 +6,74 @@ import sys,argparse,csv,math,statistics
 import datetime
 from dateutil import parser as dp
 
+# return the index of the nearest date
+# in the list
+def nearest_date(tocheck,thelist):
+    if tocheck<=thelist[0]:
+        return(0)
+    if tocheck>=thelist[-1]:
+        return(len(thelist)-1)
+    ind=0
+    for d in thelist:
+        if d>=tocheck:
+            ind=thelist.index(d)
+            break
+    above=thelist[ind]-tocheck
+    below=tocheck-thelist[ind-1]
+    if (above<below):
+        return(ind)
+    else:
+        return(ind-1)
+
+
+# for the given country, check if we have more
+# fine-grained active-user counts, and if so,
+# then calculate shortfall as the sum of the
+# weekly shortfalls; if the active user counts
+# aren't daily/weekly then we'll interpolate
+# if we don't have active user counts, we'll
+# return None
+def weekly_shortfall(country,thedir,dates,teks,cases,pop):
+    # we check in CWD for a file called <country>-actives.csv
+    # that should have lines like "2020-07-01,50122" meaning 
+    # there were 50122 active users on July 1 2020
+    aufname=country+"-actives.csv"
+    if thedir is not None:
+        aufname=thedir+"/"+aufname
+    try:
+        # we're just called once so load file and don't worry about
+        # caching
+        adates=[]
+        acounts=[]
+        with open(aufname) as csvfile: 
+            readCSV = csv.reader(csvfile, delimiter=',')
+            for row in readCSV:
+                rdate=dp.parse(row[0])
+                rcount=float(row[1])
+                adates.append(rdate)
+                acounts.append(rcount)
+        expected=0
+        short=0
+        nweeks=int(len(dates)/7)
+        for week in range(0,nweeks):
+            aind=nearest_date(dates[week*7],adates)
+            acount=acounts[aind]
+            csum=sum(cases[week*7:(week+1)*7])
+            tsum=sum(teks[week*7:(week+1)*7])
+            aper=acount/(pop*1000000)
+            wexpected=csum*aper
+            wshort=wexpected-tsum
+            #print(dates[week*7],tsum,csum,wexpected,wshort,aind,acount,aper)
+            expected+=wexpected
+            short+=wshort
+    except Exception as e:
+        print("weekly error:",str(e))
+        return(None,0)
+
+    wsf=100*short/expected
+    print("shortfall",wsf,"expected",expected)
+    return wsf,expected
+
 # mainline processing
 if __name__ == "__main__":
 
@@ -20,6 +88,9 @@ if __name__ == "__main__":
     parser.add_argument('-d','--downloads',     
                     dest='downloads',
                     help='CSV with country populations and download figures')
+    parser.add_argument('-D','--actives_dir',     
+                    dest='actives_dir',
+                    help='directory name where per-country active user count files can be found')
     parser.add_argument('-s','--start',     
                     dest='start',
                     help='start date')
@@ -150,9 +221,15 @@ if __name__ == "__main__":
                 dosf=False
 
         tline.append(str(casetot))
+        wsf=0.0
+        expected=0
         if dosf:
             cper=country_actives[country]/country_pops[country]
             shortfall=100-100*(tektot/(cper*casetot))
+            wsf,expected=weekly_shortfall(country,args.actives_dir,
+                            dates,country_teks[country],country_cases[country],country_pops[country])
+            if wsf is not None:
+                shortfall=wsf
             tline.append(str('%.1f' % shortfall))
         else:
             tline.append("-")
@@ -162,8 +239,9 @@ if __name__ == "__main__":
             tline.append("-")
         # expected
         if country_pops[country]!=0:
-            exp=casetot*country_actives[country]/country_pops[country]
-            tline.append(str(int(exp)))
+            if expected==0:
+                expected=casetot*country_actives[country]/country_pops[country]
+            tline.append(str(int(expected)))
         else:
             tline.append("-")
         table_lines.append(tline)
