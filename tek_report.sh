@@ -194,7 +194,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
 
 </p>
 
-<p>This file is updated every hour while we figure out the behaviour. This update is from $NOW UTC. If
+<p>This file is updated every two hours while we figure out the behaviour. This update is from $NOW UTC. If
 you manage one of these systems and would prefer we query less often please feel free to get in
 touch.</p> 
 
