@@ -37,6 +37,8 @@ def weekly_shortfall(country,thedir,dates,teks,cases,pop):
     # we check in CWD for a file called <country>-actives.csv
     # that should have lines like "2020-07-01,50122" meaning 
     # there were 50122 active users on July 1 2020
+    if thedir is None:
+        return(None,0)
     aufname=country+"-actives.csv"
     if thedir is not None:
         aufname=thedir+"/"+aufname
@@ -73,7 +75,7 @@ def weekly_shortfall(country,thedir,dates,teks,cases,pop):
     if expected==0:
         return(None,0)
     wsf=100*short/expected
-    print("shortfall",wsf,"expected",expected)
+    #print("shortfall",wsf,"expected",expected)
     return wsf,expected
 
 # mainline processing

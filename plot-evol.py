@@ -23,6 +23,9 @@ if __name__ == "__main__":
     parser.add_argument('-i','--input',     
                     dest='infile',
                     help='File name (wildcards supported) containing TEK CSVs')
+    parser.add_argument('-B','--BIG',     
+                    help='make plot labels BIGger',
+                    action='store_true')
     parser.add_argument('-o','--output_file',     
                     dest='outfile',
                     help='file for resulting plot')
@@ -58,11 +61,17 @@ if __name__ == "__main__":
 
     data = pd.read_csv(args.infile,header=0,parse_dates=True,names=["country","start","end","shortfall"])
     df = data.pivot(index='start', columns='country', values='shortfall')
+    df.fillna(method='ffill', inplace=True)
     if args.verbose:
         print(df)
     df.plot()
 
-    plt.tick_params(axis='x', labelrotation=20)
+    if args.BIG:
+        plt.tick_params(axis='x', which='major', labelsize=16, labelrotation=20)
+        plt.tick_params(axis='y', which='major', labelsize=16)
+        plt.tick_params(axis='both', which='minor', labelsize=16)
+    else:
+        plt.tick_params(axis='x', labelrotation=20)
     plt.xlabel("Date")
     plt.ylabel("Shortfall")
     plt.tight_layout()
@@ -79,7 +88,6 @@ if __name__ == "__main__":
     #ax.tick_params(axis='x', which='major', labelsize=24, labelrotation=20)
     #ax.tick_params(axis='y', which='major', labelsize=16)
     #ax.xaxis.label.set_size(24)
-    #ax.tick_params(axis='both', which='minor', labelsize=12)
     #dmintime=dates[0]
     #dmaxtime=dates[-1]
     if args.outfile is not None:
