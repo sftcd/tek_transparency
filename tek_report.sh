@@ -198,7 +198,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
 you manage one of these systems and would prefer we query less often please feel free to get in
 touch.</p> 
 
-<p>For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/transp.pdf">this</a>.</p>
+<p>For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/survey10.pdf">this</a>. (Please also use that report if referencing this data.)</p>
 
 EOF
 

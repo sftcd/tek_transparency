@@ -2,17 +2,32 @@
 
 # set -x
 
-# This is incomplete - will come back to it...
+# See how appearance of new TEKs is distributed, by hour
 
-# script to count each day's TEKs for each country/region
+# For a cronjob set HOME as needed in the crontab
+# and then the rest should be ok, but you can override
+# any of these you want
+x=${HOME:='/home/stephen'}
+x=${TOP:="$HOME/code/tek_transparency"}
+x=${DATADIR:="$HOME/code/tek_transparency"}
+x=${DAILIES:="$DATADIR/dailies4"}
 
-# Our definition of that day's TEKs is the number of TEKs
-# that were first seen on that day for that country/region
+TEK_DECODE="$TOP/tek_file_decode.py"
+TEK_TIMES="$TOP/tek_times.sh"
+TEK_REPORT="$TOP/tek_report.sh"
+DE_CFG_DECODE="$TOP/de_tek_cfg_decode.py"
 
-# We also note the hourly distribution of first seen TEKs
-# for each day and country/region
+CURL="/usr/bin/curl -s"
+UNZIP="/usr/bin/unzip"
 
-# The input here is a CSV produced by firstseen-v-epoch.py
+function whenisitagain()
+{
+	date -u +%Y%m%d-%H%M%S
+}
+NOW=$(whenisitagain)
+
+# The input here is the set of CSVs produced by dailycounter2.sh
+# which have one line per TEK per country and one file per run
 
 # The CSV columns are:
 #    country/tek,country,first-seen-time,epoch,hours-between
@@ -22,7 +37,7 @@
 # share teks so that gets us unique entries
 
 # countries to do by default, or just one if given on command line
-COUNTRY_LIST="ie ukni it de ch pl dk at lv es usva ca"
+. $TOP/country_list.sh
 
 function usage()
 {
@@ -30,22 +45,20 @@ function usage()
     echo "  -c [country-list] specifies which countries to process (defailt: all)"
     echo "      provide the country list as a space separatead lsit of 2-letter codes"
     echo "      e.g. '-c \"$COUNTRY_LIST\"'"
-    echo "  -e specifies the end time, in secs since UNIX epoch (default: now)"
+    echo "  -g provides a file glob (default: $GLOB)"
     echo "  -h means print this"
-    echo "  -i specifies the input file (defailt: teks.csv)"
-    echo "  -o specifies the output file (format: TBD)"
-    echo "  -s specifies the start time, in secs since UNIX epoch (default: 20200601-000000Z)"
+    echo "  -i specifies the input directory file (default: $DAILIES)"
+    echo "  -o specifies the output file"
     echo "  -v means be verbose"
     exit 99
 }
 # default values for parameters
 verbose="no"
-INFILE="teks.csv"
-START=`date +%s -d 2020-06-01T00:00:00Z`
-END=`date +%s`
+INDIR="$DAILIES"
+GLOB="202?????-??????.csv"
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(/usr/bin/getopt -s bash -o c:hi:o:v -l countries:,help,input:,output:,verbose -- "$@")
+if ! options=$(/usr/bin/getopt -s bash -o c:g:hi:o:v -l countries:,glob:,help,input:,output:,verbose -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -56,11 +69,10 @@ while [ $# -gt 0 ]
 do
     case "$1" in
         -c|--countries) COUNTRY_LIST=$2; shift;;
-        -e|--end) END=$2; shift;;
         -h|--help) usage;;
-        -i|--input) INFILE=$2; shift;;
+        -i|--input) INDIR=$2; shift;;
         -o|--output) OUTFILE=$2; shift;;
-        -s|--start) START=$2; shift;;
+        -g|--glob) GLOB=$2; shift;;
         -v|--verbose) verbose="yes" ;;
         (--) shift; break;;
         (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
@@ -69,27 +81,34 @@ do
     shift
 done
 
-function whenisitagain()
-{
-	date -u +%Y%m%d-%H%M%S
-}
-NOW=$(whenisitagain)
-
-START_STR=`date -d @$START`
-END_STR=`date -d @$END`
-
-HOURS="48"
-
-echo "Going to count daily TEKS from $START_STR ($START) to $END_STR ($END) in $COUNTRY_LIST"
+declare -A hours
 
 for country in $COUNTRY_LIST
 do
-    tmpf=`mktemp /tmp/dctekXXXX`
-    grep ",$country," $INFILE >$tmpf
-    ctot=`wc -l $tmpf | awk '{print $1}'`
-    cat $tmpf | awk -F, ' $5 < '$HOURS' ' >$tmpf.1
-    dtot=`wc -l $tmpf.1 | awk '{print $1}'`
-    echo "Doing $country: We have $ctot TEKS of which $dtot were seen < $HOURS hours after epoch"
-    # clear up
-    rm -f $tmpf $tmpf.1
+    echo "Doing $country"
+    occnt=0
+    for hour in {00..23}
+    do
+        hours[$hour]=0
+    done
+    for csv in $INDIR/$GLOB
+    do
+        ccnt=`grep -c ",$country," $csv`
+        newteks=$((ccnt-occnt))
+        occnt=$ccnt
+        tstr=`basename $csv .csv`
+        hour=${tstr:9:2}
+        oldtot=${hours[$hour]}
+        if [[ "$newteks" != "0" ]]
+        then
+            hours[$hour]=$((oldtot+1))
+        fi
+        #hours[$hour]=$((oldtot+newteks))
+        #echo "$country,$tstr,$newteks"
+    done
+    for hour in {00..23}
+    do
+        echo "$country,$hour,fake,${hours[$hour]}"
+    done
 done
+

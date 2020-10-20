@@ -20,6 +20,9 @@ if __name__ == "__main__":
 
     # command line arg handling 
     parser=argparse.ArgumentParser(description='Plot RSSIs for a set of experiments')
+    parser.add_argument('-c','--countries',     
+                    dest='countries',
+                    help='comma-separated list of country names to process')
     parser.add_argument('-i','--input',     
                     dest='infile',
                     help='File name (wildcards supported) containing TEK CSVs')
@@ -38,6 +41,9 @@ if __name__ == "__main__":
     parser.add_argument('-v','--verbose',     
                     help='additional output',
                     action='store_true')
+    parser.add_argument('-H','--hourly',     
+                    help='make legend for hourly plot',
+                    action='store_true')
     args=parser.parse_args()
 
     if args.infile is None:
@@ -46,6 +52,12 @@ if __name__ == "__main__":
     if args.verbose:
         if args.outfile is not None:
             print("Output will be in " + args.outfile)
+
+    sel_countries=[]
+    if args.countries is not None:
+        sel_countries=args.countries.split(",")
+        if args.verbose:
+            print(sel_countries)
 
     # figure limits of x-axis 
     # we depend on sorted input actually but no harm setting a limit
@@ -60,8 +72,15 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(1)
 
     data = pd.read_csv(args.infile,header=0,parse_dates=True,names=["country","start","end","shortfall"])
+    if args.verbose:
+        print(data)
+    if args.countries is not None:
+        data=data.loc[data['country'].isin(sel_countries)]
+        if args.verbose:
+            print(data)
     df = data.pivot(index='start', columns='country', values='shortfall')
     df.fillna(method='ffill', inplace=True)
+
     if args.verbose:
         print(df)
     df.plot()
@@ -74,7 +93,13 @@ if __name__ == "__main__":
         plt.tick_params(axis='x', labelrotation=20)
     plt.xlabel("Date")
     plt.ylabel("Shortfall")
-    plt.tight_layout()
+    if args.hourly:
+        plt.xlabel("Hour of the day")
+        plt.ylabel("Number of transitions")
+    #plt.tight_layout()
+
+    #plt.legend(loc='upper righ', fancybox=True, ncol=3)
+    plt.legend(bbox_to_anchor=(0, 1, 1, 0), loc="lower left", mode="expand", ncol=10)
 
     #ax.set_xticks(ax.get_xticks()[::2])
     #ax.set_xlim(mintime,maxtime)
