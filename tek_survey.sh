@@ -2093,7 +2093,9 @@ done
 
 echo "======================"
 echo ".NL TEKs"
-NL_BASE="https://productie.coronamelder-dist.nl/v1"
+# Change as per https://github.com/sftcd/tek_transparency/issues/16
+# NL_BASE="https://productie.coronamelder-dist.nl/v1"
+NL_BASE="https://productie.coronamelder-dist.nl/v2"
 rm -f content.bin content.sig export.bin export.sig
 $CURL -L "$NL_BASE/manifest" -o nl-mani.zip-but-dont-call-it-that
 $UNZIP -u nl-mani.zip-but-dont-call-it-that 2>/dev/null
@@ -2142,8 +2144,8 @@ else
 		else
 	    	echo "error downloading nl-$key.zip"
 		fi
-		# don't appear to be too keen:-)
-		sleep 1
+        # permission granted to be speedy:-)
+		# sleep 1
 	done
 	
 fi

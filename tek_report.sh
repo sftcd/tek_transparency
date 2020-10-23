@@ -189,6 +189,9 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
         last on the list) might reflect an hour later than those for Austria (.at, first on
         the list), that's ok, and we won't end up with loads of counting processes running on
         this quite ancient server:-).</li>
+    <li>20201020: Ireland, Germany and Italy are now sharing TEKS. I've not analysed that yet.</li>
+    <li>20201023: Dutch endpoint URL changed (thanks to @damaarten for 
+        <a href="https://github.com/sftcd/tek_transparency/issues/16">letting us know</a>.</li>
 
 </ul>
 
