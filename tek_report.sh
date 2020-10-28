@@ -192,6 +192,8 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
     <li>20201020: Ireland, Germany and Italy are now sharing TEKS. I've not analysed that yet.</li>
     <li>20201023: Dutch endpoint URL changed (thanks to @damaarten for 
         <a href="https://github.com/sftcd/tek_transparency/issues/16">letting us know</a>.</li>
+	<li>20201028: Overnight power outage. No runs between 20:00Z on the 27th 'till 10:00Z on 
+		the 28th. Should be back now.</li>
 
 </ul>
 
