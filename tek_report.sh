@@ -58,7 +58,7 @@ cat >>$TARGET <<EOF
 
 </ol>
 
-<p>As of 20201003, we see no keys from Hungary or Puerto Rico.</p>
+<p>As of 20201028, we still see no keys from Puerto Rico.</p>
 
 <p>We hope to expand the list of countries over
 time (help welcome!) as more public health authorities adopt the Google/Apple
@@ -194,6 +194,8 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
         <a href="https://github.com/sftcd/tek_transparency/issues/16">letting us know</a>.</li>
 	<li>20201028: Overnight power outage. No runs between 20:00Z on the 27th 'till 10:00Z on 
 		the 28th. Should be back now.</li>
+    <li>20201029: Just noticed we now have a few keys from Hungary, didn't yet go back and see when 
+        they first appeared.</li>
 
 </ul>
 
