@@ -196,6 +196,12 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
 		the 28th. Should be back now.</li>
     <li>20201029: Just noticed we now have a few keys from Hungary, didn't yet go back and see when 
         they first appeared.</li>
+    <li>20201106: Got a <a href="https://github.com/sftcd/tek_transparency/issues/19">report</a> of oddities for CZ on Oct 14th 2020.
+        Had to change from the epoch value from the zip file to the epoch for the midnight before due to some 
+        values that are not 00:00Z for that day. May have seen that before (not sure) but it
+        happened for sure for CZ on Oct 14 2020 where we had 7 odd epoch values.
+        I don't know if that's down to the CZ server or to the odd values being 
+        uploaded by handsets there.</li>
 
 </ul>
 

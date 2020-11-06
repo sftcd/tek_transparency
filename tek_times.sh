@@ -410,7 +410,13 @@ do
         mv $T2p5 $T2
     fi
 
-    grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
+    # Had to change the $1*600 below to ($1-$1%144)*600 below due to some epoch
+    # values that are not 00:00Z for that day. May have seen that before but it
+    # happened for sure for CZ on Oct 14 2020 where we had 7 odd epoch values.
+    # I don't know if that's down to the server or to the odd values being 
+    # uploaded by handsets there.
+    #grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
+    grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
     rm -f $T2
 
     cnt=''
