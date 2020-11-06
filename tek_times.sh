@@ -20,6 +20,10 @@ function whenisitagain()
 }
 NOW=$(whenisitagain)
 
+# Ensure that only one of these runs at a time...
+# This from https://unix.stackexchange.com/questions/48505/how-to-make-sure-only-one-instance-of-a-bash-script-runs
+# Check if another instance of script is running
+pidof -o %PPID -x $0 >/dev/null && echo "TEK_TIMES ERROR: Script $0 already running at $NOW" && exit 18
 
 . $TOP/country_list.sh
 

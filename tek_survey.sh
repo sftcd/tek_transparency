@@ -2279,6 +2279,12 @@ fi
 echo "Counting 'em..."
 cd $ARCHIVE
 $TEK_TIMES -F
+res=$?
+if [[ "$res" == "18" ]]
+then
+	echo "$TEK_TIMES exited as >1 running, so I'll also exit"
+	exit 0
+fi
 if [ -d  $DOCROOT ]
 then
     cp *.csv $DOCROOT
