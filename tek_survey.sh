@@ -126,6 +126,7 @@ else
                         then
                             echo "tek-decode error processing ie-$iebname"
                         fi
+						tm -f $tderr
 			        fi
 			        rm -f export.bin export.sig
 			        chunks_down=$((chunks_down+1))
