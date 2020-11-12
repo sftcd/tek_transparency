@@ -17,7 +17,10 @@ ARCHIVE="$TOP/all-zips"
 for zipf in *.zip
 do
 	bn=`basename $zipf`
-	if [ ! -f $ARCHIVE/$bn ]
+	if [ ! -s $zipf ]
+	then
+		echo "empty $bn"
+	elif [ ! -f $ARCHIVE/$bn ]
 	then
 		echo "will copy new $bn"
 		cp $zipf $ARCHIVE
@@ -25,5 +28,7 @@ do
 	then
 		echo "will copy bigger $bn"
 		cp $zipf $ARCHIVE
+	else
+		echo "nothing to do for $bn"
 	fi
 done
