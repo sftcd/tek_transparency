@@ -202,6 +202,10 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
         happened for sure for CZ on Oct 14 2020 where we had 7 odd epoch values.
         I don't know if that's down to the CZ server or to the odd values being 
         uploaded by handsets there.</li>
+    <li>20201119: Found a good 
+            <a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">link</a>
+            for the set of US states using the same server, should be useful when/if doing 
+            more analysis on those keys.</li>
 
 </ul>
 
