@@ -126,7 +126,7 @@ else
                         then
                             echo "tek-decode error processing ie-$iebname"
                         fi
-						tm -f $tderr
+						rm -f $tderr
 			        fi
 			        rm -f export.bin export.sig
 			        chunks_down=$((chunks_down+1))
@@ -1698,7 +1698,7 @@ else
 			        $UNZIP "ukgi-$gibname" >/dev/null 2>&1
 			        if [[ $? == 0 ]]
 			        then
-			            $TEK_DECODE
+			            $TEK_DECODE >/dev/null
 			            new_keys=$?
 			            total_keys=$((total_keys+new_keys))
 			        fi
