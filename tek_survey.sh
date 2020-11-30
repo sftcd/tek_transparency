@@ -2280,10 +2280,16 @@ fi
 echo "Counting 'em..."
 cd $ARCHIVE
 $TEK_TIMES -F
+# Try the last-14-days approach again see how long it takes
+# $TEK_TIMES 
 res=$?
 if [[ "$res" == "18" ]]
 then
 	echo "$TEK_TIMES exited as >1 running, so I'll also exit"
+	echo "Finished $0 at $END, got $chunks_down chunks, totalling $total_keys"
+	echo "======================"
+	echo "======================"
+	echo "======================"
 	exit 0
 fi
 if [ -d  $DOCROOT ]
