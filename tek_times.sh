@@ -174,11 +174,12 @@ ECDC_WORLD_CASES="$OUTDIR/world-cases.csv"
 TARGET="tek-times.csv"
 
 # some temp files
-T2="t2.tmp"
-T2p5="t2.5.tmp"
-T3="t3.tmp"
-T4="t4.tmp"
-T5="t5.tmp"
+T2="/tmp/t2.tmp"
+T2p5="/tmp/t2.5.tmp"
+T2p6="/tmp/t2.6.tmp"
+T3="/tmp/t3.tmp"
+T4="/tmp/t4.tmp"
+T5="/tmp/t5.tmp"
 
 # use a WHO file is it's fresh enough
 if [[ "$do_who" == "yes" ]]
@@ -240,7 +241,7 @@ then
         # the daily values
         for country in $COUNTRY_LIST
         do
-
+            targfile=$OUTDIR/$country-$TARGET
             if [[ "$country" == "ukenw" ]]
             then
                 # special case - we need to count England and Wales (and not Scotland/NI)
@@ -282,6 +283,7 @@ fi
 
 for country in $COUNTRY_LIST
 do
+    targfile=$OUTDIR/$country-$TARGET
 
     # did I do all zips or just the last few weeks worth? If the
     # latter I'll need to splice things together at the end so I
@@ -290,8 +292,8 @@ do
 
     if [ -f $country-canary ]
     then
-        echo "Skipping $country"
-        continue
+        echo "Normally Skipping $country"
+        #continue
     fi
     # upper case variant
     ucountry=${country^^}
@@ -301,18 +303,19 @@ do
         echo "Doing $country"
     fi
 
-    # If a $country-$TARGET output exists already we'll only process 
+
+    # If a targfile output exists already we'll only process 
     # zips that post-date two weeks before the last date in that
-    # $country-$TARGET file
-    if [[ "$dofull" == "False" && -f $country-$TARGET ]]
+    # targfile
+    if [[ "$dofull" == "False" && -f $targfile ]]
     then
-        ldatestr=`tail -1 $country-$TARGET | awk -F, '{print $2}'`
+        ldatestr=`tail -1 $targfile | awk -F, '{print $2}'`
         if [[ "$ldatestr" != "Date" ]]
         then
             # backup
             dosplice="True"
-            mv $country-$TARGET $country-$TARGET-b4-$NOW 
-            echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
+            mv $targfile $targfile-b4-$NOW 
+            echo "Country,Date,TEKs,Cases" $targfile
             ldate=`date +%s -d $ldatestr`
             sdate=$((ldate-(14*24*60*60)))
             zipplist=""
@@ -333,11 +336,11 @@ do
             $TEK_COUNT $ziplist >$T2
         else
             # do the lot
-            echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
+            echo "Country,Date,TEKs,Cases" >$targfile
             $TEK_COUNT $country-*.zip >$T2
         fi
     else
-        echo "Country,Date,TEKs,Cases" >$OUTDIR/$country-$TARGET
+        echo "Country,Date,TEKs,Cases" >$targfile
         $TEK_COUNT $country-*.zip >$T2
     fi
 
@@ -420,8 +423,12 @@ do
     # I don't know if that's down to the server or to the odd values being 
     # uploaded by handsets there.
     #grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
+    # This started to get verrrry slow for larger files
     grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
-    rm -f $T2
+    # So tried this...
+    # grep period $T2 | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' >$T2p6
+    # sort -n $T2p6 | uniq -c | awk '{print $1","$2}' >$T3
+    rm -f $T2 $T2p6
 
     cnt=''
     td=''
@@ -456,12 +463,12 @@ do
         then
             grep ",$ucountry," $WHO_WORLD_CASES | \
                 grep "^$year-$month-$day" | \
-                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$OUTDIR/$country-$TARGET
+                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$targfile
         elif [[ "$do_ecdc" == "yes" ]]
         then
             grep ",$ucountry," $ECDC_WORLD_CASES | \
                 grep ",$((10#$day)),$((10#$month)),$year" | \
-                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$OUTDIR/$country-$TARGET
+                awk -F, '{print "'$country','$td','$cnt',"$5}' >>$targfile
         elif [[ "$do_jhu" == "yes" ]]
         then
             # some dates can be missing or malformed in the JHU data for some countries/regions
@@ -469,9 +476,9 @@ do
             if [[ "$gotJHU" != 0 ]]
             then
                 grep "^$country,$year-$month-$day" $JHU_WORLD_CASES | \
-                    awk -F, '{print "'$country','$td','$cnt',"$4}' >>$OUTDIR/$country-$TARGET
+                    awk -F, '{print "'$country','$td','$cnt',"$4}' >>$targfile
             else
-                echo "$country,$td,$cnt,0" >>$OUTDIR/$country-$TARGET
+                echo "$country,$td,$cnt,0" >>$targfile
             fi
         else
             echo "No idea what country count to use - exiting"
@@ -487,10 +494,10 @@ do
 	# loop
     if [[ "$td" != "" ]]
     then
-        addedteks=`grep -c $td $OUTDIR/$country-$TARGET`
+        addedteks=`grep -c $td $targfile`
         if [[ "$addedteks" == "0" ]]
         then
-        echo "$country,$td,$cnt," >>$OUTDIR/$country-$TARGET
+        echo "$country,$td,$cnt," >>$targfile
         fi
     fi
 
@@ -498,10 +505,10 @@ do
     then
         # take the 14 last lines of new file and everything 
         # earlier from old file
-        head -n -14 $country-$TARGET-b4-$NOW >$T4
-        cp $country-$TARGET $country-$TARGET-aftr-$NOW
-        tail -14 $country-$TARGET >$T5
-        cat $T4 $T5 >$country-$TARGET
+        head -n -14 $targfile-b4-$NOW >$T4
+        cp $targfile $targfile-aftr-$NOW
+        tail -14 $targfile >$T5
+        cat $T4 $T5 >$targfile
         rm -f $T4 $T5
     fi
 
