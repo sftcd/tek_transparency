@@ -319,7 +319,7 @@ do
             echo "Country,Date,TEKs,Cases" >$targfile
             ldate=`date +%s -d $ldatestr`
             sdate=$((ldate-(14*24*60*60)))
-            zipplist=""
+            ziplist=""
             zcount=0
             skipcount=0
             for zipf in $country-*.zip 
