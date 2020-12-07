@@ -206,6 +206,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
             <a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">link</a>
             for the set of US states using the same server, should be useful when/if doing 
             more analysis on those keys.</li>
+    <li>20201207: Counting the TEKs is now taking hours, so I'll just do that twice a day for a bit.</li>
 
 </ul>
 

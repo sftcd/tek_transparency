@@ -333,15 +333,15 @@ do
                 fi
             done
             echo "Will do $zcount zips (skipping $skipcount) from $sdate (`date -d @$sdate`), which is two weeks before $ldatestr"
-            $TEK_COUNT $ziplist >$T2
+            $TEK_COUNT $ziplist | sort | uniq >$T2
         else
             # do the lot
             echo "Country,Date,TEKs,Cases" >$targfile
-            $TEK_COUNT $country-*.zip >$T2
+            $TEK_COUNT $country-*.zip | sort | uniq >$T2
         fi
     else
         echo "Country,Date,TEKs,Cases" >$targfile
-        $TEK_COUNT $country-*.zip >$T2
+        $TEK_COUNT $country-*.zip | sort | uniq >$T2
     fi
 
     # TODO: figure out if this is correct or not! (Likely requires contact to .at)
@@ -424,7 +424,8 @@ do
     # uploaded by handsets there.
     #grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
     # This started to get verrrry slow for larger files
-    grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
+    #grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
+    cat $T2 | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
     # So tried this...
     # grep period $T2 | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' >$T2p6
     # sort -n $T2p6 | uniq -c | awk '{print $1","$2}' >$T3

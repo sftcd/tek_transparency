@@ -114,22 +114,25 @@ else
 			            cp ie-$iebname $ARCHIVE
 			        fi
 			        # try unzip and decode
-			        $UNZIP "ie-$iebname" >/dev/null 2>&1
-			        if [[ $? == 0 ]]
-			        then
-                        tderr=`mktemp /tmp/tderrXXXX`
-			            $TEK_DECODE >/dev/null 2>$tderr 
-			            new_keys=$?
-			            total_keys=$((total_keys+new_keys))
-                        tderrsize=`stat -c%s $tderr`
-                        if [[ "$tderrsize" != '0' ]] 
+                    if [[ "$DODECODE" == "yes" ]]
+                    then
+                        $UNZIP "ie-$iebname" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
                         then
-                            echo "tek-decode error processing ie-$iebname"
+                            tderr=`mktemp /tmp/tderrXXXX`
+                            $TEK_DECODE >/dev/null 2>$tderr 
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                            tderrsize=`stat -c%s $tderr`
+                            if [[ "$tderrsize" != '0' ]] 
+                            then
+                                echo "tek-decode error processing ie-$iebname"
+                            fi
+                            rm -f $tderr
                         fi
-						rm -f $tderr
-			        fi
-			        rm -f export.bin export.sig
-			        chunks_down=$((chunks_down+1))
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
+                    fi
 			    else
 			        echo "Error decoding ie-$iebname"
 			    fi
@@ -220,15 +223,18 @@ else
 			            cp ukni-$nibname $ARCHIVE
 			        fi
 			        # try unzip and decode
-			        $UNZIP "ukni-$nibname" >/dev/null 2>&1
-			        if [[ $? == 0 ]]
-			        then
-			            $TEK_DECODE >/dev/null
-			            new_keys=$?
-			            total_keys=$((total_keys+new_keys))
-			        fi
-			        rm -f export.bin export.sig
-			        chunks_down=$((chunks_down+1))
+                    if [[ "$DODECODE" == "yes" ]]
+                    then
+                        $UNZIP "ukni-$nibname" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
+                        then
+                            $TEK_DECODE >/dev/null
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                        fi
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
+                    fi
 			    else
 			        echo "Error decoding ukni-$nibname"
 			    fi
@@ -265,14 +271,17 @@ do
             cp it-$chunk_no.zip $ARCHIVE
         fi
         # try unzip and decode
-        $UNZIP "it-$chunk_no.zip" >/dev/null 2>&1
-        if [[ $? == 0 ]]
+        if [[ "$DODECODE" == "yes" ]]
         then
-            $TEK_DECODE >/dev/null
-            new_keys=$?
-            total_keys=$((total_keys+new_keys))
+            $UNZIP "it-$chunk_no.zip" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
         fi
-        rm -f export.bin export.sig
     else
         echo "Error decoding it-$chunk_no.zip"
     fi
@@ -317,15 +326,18 @@ do
             cp de-$dedate.zip $ARCHIVE
         fi
         # try unzip and decode
-        $UNZIP "de-$dedate.zip" >/dev/null 2>&1
-        if [[ $? == 0 ]]
+        if [[ "$DODECODE" == "yes" ]]
         then
-            $TEK_DECODE >/dev/null
-            new_keys=$?
-            total_keys=$((total_keys+new_keys))
+            $UNZIP "de-$dedate.zip" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
         fi
-        rm -f export.bin export.sig
-        chunks_down=$((chunks_down+1))
     else
         echo "Error decoding de-$dedate.zip"
     fi
@@ -354,15 +366,18 @@ do
                 cp de-$dedate-$dehour.zip $ARCHIVE
             fi
             # try unzip and decode
-            $UNZIP "de-$dedate-$dehour.zip" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            if [[ "$DODECODE" == "yes" ]]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                $UNZIP "de-$dedate-$dehour.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
         else
             echo "Error decoding de-$dedate-$dehour.zip"
         fi
@@ -400,15 +415,18 @@ do
             cp de-$today-$dehour.zip $ARCHIVE
         fi
         # try unzip and decode
-        $UNZIP "de-$today-$dehour.zip" >/dev/null 2>&1
-        if [[ $? == 0 ]]
+        if [[ "$DODECODE" == "yes" ]]
         then
-            $TEK_DECODE >/dev/null
-            new_keys=$?
-            total_keys=$((total_keys+new_keys))
+            $UNZIP "de-$today-$dehour.zip" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
         fi
-        rm -f export.bin export.sig
-        chunks_down=$((chunks_down+1))
     else
         echo "Error decoding de-$today-$dehour.zip"
     fi
@@ -491,15 +509,18 @@ do
         		cp ch-$midnight.zip $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "ch-$midnight.zip" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-        			total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "ch-$midnight.zip" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+        			    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading ch-$midnight.zip (file $fno)"
@@ -547,15 +568,18 @@ do
         	    cp pl-$plzip $ARCHIVE
     	    fi
     	    # try unzip and decode
-    	    $UNZIP "pl-$plzip" >/dev/null 2>&1
-    	    if [[ $? == 0 ]]
-    	    then
-        	    $TEK_DECODE >/dev/null
-        	    new_keys=$?
-        	    total_keys=$((total_keys+new_keys))
-    	    fi
-    	    rm -f export.bin export.sig
-    	    chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    	        $UNZIP "pl-$plzip" >/dev/null 2>&1
+    	        if [[ $? == 0 ]]
+    	        then
+        	        $TEK_DECODE >/dev/null
+        	        new_keys=$?
+        	        total_keys=$((total_keys+new_keys))
+    	        fi
+    	        rm -f export.bin export.sig
+    	        chunks_down=$((chunks_down+1))
+            fi
 	    fi
     else
         echo "Error downloading pl-$plzip"
@@ -651,15 +675,18 @@ do
                     cp $the_local_zip_name $ARCHIVE
                 fi
                 # try unzip and decode
-                $UNZIP "$the_local_zip_name" >/dev/null 2>&1
-                if [[ $? == 0 ]]
+                if [[ "$DODECODE" == "yes" ]]
                 then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                        total_keys=$((total_keys+new_keys))
+                    $UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE >/dev/null
+                        new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
                 fi
-                rm -f export.bin export.sig
-    	        chunks_down=$((chunks_down+1))
             fi
         else
             echo "Didn't get a $the_zip_name" 
@@ -722,15 +749,18 @@ do
                 cp $the_local_zip_name $ARCHIVE
             fi
             # try unzip and decode
-            $UNZIP "$the_local_zip_name" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            if [[ "$DODECODE" == "yes" ]]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                $UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
         fi
     else
         echo "Didn't get a $the_zip_name" 
@@ -787,15 +817,18 @@ then
                         cp $the_local_zip_name $ARCHIVE
                     fi
                     # try unzip and decode
-                    $UNZIP "$the_local_zip_name" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
+                    if [[ "$DODECODE" == "yes" ]]
                     then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                        total_keys=$((total_keys+new_keys))
+                        $UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
+                        then
+                            $TEK_DECODE >/dev/null
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                        fi
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
                     fi
-                    rm -f export.bin export.sig
-                    chunks_down=$((chunks_down+1))
                 fi
             else
                 echo "Didn't get a $the_zip_name" 
@@ -857,16 +890,19 @@ do
         		cp es-$midnight.zip $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "es-$midnight.zip" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-        			total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
-		fi
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "es-$midnight.zip" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+        			    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+		    fi
+        fi
 	else
     	echo "curl - error downloading es-$midnight.zip (file $fno)"
 	fi
@@ -928,15 +964,18 @@ else
                 echo "A smaller or same $lpath already archived"
     		fi
             # try unzip and decode
-            $UNZIP "$lpath" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            if [[ "$DODECODE" == "yes" ]]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                $UNZIP "$lpath" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
         else
             echo "Failed to download $lpath"
             echo "Failed to download $lpath at $NOW" >$USVA_CANARY
@@ -1026,15 +1065,18 @@ do
                 echo "A smaller or same $lpath already archived"
     		fi
             # try unzip and decode
-            $UNZIP "$lpath" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            if [[ "$DODECODE" == "yes" ]]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                $UNZIP "$lpath" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
         else
             echo "Failed to download $lpath"
             echo "Failed to download $lpath at $NOW" >$CA_CANARY
@@ -1089,15 +1131,18 @@ else
                 echo "A smaller or same $lpath already archived"
     		fi
             # try unzip and decode
-            $UNZIP "$lpath" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            if [[ "$DODECODE" == "yes" ]]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                $UNZIP "$lpath" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
         else
             echo "Failed to download $lpath"
             echo "Failed to download $lpath at $NOW" >$USAL_CANARY
@@ -1141,15 +1186,18 @@ do
         		cp ee-$midnight.zip $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "ee-$midnight.zip" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-        			total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "ee-$midnight.zip" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+        			    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading ee-$midnight.zip (file $fno)"
@@ -1212,15 +1260,18 @@ then
                         cp fi-$batch.zip $ARCHIVE
                     fi
                     # try unzip and decode
-                    $UNZIP "fi-$batch.zip" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
+                    if [[ "$DODECODE" == "yes" ]]
                     then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                        total_keys=$((total_keys+new_keys))
+                        $UNZIP "fi-$batch.zip" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
+                        then
+                            $TEK_DECODE >/dev/null
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                        fi
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
                     fi
-                    rm -f export.bin export.sig
-                    chunks_down=$((chunks_down+1))
                 fi
             else
                 echo "curl - error downloading fi-$batch.zip (file $fno)"
@@ -1312,15 +1363,18 @@ else
                         cp uksc-$ukscname $ARCHIVE
                     fi
                     # try unzip and decode
-                    $UNZIP "uksc-$ukscname" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
+                    if [[ "$DODECODE" == "yes" ]]
                     then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                        total_keys=$((total_keys+new_keys))
+                        $UNZIP "uksc-$ukscname" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
+                        then
+                            $TEK_DECODE >/dev/null
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                        fi
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
                     fi
-                    rm -f export.bin export.sig
-                    chunks_down=$((chunks_down+1))
                 else
                     echo "Error decoding uksc-$ukscname"
                 fi
@@ -1403,15 +1457,18 @@ do
             cp usde-$usdename $ARCHIVE
         fi
         # try unzip and decode
-        $UNZIP "usde-$usdename" >/dev/null 2>&1
-        if [[ $? == 0 ]]
+        if [[ "$DODECODE" == "yes" ]]
         then
-            $TEK_DECODE >/dev/null
-            new_keys=$?
-            total_keys=$((total_keys+new_keys))
+            $UNZIP "usde-$usdename" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
         fi
-        rm -f export.bin export.sig
-        chunks_down=$((chunks_down+1))
     else
         echo "Error decoding usde-$usdename"
     fi
@@ -1452,15 +1509,18 @@ do
             cp usnv-$usnvname $ARCHIVE
         fi
         # try unzip and decode
-        $UNZIP "usnv-$usnvname" >/dev/null 2>&1
-        if [[ $? == 0 ]]
+        if [[ "$DODECODE" == "yes" ]]
         then
-            $TEK_DECODE >/dev/null
-            new_keys=$?
-            total_keys=$((total_keys+new_keys))
+            $UNZIP "usnv-$usnvname" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
         fi
-        rm -f export.bin export.sig
-        chunks_down=$((chunks_down+1))
     else
         echo "Error decoding usnv-$usnvname"
         echo "Error decoding usnv-$usnvname at $NOW" >$CANARY
@@ -1504,15 +1564,18 @@ do
             cp uswy-$uswyname $ARCHIVE
         fi
         # try unzip and decode
-        $UNZIP "uswy-$uswyname" >/dev/null 2>&1
-        if [[ $? == 0 ]]
+        if [[ "$DODECODE" == "yes" ]]
         then
-            $TEK_DECODE >/dev/null
-            new_keys=$?
-            total_keys=$((total_keys+new_keys))
+            $UNZIP "uswy-$uswyname" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
         fi
-        rm -f export.bin export.sig
-        chunks_down=$((chunks_down+1))
     else
         echo "Error decoding uswy-$uswyname"
     fi
@@ -1552,15 +1615,18 @@ do
             cp br-$brname $ARCHIVE
         fi
         # try unzip and decode
-        $UNZIP "br-$brname" >/dev/null 2>&1
-        if [[ $? == 0 ]]
+        if [[ "$DODECODE" == "yes" ]]
         then
-            $TEK_DECODE >/dev/null
-            new_keys=$?
-            total_keys=$((total_keys+new_keys))
+            $UNZIP "br-$brname" >/dev/null 2>&1
+            if [[ $? == 0 ]]
+            then
+                $TEK_DECODE >/dev/null
+                new_keys=$?
+                total_keys=$((total_keys+new_keys))
+            fi
+            rm -f export.bin export.sig
+            chunks_down=$((chunks_down+1))
         fi
-        rm -f export.bin export.sig
-        chunks_down=$((chunks_down+1))
     else
         echo "Error decoding br-$brname"
     fi
@@ -1610,15 +1676,18 @@ do
                 cp ukenw-$batch.zip $ARCHIVE
             fi
             # try unzip and decode
-            $UNZIP "ukenw-$batch.zip" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            if [[ "$DODECODE" == "yes" ]]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                $UNZIP "ukenw-$batch.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
         fi
     else
         echo "curl - error downloading ukenw-$batch.zip (file $fno)"
@@ -1695,15 +1764,18 @@ else
 			            cp ukgi-$gibname $ARCHIVE
 			        fi
 			        # try unzip and decode
-			        $UNZIP "ukgi-$gibname" >/dev/null 2>&1
-			        if [[ $? == 0 ]]
-			        then
-			            $TEK_DECODE >/dev/null
-			            new_keys=$?
-			            total_keys=$((total_keys+new_keys))
-			        fi
-			        rm -f export.bin export.sig
-			        chunks_down=$((chunks_down+1))
+                    if [[ "$DODECODE" == "yes" ]]
+                    then
+			            $UNZIP "ukgi-$gibname" >/dev/null 2>&1
+			            if [[ $? == 0 ]]
+			            then
+			                $TEK_DECODE >/dev/null
+			                new_keys=$?
+			                total_keys=$((total_keys+new_keys))
+			            fi
+			            rm -f export.bin export.sig
+			            chunks_down=$((chunks_down+1))
+                    fi
 			    else
 			        echo "Error decoding ukgi-$gibname"
 			    fi
@@ -1752,15 +1824,18 @@ do
         		cp mt-$midnight.zip $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "mt-$midnight.zip" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "mt-$midnight.zip" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading mt-$midnight.zip (file $fno)"
@@ -1809,15 +1884,18 @@ do
         		cp pt-$midnight.zip $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "pt-$midnight.zip" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "pt-$midnight.zip" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading pt-$midnight.zip (file $fno)"
@@ -1866,15 +1944,18 @@ do
         		cp ec-$midnight.zip $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "ec-$midnight.zip" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "ec-$midnight.zip" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading ec-$midnight.zip (file $fno)"
@@ -1923,15 +2004,18 @@ then
                         cp be-$batch.zip $ARCHIVE
                     fi
                     # try unzip and decode
-                    $UNZIP "be-$batch.zip" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
+                    if [[ "$DODECODE" == "yes" ]]
                     then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                        total_keys=$((total_keys+new_keys))
+                        $UNZIP "be-$batch.zip" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
+                        then
+                            $TEK_DECODE >/dev/null
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                        fi
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
                     fi
-                    rm -f export.bin export.sig
-                    chunks_down=$((chunks_down+1))
                 fi
             else
                 echo "curl - error downloading be-$batch.zip (file $fno)"
@@ -1973,15 +2057,18 @@ do
         		cp cz-$bfno $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "cz-$bfno" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "cz-$bfno" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading cz-$bfno"
@@ -2023,15 +2110,18 @@ do
         		cp za-$bfno $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "za-$bfno" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "za-$bfno" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading za-$bfno"
@@ -2073,15 +2163,18 @@ do
         		cp hu-$burl $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "hu-$burl" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "hu-$burl" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading hu-$burl"
@@ -2131,16 +2224,19 @@ else
 	        		cp nl-$key.zip $ARCHIVE
 	    		fi
 	    		# try unzip and decode
-	            rm -f content.bin content.sig export.bin export.sig
-	    		$UNZIP "nl-$key.zip" >/dev/null 2>&1
-	    		if [[ $? == 0 ]]
-	    		then
-	        		$TEK_DECODE >/dev/null
-	        		new_keys=$?
-	                total_keys=$((total_keys+new_keys))
-	    		fi
-	            rm -f content.bin content.sig export.bin export.sig
-	    		chunks_down=$((chunks_down+1))
+                if [[ "$DODECODE" == "yes" ]]
+                then
+	                rm -f content.bin content.sig export.bin export.sig
+	    		    $UNZIP "nl-$key.zip" >/dev/null 2>&1
+	    		    if [[ $? == 0 ]]
+	    		    then
+	        		    $TEK_DECODE >/dev/null
+	        		    new_keys=$?
+	                    total_keys=$((total_keys+new_keys))
+	    		    fi
+	                rm -f content.bin content.sig export.bin export.sig
+	    		    chunks_down=$((chunks_down+1))
+                fi
 			fi
 		else
 	    	echo "error downloading nl-$key.zip"
@@ -2184,15 +2280,18 @@ do
         		cp gu-$bfno $ARCHIVE
     		fi
     		# try unzip and decode
-    		$UNZIP "gu-$bfno" >/dev/null 2>&1
-    		if [[ $? == 0 ]]
-    		then
-        		$TEK_DECODE >/dev/null
-        		new_keys=$?
-                total_keys=$((total_keys+new_keys))
-    		fi
-    		rm -f export.bin export.sig
-    		chunks_down=$((chunks_down+1))
+            if [[ "$DODECODE" == "yes" ]]
+            then
+    		    $UNZIP "gu-$bfno" >/dev/null 2>&1
+    		    if [[ $? == 0 ]]
+    		    then
+        		    $TEK_DECODE >/dev/null
+        		    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+    		    fi
+    		    rm -f export.bin export.sig
+    		    chunks_down=$((chunks_down+1))
+            fi
 		fi
 	else
     	echo "curl - error downloading gu-$bfno"
@@ -2242,15 +2341,18 @@ then
                         cp si-$batch.zip $ARCHIVE
                     fi
                     # try unzip and decode
-                    $UNZIP "si-$batch.zip" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
+                    if [[ "$DODECODE" == "yes" ]]
                     then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                        total_keys=$((total_keys+new_keys))
+                        $UNZIP "si-$batch.zip" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
+                        then
+                            $TEK_DECODE >/dev/null
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                        fi
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
                     fi
-                    rm -f export.bin export.sig
-                    chunks_down=$((chunks_down+1))
                 fi
             else
                 echo "curl - error downloading si-$batch.zip (file $fno)"
@@ -2265,15 +2367,15 @@ fi
 
 # Now that we're hitting 0.5M or more TEKS per hour (i.e. downloading
 # that many - they aren't all new though), the counting stuff takes
-# more than 40 minutes. So rather than re-implement it now to be more
-# efficient, I'll just do the count every two hours rather than one.
+# hours. So rather than re-implement it now to be more
+# efficient, I'll just do the count twice a day for now.
 # We still collect data every hour (that takes <15 mins)
 
 hour=`date +%H`
-even=$((hour%2))
+even=$((hour%12))
 if [[ "$even" == "0" ]]
 then
-    echo "Will only count TEKS on odd hours - it's now $hour"
+    echo "Will only count TEKS at noon/midnight - it's now $hour"
     exit 0
 fi
 
