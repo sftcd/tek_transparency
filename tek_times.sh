@@ -315,7 +315,7 @@ do
             # backup
             dosplice="True"
             mv $targfile $targfile-b4-$NOW 
-            echo "Country,Date,TEKs,Cases" $targfile
+            echo "Country,Date,TEKs,Cases" >$targfile
             ldate=`date +%s -d $ldatestr`
             sdate=$((ldate-(14*24*60*60)))
             zipplist=""
@@ -324,7 +324,7 @@ do
             for zipf in $country-*.zip 
             do
                 ztime=`stat -c %Y $zipf`
-            if (( ztime >= sdate ))
+            	if (( ztime >= sdate ))
                 then
                     ziplist="$ziplist $zipf"
                     zcount=$((zcount+1))

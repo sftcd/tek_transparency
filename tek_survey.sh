@@ -2279,9 +2279,9 @@ fi
 
 echo "Counting 'em..."
 cd $ARCHIVE
-$TEK_TIMES -F
+#$TEK_TIMES -F
 # Try the last-14-days approach again see how long it takes
-# $TEK_TIMES 
+$TEK_TIMES 
 res=$?
 if [[ "$res" == "18" ]]
 then
