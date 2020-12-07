@@ -300,7 +300,8 @@ do
     if [[ "$REDUCE" != "yes" ]]
     then
         # be a bit quieter then:-)
-        echo "Doing $country"
+		NOW=$(whenisitagain)
+        echo "Doing $country at $NOW"
     fi
 
 
@@ -332,8 +333,15 @@ do
                     skipcount=$((skipcount+1))
                 fi
             done
-            echo "Will do $zcount zips (skipping $skipcount) from $sdate (`date -d @$sdate`), which is two weeks before $ldatestr"
-            $TEK_COUNT $ziplist | sort | uniq >$T2
+			if [[ "$ziplist" != "" ]]
+			then
+            	echo "Will do $zcount zips (skipping $skipcount) from $sdate (`date -d @$sdate`), which is two weeks before $ldatestr"
+            	$TEK_COUNT $ziplist | sort | uniq >$T2
+			else
+				# skip this one, nothing to do this time
+				echo "Skipping $country - nothing to do this time"
+				continue
+			fi
         else
             # do the lot
             echo "Country,Date,TEKs,Cases" >$targfile

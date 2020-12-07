@@ -27,10 +27,14 @@ then
 	zips=$@
 fi 
 
+zarr=( $zips )
+# echo to stderr 
+>&2 echo "Doing ${#zarr[@]} zips, first is ${zarr[0]}" >k
+
 total_keys=0
 for file in $zips
 do
-    echo -e "\tDoing $file"
+    2>&1 echo -e "\tDoing $file"
     rm -f export.bin export.sig content.sig content.bin
     # try unzip and decode
     timeout 120s unzip $file >/dev/null 2>&1
@@ -47,4 +51,4 @@ do
 done
 
 END=$(whenisitagain)
-echo "Finished at $END, got $total_keys (mod 256 - thanks to bash's 1 octet return)"
+2>&1 echo "Finished at $END, got $total_keys (mod 256 - thanks to bash's 1 octet return)"

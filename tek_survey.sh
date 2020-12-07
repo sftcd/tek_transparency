@@ -2373,7 +2373,7 @@ fi
 
 hour=`date +%H`
 even=$((hour%12))
-if [[ "$even" == "0" ]]
+if [[ "$even" != "0" ]]
 then
     echo "Will only count TEKS at noon/midnight - it's now $hour"
     exit 0
