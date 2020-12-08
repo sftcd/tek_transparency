@@ -29,7 +29,7 @@ fi
 
 zarr=( $zips )
 # echo to stderr 
->&2 echo "Doing ${#zarr[@]} zips, first is ${zarr[0]}" >k
+>&2 echo "Doing ${#zarr[@]} zips, first is ${zarr[0]}" 
 
 total_keys=0
 for file in $zips
