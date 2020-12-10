@@ -433,7 +433,7 @@ do
     #grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*$1}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
     # This started to get verrrry slow for larger files
     #grep period $T2 | sort | uniq | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
-    cat $T2 | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
+    grep period $T2 | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' | sort -n | uniq -c | awk '{print $1","$2}' >$T3
     # So tried this...
     # grep period $T2 | awk -F\' '{print $3}' | awk -F, '{print 600*($1-$1%144)}' >$T2p6
     # sort -n $T2p6 | uniq -c | awk '{print $1","$2}' >$T3
