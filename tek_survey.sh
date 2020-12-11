@@ -2362,6 +2362,32 @@ then
 fi
 
 
+# France
+# France isn't a GAEN app, but they do produce some configs and stats we can grab
+
+FR_BASE="https://app.stopcovid.gouv.fr"
+
+FR_PATHS=(
+    "infos/key-figures.json"
+    "maintenance/info-maintenance-v2.json"
+    "json/version-25//Attestations/form.json"
+    "json/version-25/config.json"
+    "json/version-25/InfoCenter/info-center.json"
+    "json/version-25/InfoCenter/info-center-lastupdate.json"
+    "json/version-25/InfoCenter/info-labels-en.json"
+    "json/version-25/InfoCenter/info-tags.json"
+    "json/version-25/Links/links-en.json"
+    "json/version-25/MoreKeyFigures/morekeyfigures-en.json"
+    "json/version-25/privacy-en.json"
+    "json/version-25/strings-en.json"
+    )
+
+
+for path in "${FR_PATHS[@]}"
+do
+    bn=`basename $path`
+    $CURL $FR_BASE/$path --output fr-$bn
+done
 
 ## now count 'em and push to web DocRoot
 
