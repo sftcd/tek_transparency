@@ -165,8 +165,10 @@ do
     if [ ! -f $ofile ]
     then
         # map from zips to csv
-        # TODO: we may still need to remove some .at batch files first
-        $TOP/teks2csv.py -R -i $run -o $ofile.allteks
+        for country in $COUNTRY_LIST
+        do
+            $TOP/teks2csv.py -R -i $run -o $ofile.allteks -a -p "$run/$country-"
+        done
         if [ -f $ofile.allteks ]
         then
             ntek=`wc -l $ofile.allteks | awk '{print $1}'`
