@@ -14,6 +14,18 @@ x=${TOP:="$HOME/code/tek_transparency"}
 TEK_COUNT="$TOP/tek_count.sh"
 CURL="/usr/bin/curl -s"
 
+# The sorts for some of these are getting too big for the space
+# left on the main disk, so I'm gonna try re-set TMPDIR to a
+# place where I have more space. Let's see if that works...
+
+export TMPDIR=/tmp
+export TMP=/tmp
+if [ -d /data1/tmp ]
+then
+	export TMPDIR=/data1/tmp
+	export TMP=/data1/tmp
+fi
+
 function whenisitagain()
 {
 	date -u +%Y%m%d-%H%M%S
@@ -174,12 +186,12 @@ ECDC_WORLD_CASES="$OUTDIR/world-cases.csv"
 TARGET="tek-times.csv"
 
 # some temp files
-T2="/tmp/t2.tmp"
-T2p5="/tmp/t2.5.tmp"
-T2p6="/tmp/t2.6.tmp"
-T3="/tmp/t3.tmp"
-T4="/tmp/t4.tmp"
-T5="/tmp/t5.tmp"
+T2="$TMPDIR/t2.tmp"
+T2p5="$TMPDIR/t2.5.tmp"
+T2p6="$TMPDIR/t2.6.tmp"
+T3="$TMPDIR/t3.tmp"
+T4="$TMPDIR/t4.tmp"
+T5="$TMPDIR/t5.tmp"
 
 # use a WHO file is it's fresh enough
 if [[ "$do_who" == "yes" ]]
