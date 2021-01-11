@@ -206,7 +206,12 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
             <a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">link</a>
             for the set of US states using the same server, should be useful when/if doing 
             more analysis on those keys.</li>
-    <li>20201207: Counting the TEKs is now taking hours, so I'll just do that twice a day for a bit.</li>
+    <li>20201207: Counting the TEKs is now taking hours, so I'll just do that twice a day for a bit. (Since
+            reduced further to 1/day on 20210110;-)</li>
+    <li>20210111: Tweaked UKSC index URL, as the 'limit' URL param setting needed a change due to a change
+        on the service side. Don't think I missed any TEKs there but some will appear to have arrived
+        'late' from the POV of my archives - that doesn't mean there was any issue with the actual
+        app for that region. </li>
 
 </ul>
 

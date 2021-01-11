@@ -1283,7 +1283,7 @@ fi
 # Scotland
 
 CANARY="$ARCHIVE/uksc-canary"
-UKSC_INDEX="https://api-scot-prod.nearform-covid-services.com/api/exposures/?since=0&limit=1"
+UKSC_INDEX="https://api-scot-prod.nearform-covid-services.com/api/exposures/?since=0&limit=1000"
 UKSC_BASE="https://api-scot-prod.nearform-covid-services.com/api/data"
 UKSC_REFRESH="https://api-scot-prod.nearform-covid-services.com/api/refresh"
 UKSC_CONFIG="https://api-scot-prod.nearform-covid-services.com/api/settings/exposures"
