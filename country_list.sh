@@ -15,6 +15,7 @@ declare -A COUNTRY_NAMES=(\
                ["es"]="Spain" \
                ["fi"]="Finland" \
                ["gu"]="Guam" \
+               ["hr"]="Croatia" \
                ["hu"]="Hungary" \
                ["ie"]="Ireland" \
                ["it"]="Italy" \

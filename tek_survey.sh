@@ -2389,6 +2389,45 @@ do
     $CURL $FR_BASE/$path --output fr-$bn
 done
 
+## Croatia
+
+HR_INDEX="https://en.apis-it.hr/submission/diagnosis-key-file-urls"
+
+echo "======================"
+echo ".hr TEKs"
+zips=`$CURL -L "$HR_INDEX" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+echo "HR index at $NOW: $zips"
+for fname in $zips
+do
+    bfname=`basename $fname`
+	echo "Getting .hr url $fname into hr-$bfname" 
+	$CURL -L "$fname" --output hr-$bfname
+	if [[ $? == 0 ]]
+	then
+		if [ ! -s hr-$bfname ]
+		then
+			echo "Empty or non-existent downloaded Croatian file: hr-$bfname"
+		else
+    		if [ ! -f $ARCHIVE/hr-$bfname ]
+    		then
+				echo "New .hr file hr-$bfname" 
+        		cp hr-$bfname $ARCHIVE
+			elif ((`stat -c%s "hr-$bfname"`>`stat -c%s "$ARCHIVE/hr-$bfname"`));then
+				# if the new one is bigger than archived, then archive new one
+				echo "Updated/bigger .hr file hr-$bfname" 
+        		cp hr-$bfname $ARCHIVE
+    		fi
+		fi
+	else
+    	echo "curl - error downloading hr-$bfname"
+	fi
+	# don't appear to be too keen:-)
+	sleep 1
+done
+
+
+
+
 ## now count 'em and push to web DocRoot
 
 # Now that we're hitting 0.5M or more TEKS per hour (i.e. downloading

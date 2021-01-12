@@ -212,6 +212,7 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
         on the service side. Don't think I missed any TEKs there but some will appear to have arrived
         'late' from the POV of my archives - that doesn't mean there was any issue with the actual
         app for that region. </li>
+    <li>20210112: Added Croatia (though they're not showing any TEKs as of now)</li>
 
 </ul>
 
