@@ -213,6 +213,10 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
         'late' from the POV of my archives - that doesn't mean there was any issue with the actual
         app for that region. </li>
     <li>20210112: Added Croatia (though they're not showing any TEKs as of now)</li>
+	<li>20210113: Added URL param (so a 2nd URL we query for zips) so we also grab Croatian server's idea of EU shared keys, not sure if those 
+		zips also include or exclude local (.hr) keys or only contain keys from EU members. Still no sign of definitely local (.hr) TEKs. The
+		same issue seems to apply to Hungary (since 20201220, we haven't seen any .hu TEKs but adding the "?all=true" URL param results in
+		getting a bunch of new zips (similarly named to .hr ones) that presumably (also?) contain EU TEKs.</li>
 
 </ul>
 

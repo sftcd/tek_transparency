@@ -2133,12 +2133,14 @@ done
 # Hungary
 
 HU_BASE="https://en.apis-it.hr/submission/diagnosis-key-file-urls"
+HU_BASE_EU="https://en.apis-it.hr/submission/diagnosis-key-file-urls?all=true"
 
 echo "======================"
 echo ".HU TEKs"
 hu_urls=`$CURL -L "$HU_BASE" | json_pp | grep https | sed -e 's/"//g' | sed -e 's/,//g'`
-echo "HU URLs at $NOW: $hu_urls"
-for url in $hu_urls
+hu_urls_eu=`$CURL -L "$HU_BASE_EU" | json_pp | grep https | sed -e 's/"//g' | sed -e 's/,//g'`
+echo "HU URLs at $NOW: $hu_urls $hu_urls_eu"
+for url in $hu_urls $hu_urls_eu
 do
 	echo "Doing .hu file $url" 
     burl=`basename $url`
@@ -2392,12 +2394,14 @@ done
 ## Croatia
 
 HR_INDEX="https://en.apis-it.hr/submission/diagnosis-key-file-urls"
+HR_INDEX_EU="https://en.apis-it.hr/submission/diagnosis-key-file-urls?all=true"
 
 echo "======================"
 echo ".hr TEKs"
 zips=`$CURL -L "$HR_INDEX" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
-echo "HR index at $NOW: $zips"
-for fname in $zips
+zips_eu=`$CURL -L "$HR_INDEX_EU" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+echo "HR index at $NOW: $zips $zips_eu"
+for fname in $zips $zips_eu
 do
     bfname=`basename $fname`
 	echo "Getting .hr url $fname into hr-$bfname" 
