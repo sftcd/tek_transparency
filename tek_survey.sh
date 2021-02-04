@@ -1476,6 +1476,10 @@ done
 
 # Nevada
 
+# 20210204: looks like this has migrated to US national server
+# TODO: update the output page to reflect which US states do the same, there's a map at:
+# https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx
+
 USNV_INDEX="https://exposure-notification-export-cpmxr.storage.googleapis.com/exposure-keys/index.txt"
 USNV_BASE="https://exposure-notification-export-cpmxr.storage.googleapis.com"
 USNV_CONFIG="https://static.nvcovidtrace.com/remote.json"
