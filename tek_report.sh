@@ -217,6 +217,10 @@ for multiple days. I've collated the set of one-off TEKs and so now scan for tho
 		zips also include or exclude local (.hr) keys or only contain keys from EU members. Still no sign of definitely local (.hr) TEKs. The
 		same issue seems to apply to Hungary (since 20201220, we haven't seen any .hu TEKs but adding the "?all=true" URL param results in
 		getting a bunch of new zips (similarly named to .hr ones) that presumably (also?) contain EU TEKs.</li>
+	<li>20210222: Some college-wide transient n/w outages reported today. I
+also saw some sockets hanging in TIME_WAIT state on the measurement machine so
+counts could be affected, not sure. Apparently a fix was put in place before or
+around noon UTC.</li>
     <li>20210525: The Irish Health Services Executive (HSE) suffered a major
 ransomware attack on May 14th and so stopped a lot of data reporting to 
 (reasonably) concentrate on getting core services back up and running. That's 
