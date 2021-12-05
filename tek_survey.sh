@@ -2452,6 +2452,9 @@ then
     exit 0
 fi
 
+echo "Not Counting 'em..."
+exit 0
+
 echo "Counting 'em..."
 cd $ARCHIVE
 $TEK_TIMES -F
