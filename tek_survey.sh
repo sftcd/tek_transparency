@@ -1597,11 +1597,12 @@ CANARY="$ARCHIVE/br-canary"
 echo "======================"
 echo "Brazil TEKs"
 
+bad_brazil="no"
 index_str=`$CURL -s -L "$BR_INDEX"` 
 if [[ $? != 0 ]]
 then
     echo "Error getting index string: $index_str ($?)"
-    exit 1
+    index_str=""
 fi
 echo "Brazil index string: $index_str"
 for brfile in $index_str
