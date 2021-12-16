@@ -10,7 +10,7 @@
 x=${HOME:='/home/stephen'}
 x=${DOCROOT:='/var/www/tact/tek-counts/'}
 x=${TOP:="$HOME/code/tek_transparency"}
-x=${DATADIR:="$TOP"}
+x=${DATADIR:="$TOP/data"}
 x=${ARCHIVE:="$DATADIR/all-zips"}
 x=${DAILIES:="$DATADIR/dailies"}
 x=${DAILIES2:="$DATADIR/dailies2"}
@@ -2452,9 +2452,6 @@ then
     echo "Will only count TEKS at noon/midnight - it's now $hour"
     exit 0
 fi
-
-echo "Not Counting 'em..."
-exit 0
 
 echo "Counting 'em..."
 cd $ARCHIVE

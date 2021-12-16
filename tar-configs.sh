@@ -7,7 +7,7 @@
 
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
-x=${DATADIR:="$HOME/data/teks/tek_transparency"}
+x=${DATADIR:="$HOME/data/teks/tek_transparency/data"}
 
 COUNTRY="ie"
 OUTFILE="$COUNTRY-configs.tgz"

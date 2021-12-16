@@ -9,7 +9,7 @@
 # any of these you want
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
-x=${DATADIR:="$HOME/code/tek_transparency"}
+x=${DATADIR:="$HOME/code/tek_transparency/data"}
 x=${DAILIES:="$DATADIR/dailies4"}
 
 TEK_DECODE="$TOP/tek_file_decode.py"

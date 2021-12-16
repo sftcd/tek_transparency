@@ -4,7 +4,7 @@
 
 # set -x
 
-x=${DATADIR:="$HOME/data/teks/tek_transparency"}
+x=${DATADIR:="$HOME/data/teks/tek_transparency/data"}
 
 lastrun=`ls -d $DATADIR/202* | tail -1`
 

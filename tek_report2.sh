@@ -11,7 +11,7 @@
 x=${HOME:='/home/stephen'}
 x=${DOCROOT:='/var/www/tact/tek-counts/'}
 x=${TOP:="$HOME/code/tek_transparency"}
-x=${DATADIR:="$TOP"}
+x=${DATADIR:="$TOP/data"}
 x=${ARCHIVE:="$DATADIR/all-zips"}
 x=${DAILYDIR:="$TOP/dailies2"}
 

@@ -7,7 +7,7 @@
 x=${HOME:='/home/stephen'}
 x=${DOCROOT:='/var/www/tact/tek-counts/'}
 x=${TOP:="$HOME/code/tek_transparency"}
-x=${DATADIR:="$HOME/data/teks/tek_transparency"}
+x=${DATADIR:="$HOME/data/teks/tek_transparency/data"}
 
 # find our list of files
 

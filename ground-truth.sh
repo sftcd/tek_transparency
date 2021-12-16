@@ -9,7 +9,7 @@
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${JHU_TOP:="$HOME/code/covid/jhu/COVID-19"}
-x=${DATADIR="$HOME/code/tek_transparency"}
+x=${DATADIR="$HOME/code/tek_transparency/data"}
 x=${DAILIES="$HOME/code/tek_transparency/dailies2"}
 # Swiss
 

@@ -8,7 +8,7 @@
 x=${HOME:='/home/stephen'}
 x=${DOCROOT:='/var/www/tact/tek-counts/'}
 x=${TOP:="$HOME/code/tek_transparency"}
-x=${DATADIR:="$TOP"}
+x=${DATADIR:="$TOP/data"}
 x=${ARCHIVE:="$DATADIR/all-zips"}
 
 TARGET_DIR="$DOCROOT"
@@ -225,6 +225,11 @@ around noon UTC.</li>
 ransomware attack on May 14th and so stopped a lot of data reporting to 
 (reasonably) concentrate on getting core services back up and running. That's 
 still ongoing.</li>
+    <li>20211216: I updated the h/w for this server and have just finished 
+migrating to the new h/w. Seems like things work still (mostly) and given
+this box has 16X the RAM of the last one, it may be fun to play about some
+more with TEKs. That said, some of the URLs from which we're reading may
+have changed since we started so I'll need to check that out.</li>
 
 </ul>
 
@@ -241,7 +246,7 @@ EOF
 # Check for canaries, these get dropped if bad happens
 for canary in $ARCHIVE/*-canary
 do
-    cat $ARCHIVE/$canary >>$TARGET
+    cat $canary >>$TARGET
 done
 
 # table of tables with 1 row only 

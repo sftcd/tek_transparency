@@ -10,7 +10,7 @@
 # updated as would've happened had tek_survey.sh gotten these zips
 # as usual
 
-x=${TOP:="$HOME/code/tek_transparency"}
+x=${TOP:="$HOME/code/tek_transparency/data"}
 
 ARCHIVE="$TOP/all-zips"
 

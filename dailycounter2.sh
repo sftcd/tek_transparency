@@ -7,7 +7,7 @@
 x=${HOME:='/home/stephen'}
 x=${TOP:="$HOME/code/tek_transparency"}
 x=${JHU_TOP:="$HOME/code/covid/jhu/COVID-19"}
-x=${DATADIR="$HOME/data/teks/tek_transparency"}
+x=${DATADIR="$HOME/data/teks/tek_transparency/data"}
 x=${OUTDIR="`/bin/pwd`"}
 x=${DOCROOT:='/var/www/tact/tek-counts/'}
 

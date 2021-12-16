@@ -2,3 +2,4 @@ all-zips/
 2020*
 __pycache__/
 scratch/
+data/
