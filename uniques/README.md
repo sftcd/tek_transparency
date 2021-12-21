@@ -47,13 +47,14 @@ We calculate occurrence frequencies using:
 
 And then we use libreoffice to get ``freqs.ods`` with this 
 [plot of occurrence frequencies](tek-occurrence-count.png).
+More analysis along those lines is probably better later as 
+this isn't really realted to key bit randomness, but is more
+related to how the GAEN services replicate the same TEKs and
+inject fake TEKs..
 
 We can't of course check that our set of 33.85M TEKS are "random"
-but we can do some checks for non-randomness. Note that these tools
-are really intended to check the output of an RNG, whereas we're
-testing the outputs from many phones that have each only contributed
-a few (14 or less) TEKs (plus the generation of "fake" TEKs that are 
-added by various services totalling a few million).
+but we can do some checks for non-randomness. 
+Firstly, we can do some home-grown checks...
 
 - [aeskeys.py](aeskeys.py) is a python script that plots sets of TEKs
   on a Hilbert curve to allow one to eyeball potentially 
@@ -61,6 +62,18 @@ added by various services totalling a few million).
   points and generate a [heatmap](heatmap.png), and also with an option
   to replace the TEKs with new random data of the same form
   for visual comparison. No visible non-randomness was seen.
+
+- [bitcounts.py](bitounts.py) counts the number of ones in each
+  key and the number of occurrences of ones in each key bit 
+  position. A normalised output for our TEKs is [here](bitcounts.png)
+  and also has no indication of non-randomness.
+
+We can also use some existing RNG output checkers.
+Note that these tools
+are really intended to check the output of an RNG, whereas we're
+testing the outputs from many phones that have each only contributed
+a few (14 or less) TEKs (plus the generation of "fake" TEKs that are 
+added by various services totalling a few million).
 
 - ``ent`` from [http://www.fourmilab.ch/random/](http://www.fourmilab.ch/random/)
   does 5 tests, with seemingly ok results (the chi-squared one might be 
