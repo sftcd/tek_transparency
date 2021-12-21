@@ -65,8 +65,9 @@ Firstly, we can do some home-grown checks...
 
 - [bitcounts.py](bitounts.py) counts the number of ones in each
   key and the number of occurrences of ones in each key bit 
-  position. A normalised output for our TEKs is [here](bitcounts.png)
-  and also has no indication of non-randomness.
+  position. The output for our TEKs is [here](bitcounts.png),
+  with the positional bit counts normalised to half-height.
+  That also has no indication of non-randomness.
 
 We can also use some existing RNG output checkers.
 Note that these tools
