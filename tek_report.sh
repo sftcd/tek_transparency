@@ -230,6 +230,8 @@ migrating to the new h/w. Seems like things work still (mostly) and given
 this box has 16X the RAM of the last one, it may be fun to play about some
 more with TEKs. That said, some of the URLs from which we're reading may
 have changed since we started so I'll need to check that out.</li>
+    <li>20220104: had to change a script constant to cover 2022 as well as 2020 and
+2021. Never did think it'd last that long when we started;-( </li>
 
 </ul>
 
