@@ -43,26 +43,56 @@ vlink="#000080" alink="#FF0000">
 <h1>Testing Apps for COVID-19 Tracing (TACT) - TEK Survey </h1>
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
-that are visible on the Internet, to allow for comparisons for each day, for
-these regions running GAEN apps:
+that are visible on the Internet, to allow for comparisons for each day. 
+Now that these services are being turned off, we note the last time we
+saw new key files published for each service. 
+Those are coloured <strong><span style="color:red";">Red</span></strong>
+if we haven't seen any new keys for more than 24 hours, 
+<strong><span style="bold;color:green;">Green</span></strong> if we have:
 </p>  
 <ol> 
+<strong>
 EOF
 
+# time_t for now
+stillworking=0
+turnedoff=0
+nowtimet=`date +%s`
+redstr=' style="color:Red;"'
+greenstr=' style="color:Green;"'
 for country in $COUNTRY_LIST
 do
-    echo "<li>${COUNTRY_NAMES[$country]}</li>" >>$TARGET
+    colstr=$redstr
+    lastzip=`ls -rt data/all-zips/$country-*.zip | tail -1`
+    if [[ "$lastzip" != "" ]]
+    then
+        lasttime=`stat -c %Z $lastzip`
+        lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
+        if (( (nowtimet-lasttime)<(24*60*60) ))
+        then
+            colstr=$greenstr
+            stillworking=$(( stillworking+1 ))
+        else
+            turnedoff=$(( turnedoff+1 ))
+        fi
+    else
+        lastkeys="never"
+        turnedoff=$(( turnedoff+1 ))
+    fi
+    echo "<li $colstr>${COUNTRY_NAMES[$country]}, last keys seen at: $lastkeys</li>" >>$TARGET
 done
 
 cat >>$TARGET <<EOF
 
+</strong>
 </ol>
 
-<p>As of 20201028, we still see no keys from Puerto Rico.</p>
+<p>That's a total of $stillworking still seemingly working and
+$turnedoff apparently turned off.</p>
 
-<p>We hope to expand the list of countries over
-time (help welcome!) as more public health authorities adopt the Google/Apple
-Exposure Notification (GAEN) API (if they do!). The code that produces this is
+<p>Starting in mid-2020 we expanded the list of countries over
+time as more public health authorities adopted the Google/Apple
+Exposure Notification (GAEN) API. The code that produces this is
 <a href="https://github.com/sftcd/tek_transparency/">here</a>.  This is
 produced as part of our <a href="https://down.dsg.cs.tcd.ie/tact/">TACT</a>
 project.</p>
@@ -232,6 +262,8 @@ more with TEKs. That said, some of the URLs from which we're reading may
 have changed since we started so I'll need to check that out.</li>
     <li>20220104: had to change a script constant to cover 2022 as well as 2020 and
 2021. Never did think it'd last that long when we started;-( </li>
+    <li>20220403: a lot of the services (incl. Ireland) seem to be turning off now (finally;-) Changed the header here
+to reflect that.</li>
 
 </ul>
 

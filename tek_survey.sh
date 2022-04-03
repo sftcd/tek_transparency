@@ -622,10 +622,17 @@ then
     # my guess is I might notice this easier than the
     # absence of the config file
     echo "Failed to get DK config - curl returned $dkcfg_res"
+    # we only do the zip files if the above worked - in fact they've
+    # turned this one off now (20220403)
 fi
 
 echo "======================"
 echo ".dk TEKs"
+
+if [ ! -f dk-cfg.json ]
+then
+    echo "No sign of dk-cfg so won't go for TEKs - seems to time out"
+else
 
 # For DK, we grab $DK_Base/<date>.0.zip and there's an HTTP header
 # ("FinalForTheDay: False") in the response to us if we still need 
@@ -703,6 +710,8 @@ do
 
     done    
 done
+
+fi
 echo "======================"
 
 echo "======================"
