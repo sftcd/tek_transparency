@@ -88,7 +88,9 @@ cat >>$TARGET <<EOF
 </ol>
 
 <p>That's a total of $stillworking still seemingly working and
-$turnedoff apparently turned off.</p>
+$turnedoff apparently turned off. (That said, Portugal is counted
+here as "working" even though they've basically posted one key
+per day since March 2021, so one could quiblle on that one.)</p>
 
 <p>Starting in mid-2020 we expanded the list of countries over
 time as more public health authorities adopted the Google/Apple

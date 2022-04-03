@@ -8,8 +8,7 @@ SRCDIR=$HOME/code/tek_transparency/
 DATADIR=$SRCDIR/data
 ARCHDIR=$SRCDIR/data/all-zips
 
-# just do 2020 to start - as I have a 2nd backup of those
-for hdir in $DATADIR/2020*
+for hdir in $DATADIR/2021*
 do
     bsize=`du -sh $hdir`
     echo "De-duping $hdir - started at $bsize"
