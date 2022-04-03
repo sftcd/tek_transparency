@@ -25,7 +25,7 @@ UNZIP="/usr/bin/unzip"
 
 function whenisitagain()
 {
-	date -u +%Y%m%d-%H%M%S
+    date -u +%Y%m%d-%H%M%S
 }
 NOW=$(whenisitagain)
 
@@ -70,50 +70,50 @@ then
     echo "Skipping .ie because refreshToken access failed at $NOW.</p>" 
 else 
 
-	refreshToken=`cat $IE_RTFILE`
-	tok_json=`$CURL -s -L $IE_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
-	if [[ "$?" != 0 ]]
-	then
-	    if [ ! -f $IE_CANARY ]
-	    then
-	        echo "<p>Skipping .ie because refreshToken use failed at $NOW.</p>" >$IE_CANARY
-	    fi
-	    echo "Skipping .ie because refreshToken use failed at $NOW."
+    refreshToken=`cat $IE_RTFILE`
+    tok_json=`$CURL -s -L $IE_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
+    if [[ "$?" != 0 ]]
+    then
+        if [ ! -f $IE_CANARY ]
+        then
+            echo "<p>Skipping .ie because refreshToken use failed at $NOW.</p>" >$IE_CANARY
+        fi
+        echo "Skipping .ie because refreshToken use failed at $NOW."
     else
-	
-		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
-		if [[ "$newtoken" == "" ]]
-		then
-		    echo "No sign of an authToken, sorry - Skipping .ie"
+    
+        newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+        if [[ "$newtoken" == "" ]]
+        then
+            echo "No sign of an authToken, sorry - Skipping .ie"
         else
             # get stats
             $CURL -s -L "$IE_BASE/stats" -o ie-stats.json -H "Authorization: Bearer $newtoken"
 
-			index_str=`$CURL -s -L "$IE_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
-			echo "Irish index string: $index_str"
-			iefiles=""
-			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
-			do
-			    _jq() {
-			             echo ${row} | base64 --decode | jq -r ${1}
-			    }
-			    iefiles="$iefiles $(_jq '.path')"
-			done
-			for iefile in $iefiles
-			do
-			    echo "Getting $iefile"
-			    iebname=`basename $iefile`
-			    $CURL -s -L "$IE_BASE/data/$iefile" --output ie-$iebname -H "Authorization: Bearer $newtoken"
-			    if [[ $? == 0 ]]
-			    then
+            index_str=`$CURL -s -L "$IE_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
+            echo "Irish index string: $index_str"
+            iefiles=""
+            for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+            do
+                _jq() {
+                         echo ${row} | base64 --decode | jq -r ${1}
+                }
+                iefiles="$iefiles $(_jq '.path')"
+            done
+            for iefile in $iefiles
+            do
+                echo "Getting $iefile"
+                iebname=`basename $iefile`
+                $CURL -s -L "$IE_BASE/data/$iefile" --output ie-$iebname -H "Authorization: Bearer $newtoken"
+                if [[ $? == 0 ]]
+                then
                     # we should be good now, so remove canary
                     rm -f $IE_CANARY
-			        echo "Got ie-$iebname"
-			        if [ ! -f $ARCHIVE/ie-$iebname ]
-			        then
-			            cp ie-$iebname $ARCHIVE
-			        fi
-			        # try unzip and decode
+                    echo "Got ie-$iebname"
+                    if [ ! -f $ARCHIVE/ie-$iebname ]
+                    then
+                        cp ie-$iebname $ARCHIVE
+                    fi
+                    # try unzip and decode
                     if [[ "$DODECODE" == "yes" ]]
                     then
                         $UNZIP "ie-$iebname" >/dev/null 2>&1
@@ -133,13 +133,13 @@ else
                         rm -f export.bin export.sig
                         chunks_down=$((chunks_down+1))
                     fi
-			    else
-			        echo "Error decoding ie-$iebname"
-			    fi
-			done
-	
-		fi
-	fi
+                else
+                    echo "Error decoding ie-$iebname"
+                fi
+            done
+    
+        fi
+    fi
 fi
 
 # Northern Ireland
@@ -173,56 +173,56 @@ then
     echo "Skipping Northern Ireland because refreshToken access failed at $NOW.</p>" 
 else 
 
-	refreshToken=`cat $NI_RTFILE`
-	tok_json=`$CURL -s -L $NI_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
-	if [[ "$?" != 0 ]]
-	then
-	    if [ ! -f $NI_CANARY ]
-	    then
-	        echo "<p>Skipping Northern Ireland because refreshToken use failed at $NOW.</p>" >$NI_CANARY
-	    fi
-	    echo "Skipping Northern Ireland because refreshToken use failed at $NOW."
+    refreshToken=`cat $NI_RTFILE`
+    tok_json=`$CURL -s -L $NI_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
+    if [[ "$?" != 0 ]]
+    then
+        if [ ! -f $NI_CANARY ]
+        then
+            echo "<p>Skipping Northern Ireland because refreshToken use failed at $NOW.</p>" >$NI_CANARY
+        fi
+        echo "Skipping Northern Ireland because refreshToken use failed at $NOW."
     else
-	
-		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
-		if [[ "$newtoken" == "" ]]
-		then
-		    echo "No sign of an authToken, sorry - Skipping Northern Ireland"
+    
+        newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+        if [[ "$newtoken" == "" ]]
+        then
+            echo "No sign of an authToken, sorry - Skipping Northern Ireland"
         else
             # grab stats
             $CURL -s -L "$NI_BASE/stats" -o ukni-stats.json -H "Authorization: Bearer $newtoken"
 
-			index_str=`$CURL -s -L "$NI_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
-			echo "Northern Irish index string: $index_str"
-			nifiles=""
-			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
-			do
+            index_str=`$CURL -s -L "$NI_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
+            echo "Northern Irish index string: $index_str"
+            nifiles=""
+            for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+            do
                 check401=`echo ${row} | base64 --decode`
                 if [[ "$check401" == "401" ]]
                 then
                     echo "401 detected in JSON answer - oops"
                     break
                 fi
-			    _jq() {
-			             echo ${row} | base64 --decode | jq -r ${1}
-			    }
-			    nifiles="$nifiles $(_jq '.path')"
-			done
-			for nifile in $nifiles
-			do
-			    echo "Getting $nifile"
-			    nibname=`basename $nifile`
-			    $CURL -s -L "$NI_BASE/data/$nifile" --output ukni-$nibname -H "Authorization: Bearer $newtoken"
-			    if [[ $? == 0 ]]
-			    then
+                _jq() {
+                         echo ${row} | base64 --decode | jq -r ${1}
+                }
+                nifiles="$nifiles $(_jq '.path')"
+            done
+            for nifile in $nifiles
+            do
+                echo "Getting $nifile"
+                nibname=`basename $nifile`
+                $CURL -s -L "$NI_BASE/data/$nifile" --output ukni-$nibname -H "Authorization: Bearer $newtoken"
+                if [[ $? == 0 ]]
+                then
                     # we should be good now, so remove canary
                     rm -f $NI_CANARY
-			        echo "Got ukni-$nibname"
-			        if [ ! -f $ARCHIVE/ukni-$nibname ]
-			        then
-			            cp ukni-$nibname $ARCHIVE
-			        fi
-			        # try unzip and decode
+                    echo "Got ukni-$nibname"
+                    if [ ! -f $ARCHIVE/ukni-$nibname ]
+                    then
+                        cp ukni-$nibname $ARCHIVE
+                    fi
+                    # try unzip and decode
                     if [[ "$DODECODE" == "yes" ]]
                     then
                         $UNZIP "ukni-$nibname" >/dev/null 2>&1
@@ -235,13 +235,13 @@ else
                         rm -f export.bin export.sig
                         chunks_down=$((chunks_down+1))
                     fi
-			    else
-			        echo "Error decoding ukni-$nibname"
-			    fi
-			done
-	
-		fi
-	fi
+                else
+                    echo "Error decoding ukni-$nibname"
+                fi
+            done
+    
+        fi
+    fi
 fi
 
 # italy
@@ -486,47 +486,47 @@ echo "======================"
 echo ".ch TEKs"
 for fno in {0..15}
 do
-	echo "Doing .ch file $fno" 
-	midnight=$((today_midnight-fno*day))
-	$CURL -L "$CH_BASE/$midnight" --output ch-$midnight.zip
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .ch sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s ch-$midnight.zip ]
-		then
-			echo "Empty or non-existent downloaded Swiss file: ch-$midnight.zip ($fno)"
-		else
-    		if [ ! -f $ARCHIVE/ch-$midnight.zip ]
-    		then
-				echo "New .ch file $fno ch-$midnight" 
-        		cp ch-$midnight.zip $ARCHIVE
-			elif ((`stat -c%s "ch-$midnight.zip"`>`stat -c%s "$ARCHIVE/ch-$midnight.zip"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .ch file $fno ch-$midnight" 
-        		cp ch-$midnight.zip $ARCHIVE
-    		fi
-    		# try unzip and decode
+    echo "Doing .ch file $fno" 
+    midnight=$((today_midnight-fno*day))
+    $CURL -L "$CH_BASE/$midnight" --output ch-$midnight.zip
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .ch sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s ch-$midnight.zip ]
+        then
+            echo "Empty or non-existent downloaded Swiss file: ch-$midnight.zip ($fno)"
+        else
+            if [ ! -f $ARCHIVE/ch-$midnight.zip ]
+            then
+                echo "New .ch file $fno ch-$midnight" 
+                cp ch-$midnight.zip $ARCHIVE
+            elif ((`stat -c%s "ch-$midnight.zip"`>`stat -c%s "$ARCHIVE/ch-$midnight.zip"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .ch file $fno ch-$midnight" 
+                cp ch-$midnight.zip $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "ch-$midnight.zip" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
-        			    total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                $UNZIP "ch-$midnight.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading ch-$midnight.zip (file $fno)"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading ch-$midnight.zip (file $fno)"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 $CURL -L $CH_CONFIG --output ch-cfg.json
@@ -553,38 +553,44 @@ PL_CONFIG="dunno; get later"
 echo "======================"
 echo ".pl TEKs"
 plzips=`$CURL -L "$PL_BASE/index.txt" | sed -e 's/\///g'`
-for plzip in $plzips
-do
-    echo "Getting $plzip"
-    $CURL -L "$PL_BASE/$plzip" --output pl-$plzip
-    if [[ $? == 0 ]]
-    then
-	    if [ ! -s pl-$plzip ]
-	    then
-		    echo "Empty or non-existent Polish file: pl-$plzip"
-	    else
-    	    if [ ! -f $ARCHIVE/pl-$plzip ]
-    	    then
-        	    cp pl-$plzip $ARCHIVE
-    	    fi
-    	    # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
+plhttpcode=`$CURL -L "$PL_BASE/index.txt -s -w "{%http_code}" -o pl-index.txt`
+if [[ "$plhttpcode" != "200" ]]
+then
+    echo "PL index failure, HTTP response $plhttpcode"
+else
+    for plzip in $plzips
+    do
+        echo "Getting $plzip"
+        $CURL -L "$PL_BASE/$plzip" --output pl-$plzip
+        if [[ $? == 0 ]]
+        then
+            if [ ! -s pl-$plzip ]
             then
-    	        $UNZIP "pl-$plzip" >/dev/null 2>&1
-    	        if [[ $? == 0 ]]
-    	        then
-        	        $TEK_DECODE >/dev/null
-        	        new_keys=$?
-        	        total_keys=$((total_keys+new_keys))
-    	        fi
-    	        rm -f export.bin export.sig
-    	        chunks_down=$((chunks_down+1))
+                echo "Empty or non-existent Polish file: pl-$plzip"
+            else
+                if [ ! -f $ARCHIVE/pl-$plzip ]
+                then
+                    cp pl-$plzip $ARCHIVE
+                fi
+                # try unzip and decode
+                if [[ "$DODECODE" == "yes" ]]
+                then
+                    $UNZIP "pl-$plzip" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE >/dev/null
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
+                fi
             fi
-	    fi
-    else
-        echo "Error downloading pl-$plzip"
-    fi
-done
+        else
+            echo "Error downloading pl-$plzip"
+        fi
+    done
+fi
 
 # PL config, still don't have a good URL but...
 # to get config needs a post to firebaseremoteconfig.googleapis.com with a ton of ids/authentication.  response is 
@@ -782,16 +788,16 @@ LV_INDEX="$LV_BASE/dkfs/v1/index.txt"
 $CURL -o lv-cfg.json -L "$LV_CONFIG"
 if [[ "$?" != 0 ]]
 then
-	echo "Error grabbing .lv config: $LV_CONFIG"
+    echo "Error grabbing .lv config: $LV_CONFIG"
 fi
 response_headers=`$CURL -D - -o lv-index.txt -L "$LV_INDEX" -i`
 if [[ "$?" == 0 ]]
 then
-	clzero=`echo $response_headers | grep -c "Content-Length: 0"`
-	if [[ "$clzero" == "1" ]]
-	then
-    	echo "no .lv TEKs at $NOW"
-	else
+    clzero=`echo $response_headers | grep -c "Content-Length: 0"`
+    if [[ "$clzero" == "1" ]]
+    then
+        echo "no .lv TEKs at $NOW"
+    else
         urls2get=`cat lv-index.txt | grep https`
         for theurl in $urls2get
         do
@@ -867,47 +873,47 @@ echo "======================"
 echo ".es TEKs"
 for fno in {0..14}
 do
-	echo "Doing .es file $fno" 
-	midnight=$((today_midnight-fno*day))
-	$CURL -L "$ES_BASE/$midnight" --output es-$midnight.zip
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .es sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s es-$midnight.zip ]
-		then
-			echo "Empty or non-existent downloaded Spanish file: es-$midnight.zip ($fno)"
-		else
-    		if [ ! -f $ARCHIVE/es-$midnight.zip ]
-    		then
-				echo "New .es file $fno es-$midnight" 
-        		cp es-$midnight.zip $ARCHIVE
-			elif ((`stat -c%s "es-$midnight.zip"`>`stat -c%s "$ARCHIVE/es-$midnight.zip"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .es file $fno es-$midnight" 
-        		cp es-$midnight.zip $ARCHIVE
-    		fi
-    		# try unzip and decode
+    echo "Doing .es file $fno" 
+    midnight=$((today_midnight-fno*day))
+    $CURL -L "$ES_BASE/$midnight" --output es-$midnight.zip
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .es sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s es-$midnight.zip ]
+        then
+            echo "Empty or non-existent downloaded Spanish file: es-$midnight.zip ($fno)"
+        else
+            if [ ! -f $ARCHIVE/es-$midnight.zip ]
+            then
+                echo "New .es file $fno es-$midnight" 
+                cp es-$midnight.zip $ARCHIVE
+            elif ((`stat -c%s "es-$midnight.zip"`>`stat -c%s "$ARCHIVE/es-$midnight.zip"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .es file $fno es-$midnight" 
+                cp es-$midnight.zip $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "es-$midnight.zip" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
-        			    total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
-		    fi
+                $UNZIP "es-$midnight.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
+            fi
         fi
-	else
-    	echo "curl - error downloading es-$midnight.zip (file $fno)"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+    else
+        echo "curl - error downloading es-$midnight.zip (file $fno)"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 ES_CONFIG="https://radarcovid.covid19.gob.es/configuration/settings"
@@ -952,17 +958,17 @@ else
         then
             # we should be good now, so remove canary
             rm -f $USVA_CANARY
-    		if [ ! -f $ARCHIVE/$lpath ]
-    		then
-				echo "New usva file $lpath"
+            if [ ! -f $ARCHIVE/$lpath ]
+            then
+                echo "New usva file $lpath"
                 cp $lpath $ARCHIVE
-			elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger usva file $lpath"
+            elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger usva file $lpath"
                 cp $lpath $ARCHIVE
             else
                 echo "A smaller or same $lpath already archived"
-    		fi
+            fi
             # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
@@ -1053,17 +1059,17 @@ do
         if [ -f $lpath ]
         then
             # we should be good now, so remove canary
-    		if [ ! -f $ARCHIVE/$lpath ]
-    		then
-				echo "New ca file $lpath"
+            if [ ! -f $ARCHIVE/$lpath ]
+            then
+                echo "New ca file $lpath"
                 cp $lpath $ARCHIVE
-			elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger ca file $lpath"
+            elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger ca file $lpath"
                 cp $lpath $ARCHIVE
             else
                 echo "A smaller or same $lpath already archived"
-    		fi
+            fi
             # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
@@ -1119,17 +1125,17 @@ else
         then
             # we should be good now, so remove canary
             rm -f $USAL_CANARY
-    		if [ ! -f $ARCHIVE/$lpath ]
-    		then
-				echo "New usal file $lpath"
+            if [ ! -f $ARCHIVE/$lpath ]
+            then
+                echo "New usal file $lpath"
                 cp $lpath $ARCHIVE
-			elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger usal file $lpath"
+            elif ((`stat -c%s "$lpath"`>`stat -c%s "$ARCHIVE/$lpath"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger usal file $lpath"
                 cp $lpath $ARCHIVE
             else
                 echo "A smaller or same $lpath already archived"
-    		fi
+            fi
             # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
@@ -1163,47 +1169,47 @@ echo "======================"
 echo ".ee TEKs"
 for fno in {0..14}
 do
-	echo "Doing .ee file $fno" 
-	midnight=$((toay_midnight-fno*day))
-	$CURL -L "$EE_BASE/$midnight" --output ee-$midnight.zip
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .ee sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s ee-$midnight.zip ]
-		then
-			echo "Empty or non-existent downloaded Estonian file: ee-$midnight.zip ($fno)"
-		else
-    		if [ ! -f $ARCHIVE/ee-$midnight.zip ]
-    		then
-				echo "New .ee file $fno ee-$midnight" 
-        		cp ee-$midnight.zip $ARCHIVE
-			elif ((`stat -c%s "ee-$midnight.zip"`>`stat -c%s "$ARCHIVE/ee-$midnight.zip"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .ee file $fno ee-$midnight" 
-        		cp ee-$midnight.zip $ARCHIVE
-    		fi
-    		# try unzip and decode
+    echo "Doing .ee file $fno" 
+    midnight=$((toay_midnight-fno*day))
+    $CURL -L "$EE_BASE/$midnight" --output ee-$midnight.zip
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .ee sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s ee-$midnight.zip ]
+        then
+            echo "Empty or non-existent downloaded Estonian file: ee-$midnight.zip ($fno)"
+        else
+            if [ ! -f $ARCHIVE/ee-$midnight.zip ]
+            then
+                echo "New .ee file $fno ee-$midnight" 
+                cp ee-$midnight.zip $ARCHIVE
+            elif ((`stat -c%s "ee-$midnight.zip"`>`stat -c%s "$ARCHIVE/ee-$midnight.zip"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .ee file $fno ee-$midnight" 
+                cp ee-$midnight.zip $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "ee-$midnight.zip" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
-        			    total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                $UNZIP "ee-$midnight.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading ee-$midnight.zip (file $fno)"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading ee-$midnight.zip (file $fno)"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # Don't know config URL yet
@@ -1232,9 +1238,9 @@ $CURL -o fi-cfg2.json -L $FI_CONFIG2 $FI_UA
 
 if [ ! -f $CANARY ]
 then
-	fi_index=`$CURL -L "$FI_BASE/v1/list?previous=0" $FI_UA`
-	if [[ "$?" == "0" ]]
-	then
+    fi_index=`$CURL -L "$FI_BASE/v1/list?previous=0" $FI_UA`
+    if [[ "$?" == "0" ]]
+    then
         echo "Finnish index: $fi_index"
         batches=`echo $fi_index |  sed -e 's/","/ /g' | sed -e 's/"]}//' | sed -e 's/.*"//'`
         for batch in $batches
@@ -1277,7 +1283,7 @@ then
                 echo "curl - error downloading fi-$batch.zip (file $fno)"
             fi
         done
-	fi
+    fi
 fi
 
 # Scotland
@@ -1308,20 +1314,20 @@ then
     echo "Skipping Scotland stats/cfg because refreshToken access failed at $NOW.</p>" 
 else 
 
-	refreshToken=`cat $UKSC_RTFILE`
-	tok_json=`$CURL -s -L $UKSC_REFRESH -H "Authorization: Bearer $refreshToken" -d "{}"`
-	if [[ "$?" != 0 ]]
-	then
-	    if [ ! -f $CANARY ]
-	    then
-	        echo "<p>Skipping Scotland stats/cfg because refreshToken use failed at $NOW.</p>" >$CANARY
-	    fi
-	    echo "Skipping Scotland stats/cfg because refreshToken use failed at $NOW."
+    refreshToken=`cat $UKSC_RTFILE`
+    tok_json=`$CURL -s -L $UKSC_REFRESH -H "Authorization: Bearer $refreshToken" -d "{}"`
+    if [[ "$?" != 0 ]]
+    then
+        if [ ! -f $CANARY ]
+        then
+            echo "<p>Skipping Scotland stats/cfg because refreshToken use failed at $NOW.</p>" >$CANARY
+        fi
+        echo "Skipping Scotland stats/cfg because refreshToken use failed at $NOW."
     else
-		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
-		if [[ "$newtoken" == "" ]]
-		then
-		    echo "No sign of an authToken, sorry - Skipping Scotland"
+        newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+        if [[ "$newtoken" == "" ]]
+        then
+            echo "No sign of an authToken, sorry - Skipping Scotland"
         else
             # config now requires authz for some reason
             $CURL --output uksc-cfg.json -L $UKSC_CONFIG -H "Authorization: Bearer $newtoken"` 
@@ -1334,20 +1340,20 @@ else
                 exit 1
             fi
             echo "Scotland index string: $index_str"
-			ukscfiles=""
-			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
-			do
+            ukscfiles=""
+            for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+            do
                 check401=`echo ${row} | base64 --decode`
                 if [[ "$check401" == "401" ]]
                 then
                     echo "401 detected in JSON answer - oops"
                     break
                 fi
-			    _jq() {
-			             echo ${row} | base64 --decode | jq -r ${1}
-			    }
-			    ukscfiles="$ukscfiles $(_jq '.path')"
-			done
+                _jq() {
+                         echo ${row} | base64 --decode | jq -r ${1}
+                }
+                ukscfiles="$ukscfiles $(_jq '.path')"
+            done
             for ukscfile in $ukscfiles
             do
                 echo "Getting $ukscfile"
@@ -1412,27 +1418,27 @@ then
     echo "Skipping Delaware stats/cfg because refreshToken access failed at $NOW.</p>" 
 else 
 
-	refreshToken=`cat $USDE_RTFILE`
-	tok_json=`$CURL -s -L $USDE_REFRESH -H "Authorization: Bearer $refreshToken" -d "{}"`
-	if [[ "$?" != 0 ]]
-	then
-	    if [ ! -f $CANARY ]
-	    then
-	        echo "<p>Skipping Delaware stats/cfg because refreshToken use failed at $NOW.</p>" >$CANARY
-	    fi
-	    echo "Skipping Delaware stats/cfg because refreshToken use failed at $NOW."
+    refreshToken=`cat $USDE_RTFILE`
+    tok_json=`$CURL -s -L $USDE_REFRESH -H "Authorization: Bearer $refreshToken" -d "{}"`
+    if [[ "$?" != 0 ]]
+    then
+        if [ ! -f $CANARY ]
+        then
+            echo "<p>Skipping Delaware stats/cfg because refreshToken use failed at $NOW.</p>" >$CANARY
+        fi
+        echo "Skipping Delaware stats/cfg because refreshToken use failed at $NOW."
     else
-		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
-		if [[ "$newtoken" == "" ]]
-		then
-		    echo "No sign of an authToken, sorry - Skipping Delaware"
+        newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+        if [[ "$newtoken" == "" ]]
+        then
+            echo "No sign of an authToken, sorry - Skipping Delaware"
         else
             # config now requires authz for some reason
             $CURL --output usde-cfg.json -L $USDE_CONFIG -H "Authorization: Bearer $newtoken"` 
             $CURL --output usde-stats.json -L $USDE_STATS -H "Authorization: Bearer $newtoken"` 
 
-		fi
-	fi
+        fi
+    fi
 fi
 
 index_str=`$CURL -s -L "$USDE_INDEX"` 
@@ -1723,71 +1729,71 @@ then
     echo "Skipping Gibraltar because refreshToken access failed at $NOW.</p>" 
 else 
 
-	refreshToken=`cat $GI_RTFILE`
-	tok_json=`$CURL -s -L $GI_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
-	if [[ "$?" != 0 ]]
-	then
-	    if [ ! -f $CANARY ]
-	    then
-	        echo "<p>Skipping Gibraltar because refreshToken use failed at $NOW.</p>" >$CANARY
-	    fi
-	    echo "Skipping Gibraltar because refreshToken use failed at $NOW."
+    refreshToken=`cat $GI_RTFILE`
+    tok_json=`$CURL -s -L $GI_BASE/refresh -H "Authorization: Bearer $refreshToken" -d "{}"`
+    if [[ "$?" != 0 ]]
+    then
+        if [ ! -f $CANARY ]
+        then
+            echo "<p>Skipping Gibraltar because refreshToken use failed at $NOW.</p>" >$CANARY
+        fi
+        echo "Skipping Gibraltar because refreshToken use failed at $NOW."
     else
-		newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
-		if [[ "$newtoken" == "" ]]
-		then
-		    echo "No sign of an authToken, sorry - Skipping Gibraltar"
+        newtoken=`echo $tok_json | awk -F: '{print $2}' | sed -e 's/"//g' | sed -e 's/}//'`
+        if [[ "$newtoken" == "" ]]
+        then
+            echo "No sign of an authToken, sorry - Skipping Gibraltar"
         else
-			index_str=`$CURL -s -L "$GI_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
-			echo "Gibraltar index string: $index_str"
-			gifiles=""
-			for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
-			do
+            index_str=`$CURL -s -L "$GI_BASE/exposures/?since=0&limit=1000" -H "Authorization: Bearer $newtoken"` 
+            echo "Gibraltar index string: $index_str"
+            gifiles=""
+            for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+            do
                 check401=`echo ${row} | base64 --decode`
                 if [[ "$check401" == "401" ]]
                 then
                     echo "401 detected in JSON answer - oops"
                     break
                 fi
-			    _jq() {
-			             echo ${row} | base64 --decode | jq -r ${1}
-			    }
-			    gifiles="$gifiles $(_jq '.path')"
-			done
-			for gifile in $gifiles
-			do
-			    echo "Getting $gifile"
-			    gibname=`basename $gifile`
-			    $CURL -s -L "$GI_BASE/data/$gifile" --output ukgi-$gibname -H "Authorization: Bearer $newtoken"
-			    if [[ $? == 0 ]]
-			    then
+                _jq() {
+                         echo ${row} | base64 --decode | jq -r ${1}
+                }
+                gifiles="$gifiles $(_jq '.path')"
+            done
+            for gifile in $gifiles
+            do
+                echo "Getting $gifile"
+                gibname=`basename $gifile`
+                $CURL -s -L "$GI_BASE/data/$gifile" --output ukgi-$gibname -H "Authorization: Bearer $newtoken"
+                if [[ $? == 0 ]]
+                then
                     # we should be good now, so remove canary
                     rm -f $CANARY
-			        echo "Got ukgi-$gibname"
-			        if [ ! -f $ARCHIVE/ukgi-$gibname ]
-			        then
-			            cp ukgi-$gibname $ARCHIVE
-			        fi
-			        # try unzip and decode
+                    echo "Got ukgi-$gibname"
+                    if [ ! -f $ARCHIVE/ukgi-$gibname ]
+                    then
+                        cp ukgi-$gibname $ARCHIVE
+                    fi
+                    # try unzip and decode
                     if [[ "$DODECODE" == "yes" ]]
                     then
-			            $UNZIP "ukgi-$gibname" >/dev/null 2>&1
-			            if [[ $? == 0 ]]
-			            then
-			                $TEK_DECODE >/dev/null
-			                new_keys=$?
-			                total_keys=$((total_keys+new_keys))
-			            fi
-			            rm -f export.bin export.sig
-			            chunks_down=$((chunks_down+1))
+                        $UNZIP "ukgi-$gibname" >/dev/null 2>&1
+                        if [[ $? == 0 ]]
+                        then
+                            $TEK_DECODE >/dev/null
+                            new_keys=$?
+                            total_keys=$((total_keys+new_keys))
+                        fi
+                        rm -f export.bin export.sig
+                        chunks_down=$((chunks_down+1))
                     fi
-			    else
-			        echo "Error decoding ukgi-$gibname"
-			    fi
-			done
-	
-		fi
-	fi
+                else
+                    echo "Error decoding ukgi-$gibname"
+                fi
+            done
+    
+        fi
+    fi
 fi
 
 # Malta
@@ -1806,47 +1812,47 @@ echo "======================"
 echo ".mt TEKs"
 for fno in {0..14}
 do
-	echo "Doing .mt file $fno" 
-	midnight=$((today_midnight-fno*day))
-	$CURL -L "$MT_BASE/$midnight" --output mt-$midnight.zip
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .mt sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s mt-$midnight.zip ]
-		then
-			echo "Empty or non-existent downloaded Maltese file: mt-$midnight.zip ($fno)"
-		else
-    		if [ ! -f $ARCHIVE/mt-$midnight.zip ]
-    		then
-				echo "New .mt file $fno mt-$midnight" 
-        		cp mt-$midnight.zip $ARCHIVE
-			elif ((`stat -c%s "mt-$midnight.zip"`>`stat -c%s "$ARCHIVE/mt-$midnight.zip"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .mt file $fno mt-$midnight" 
-        		cp mt-$midnight.zip $ARCHIVE
-    		fi
-    		# try unzip and decode
+    echo "Doing .mt file $fno" 
+    midnight=$((today_midnight-fno*day))
+    $CURL -L "$MT_BASE/$midnight" --output mt-$midnight.zip
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .mt sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s mt-$midnight.zip ]
+        then
+            echo "Empty or non-existent downloaded Maltese file: mt-$midnight.zip ($fno)"
+        else
+            if [ ! -f $ARCHIVE/mt-$midnight.zip ]
+            then
+                echo "New .mt file $fno mt-$midnight" 
+                cp mt-$midnight.zip $ARCHIVE
+            elif ((`stat -c%s "mt-$midnight.zip"`>`stat -c%s "$ARCHIVE/mt-$midnight.zip"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .mt file $fno mt-$midnight" 
+                cp mt-$midnight.zip $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "mt-$midnight.zip" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
+                $UNZIP "mt-$midnight.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
                     total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading mt-$midnight.zip (file $fno)"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading mt-$midnight.zip (file $fno)"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # Portugal
@@ -1866,47 +1872,47 @@ echo "======================"
 echo ".pt TEKs"
 for fno in {0..14}
 do
-	echo "Doing .pt file $fno" 
-	midnight=$((today_midnight-fno*day))
-	$CURL -L "$PT_BASE/$midnight" --output pt-$midnight.zip
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .pt sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s pt-$midnight.zip ]
-		then
-			echo "Empty or non-existent downloaded Portugese file: pt-$midnight.zip ($fno)"
-		else
-    		if [ ! -f $ARCHIVE/pt-$midnight.zip ]
-    		then
-				echo "New .pt file $fno pt-$midnight" 
-        		cp pt-$midnight.zip $ARCHIVE
-			elif ((`stat -c%s "pt-$midnight.zip"`>`stat -c%s "$ARCHIVE/pt-$midnight.zip"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .pt file $fno pt-$midnight" 
-        		cp pt-$midnight.zip $ARCHIVE
-    		fi
-    		# try unzip and decode
+    echo "Doing .pt file $fno" 
+    midnight=$((today_midnight-fno*day))
+    $CURL -L "$PT_BASE/$midnight" --output pt-$midnight.zip
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .pt sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s pt-$midnight.zip ]
+        then
+            echo "Empty or non-existent downloaded Portugese file: pt-$midnight.zip ($fno)"
+        else
+            if [ ! -f $ARCHIVE/pt-$midnight.zip ]
+            then
+                echo "New .pt file $fno pt-$midnight" 
+                cp pt-$midnight.zip $ARCHIVE
+            elif ((`stat -c%s "pt-$midnight.zip"`>`stat -c%s "$ARCHIVE/pt-$midnight.zip"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .pt file $fno pt-$midnight" 
+                cp pt-$midnight.zip $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "pt-$midnight.zip" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
+                $UNZIP "pt-$midnight.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
                     total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading pt-$midnight.zip (file $fno)"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading pt-$midnight.zip (file $fno)"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # Ecuador
@@ -1926,47 +1932,47 @@ echo "======================"
 echo ".ec TEKs"
 for fno in {0..14}
 do
-	echo "Doing .ec file $fno" 
-	midnight=$((today_midnight-fno*day))
-	$CURL -L "$EC_BASE/$midnight" --output ec-$midnight.zip
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .ec sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s ec-$midnight.zip ]
-		then
-			echo "Empty or non-existent downloaded Ecuadorian file: ec-$midnight.zip ($fno)"
-		else
-    		if [ ! -f $ARCHIVE/ec-$midnight.zip ]
-    		then
-				echo "New .ec file $fno ec-$midnight" 
-        		cp ec-$midnight.zip $ARCHIVE
-			elif ((`stat -c%s "ec-$midnight.zip"`>`stat -c%s "$ARCHIVE/ec-$midnight.zip"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .ec file $fno ec-$midnight" 
-        		cp ec-$midnight.zip $ARCHIVE
-    		fi
-    		# try unzip and decode
+    echo "Doing .ec file $fno" 
+    midnight=$((today_midnight-fno*day))
+    $CURL -L "$EC_BASE/$midnight" --output ec-$midnight.zip
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .ec sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s ec-$midnight.zip ]
+        then
+            echo "Empty or non-existent downloaded Ecuadorian file: ec-$midnight.zip ($fno)"
+        else
+            if [ ! -f $ARCHIVE/ec-$midnight.zip ]
+            then
+                echo "New .ec file $fno ec-$midnight" 
+                cp ec-$midnight.zip $ARCHIVE
+            elif ((`stat -c%s "ec-$midnight.zip"`>`stat -c%s "$ARCHIVE/ec-$midnight.zip"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .ec file $fno ec-$midnight" 
+                cp ec-$midnight.zip $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "ec-$midnight.zip" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
+                $UNZIP "ec-$midnight.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
                     total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading ec-$midnight.zip (file $fno)"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading ec-$midnight.zip (file $fno)"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # Belgium
@@ -1981,9 +1987,9 @@ $CURL -L $BE_STATS --output be-stats.json
 
 if [ ! -f $CANARY ]
 then
-	be_index=`$CURL -L "$BE_BASE"`
-	if [[ "$?" == "0" ]]
-	then
+    be_index=`$CURL -L "$BE_BASE"`
+    if [[ "$?" == "0" ]]
+    then
         echo "Belgian index: $be_index"
         batches=`echo $be_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
         for batch in $batches
@@ -2026,7 +2032,7 @@ then
                 echo "curl - error downloading be-$batch.zip (file $fno)"
             fi
         done
-	fi
+    fi
 fi
 
 # Czechia
@@ -2039,47 +2045,47 @@ cz_index=`$CURL -L "$CZ_BASE/erouska/index.txt"`
 echo "CZ index at $NOW: $cz_index"
 for fno in $cz_index
 do
-	echo "Doing .cz file $fno" 
+    echo "Doing .cz file $fno" 
     bfno=`basename $fno`
-	$CURL -L "$CZ_BASE/$fno" --output cz-$bfno
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .cz sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s cz-$bfno ]
-		then
-			echo "Empty or non-existent downloaded Czech file: cz-$bfno"
-		else
-    		if [ ! -f $ARCHIVE/cz-$bfno ]
-    		then
-				echo "New .cz file cz-$bfno" 
-        		cp cz-$bfno $ARCHIVE
-			elif ((`stat -c%s "cz-$bfno"`>`stat -c%s "$ARCHIVE/cz-$bfno"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .cz file cz-$bfno" 
-        		cp cz-$bfno $ARCHIVE
-    		fi
-    		# try unzip and decode
+    $CURL -L "$CZ_BASE/$fno" --output cz-$bfno
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .cz sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s cz-$bfno ]
+        then
+            echo "Empty or non-existent downloaded Czech file: cz-$bfno"
+        else
+            if [ ! -f $ARCHIVE/cz-$bfno ]
+            then
+                echo "New .cz file cz-$bfno" 
+                cp cz-$bfno $ARCHIVE
+            elif ((`stat -c%s "cz-$bfno"`>`stat -c%s "$ARCHIVE/cz-$bfno"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .cz file cz-$bfno" 
+                cp cz-$bfno $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "cz-$bfno" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
+                $UNZIP "cz-$bfno" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
                     total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading cz-$bfno"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading cz-$bfno"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # South Africa
@@ -2092,47 +2098,47 @@ za_index=`$CURL -L "$ZA_BASE/exposureKeyExport-ZA/index.txt"`
 echo "ZA index at $NOW: $za_index"
 for fno in $za_index
 do
-	echo "Doing .za file $fno" 
+    echo "Doing .za file $fno" 
     bfno=`basename $fno`
-	$CURL -L "$ZA_BASE/$fno" --output za-$bfno
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .za sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s za-$bfno ]
-		then
-			echo "Empty or non-existent downloaded South African file: za-$bfno"
-		else
-    		if [ ! -f $ARCHIVE/za-$bfno ]
-    		then
-				echo "New .za file za-$bfno" 
-        		cp za-$bfno $ARCHIVE
-			elif ((`stat -c%s "za-$bfno"`>`stat -c%s "$ARCHIVE/za-$bfno"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .za file za-$bfno" 
-        		cp za-$bfno $ARCHIVE
-    		fi
-    		# try unzip and decode
+    $CURL -L "$ZA_BASE/$fno" --output za-$bfno
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .za sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s za-$bfno ]
+        then
+            echo "Empty or non-existent downloaded South African file: za-$bfno"
+        else
+            if [ ! -f $ARCHIVE/za-$bfno ]
+            then
+                echo "New .za file za-$bfno" 
+                cp za-$bfno $ARCHIVE
+            elif ((`stat -c%s "za-$bfno"`>`stat -c%s "$ARCHIVE/za-$bfno"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .za file za-$bfno" 
+                cp za-$bfno $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "za-$bfno" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
+                $UNZIP "za-$bfno" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
                     total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading za-$bfno"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading za-$bfno"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # Hungary
@@ -2147,47 +2153,47 @@ hu_urls_eu=`$CURL -L "$HU_BASE_EU" | json_pp | grep https | sed -e 's/"//g' | se
 echo "HU URLs at $NOW: $hu_urls $hu_urls_eu"
 for url in $hu_urls $hu_urls_eu
 do
-	echo "Doing .hu file $url" 
+    echo "Doing .hu file $url" 
     burl=`basename $url`
-	$CURL -L "$url" --output hu-$burl
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .hu sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s hu-$burl ]
-		then
-			echo "Empty or non-existent downloaded Hungarian file: hu-$burl"
-		else
-    		if [ ! -f $ARCHIVE/hu-$burl ]
-    		then
-				echo "New .hu file hu-$burl" 
-        		cp hu-$burl $ARCHIVE
-			elif ((`stat -c%s "hu-$burl"`>`stat -c%s "$ARCHIVE/hu-$burl"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .hu file hu-$burl" 
-        		cp hu-$burl $ARCHIVE
-    		fi
-    		# try unzip and decode
+    $CURL -L "$url" --output hu-$burl
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .hu sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s hu-$burl ]
+        then
+            echo "Empty or non-existent downloaded Hungarian file: hu-$burl"
+        else
+            if [ ! -f $ARCHIVE/hu-$burl ]
+            then
+                echo "New .hu file hu-$burl" 
+                cp hu-$burl $ARCHIVE
+            elif ((`stat -c%s "hu-$burl"`>`stat -c%s "$ARCHIVE/hu-$burl"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .hu file hu-$burl" 
+                cp hu-$burl $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "hu-$burl" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
+                $UNZIP "hu-$burl" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
                     total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading hu-$burl"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading hu-$burl"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # Netherlands
@@ -2204,54 +2210,54 @@ if [ ! -f content.bin ]
 then
     echo "Failed to unzip nl-mani.zip"
 else
-	nl_keys=`cat content.bin | jq ".exposureKeySets?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
-	nl_cfg=`cat content.bin | jq ".appConfig?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
-	nl_rcp=`cat content.bin | jq ".riskCalculationParameters?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+    nl_keys=`cat content.bin | jq ".exposureKeySets?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+    nl_cfg=`cat content.bin | jq ".appConfig?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+    nl_rcp=`cat content.bin | jq ".riskCalculationParameters?" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
 
-	$CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip-but-dont-call-it-that
-	$CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip-but-dont-call-it-that
+    $CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip-but-dont-call-it-that
+    $CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip-but-dont-call-it-that
 
-	for key in $nl_keys
-	do
-		echo "Getting .nl file $key" 
-		$CURL -L "$NL_BASE/exposurekeyset/$key" --output nl-$key.zip
-		if [[ $? == 0 ]]
-		then
-			if [ ! -s nl-$key.zip ]
-			then
-				echo "Empty or non-existent downloaded Dutch file: nl-$key.zip"
-			else
-	    		if [ ! -f $ARCHIVE/nl-$key.zip ]
-	    		then
-					echo "New .nl file nl-$key.zip" 
-	        		cp nl-$key.zip $ARCHIVE
-				elif ((`stat -c%s "nl-$key.zip"`>`stat -c%s "$ARCHIVE/nl-$key.zip"`));then
-					# if the new one is bigger than archived, then archive new one
-					echo "Updated/bigger .nl file nl-$key.zip" 
-	        		cp nl-$key.zip $ARCHIVE
-	    		fi
-	    		# try unzip and decode
+    for key in $nl_keys
+    do
+        echo "Getting .nl file $key" 
+        $CURL -L "$NL_BASE/exposurekeyset/$key" --output nl-$key.zip
+        if [[ $? == 0 ]]
+        then
+            if [ ! -s nl-$key.zip ]
+            then
+                echo "Empty or non-existent downloaded Dutch file: nl-$key.zip"
+            else
+                if [ ! -f $ARCHIVE/nl-$key.zip ]
+                then
+                    echo "New .nl file nl-$key.zip" 
+                    cp nl-$key.zip $ARCHIVE
+                elif ((`stat -c%s "nl-$key.zip"`>`stat -c%s "$ARCHIVE/nl-$key.zip"`));then
+                    # if the new one is bigger than archived, then archive new one
+                    echo "Updated/bigger .nl file nl-$key.zip" 
+                    cp nl-$key.zip $ARCHIVE
+                fi
+                # try unzip and decode
                 if [[ "$DODECODE" == "yes" ]]
                 then
-	                rm -f content.bin content.sig export.bin export.sig
-	    		    $UNZIP "nl-$key.zip" >/dev/null 2>&1
-	    		    if [[ $? == 0 ]]
-	    		    then
-	        		    $TEK_DECODE >/dev/null
-	        		    new_keys=$?
-	                    total_keys=$((total_keys+new_keys))
-	    		    fi
-	                rm -f content.bin content.sig export.bin export.sig
-	    		    chunks_down=$((chunks_down+1))
+                    rm -f content.bin content.sig export.bin export.sig
+                    $UNZIP "nl-$key.zip" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE >/dev/null
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f content.bin content.sig export.bin export.sig
+                    chunks_down=$((chunks_down+1))
                 fi
-			fi
-		else
-	    	echo "error downloading nl-$key.zip"
-		fi
+            fi
+        else
+            echo "error downloading nl-$key.zip"
+        fi
         # permission granted to be speedy:-)
-		# sleep 1
-	done
-	
+        # sleep 1
+    done
+    
 fi
 
 # Guam
@@ -2264,47 +2270,47 @@ gu_index=`$CURL -L "$GU_BASE/guam/teks/index.txt"`
 echo "GU index at $NOW: $gu_index"
 for fno in $gu_index
 do
-	echo "Doing .gu file $fno" 
+    echo "Doing .gu file $fno" 
     bfno=`basename $fno`
-	$CURL -L "$GU_BASE/$fno" --output gu-$bfno
-	if [[ $? == 0 ]]
-	then
-		# we do see zero sized files from .gu sometimes
-		# which is odd but whatever (could be their f/w
-		# doing that but what'd be the effect on the 
-		# app?) 
-		if [ ! -s gu-$bfno ]
-		then
-			echo "Empty or non-existent downloaded Guam file: gu-$bfno"
-		else
-    		if [ ! -f $ARCHIVE/gu-$bfno ]
-    		then
-				echo "New .gu file gu-$bfno" 
-        		cp gu-$bfno $ARCHIVE
-			elif ((`stat -c%s "gu-$bfno"`>`stat -c%s "$ARCHIVE/gu-$bfno"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .gu file gu-$bfno" 
-        		cp gu-$bfno $ARCHIVE
-    		fi
-    		# try unzip and decode
+    $CURL -L "$GU_BASE/$fno" --output gu-$bfno
+    if [[ $? == 0 ]]
+    then
+        # we do see zero sized files from .gu sometimes
+        # which is odd but whatever (could be their f/w
+        # doing that but what'd be the effect on the 
+        # app?) 
+        if [ ! -s gu-$bfno ]
+        then
+            echo "Empty or non-existent downloaded Guam file: gu-$bfno"
+        else
+            if [ ! -f $ARCHIVE/gu-$bfno ]
+            then
+                echo "New .gu file gu-$bfno" 
+                cp gu-$bfno $ARCHIVE
+            elif ((`stat -c%s "gu-$bfno"`>`stat -c%s "$ARCHIVE/gu-$bfno"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .gu file gu-$bfno" 
+                cp gu-$bfno $ARCHIVE
+            fi
+            # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-    		    $UNZIP "gu-$bfno" >/dev/null 2>&1
-    		    if [[ $? == 0 ]]
-    		    then
-        		    $TEK_DECODE >/dev/null
-        		    new_keys=$?
+                $UNZIP "gu-$bfno" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
                     total_keys=$((total_keys+new_keys))
-    		    fi
-    		    rm -f export.bin export.sig
-    		    chunks_down=$((chunks_down+1))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
             fi
-		fi
-	else
-    	echo "curl - error downloading gu-$bfno"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+        fi
+    else
+        echo "curl - error downloading gu-$bfno"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 # Slovenia
@@ -2320,9 +2326,9 @@ $CURL -L $SI_CONFIG --output si-cfg.json
 
 if [ ! -f $CANARY ]
 then
-	si_index=`$CURL -L "$SI_BASE"`
-	if [[ "$?" == "0" ]]
-	then
+    si_index=`$CURL -L "$SI_BASE"`
+    if [[ "$?" == "0" ]]
+    then
         echo "Slovenian index: $si_index"
         batches=`echo $si_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
         for batch in $batches
@@ -2365,7 +2371,7 @@ then
                 echo "curl - error downloading si-$batch.zip (file $fno)"
             fi
         done
-	fi
+    fi
 fi
 
 
@@ -2409,29 +2415,29 @@ echo "HR index at $NOW: $zips $zips_eu"
 for fname in $zips $zips_eu
 do
     bfname=`basename $fname`
-	echo "Getting .hr url $fname into hr-$bfname" 
-	$CURL -L "$fname" --output hr-$bfname
-	if [[ $? == 0 ]]
-	then
-		if [ ! -s hr-$bfname ]
-		then
-			echo "Empty or non-existent downloaded Croatian file: hr-$bfname"
-		else
-    		if [ ! -f $ARCHIVE/hr-$bfname ]
-    		then
-				echo "New .hr file hr-$bfname" 
-        		cp hr-$bfname $ARCHIVE
-			elif ((`stat -c%s "hr-$bfname"`>`stat -c%s "$ARCHIVE/hr-$bfname"`));then
-				# if the new one is bigger than archived, then archive new one
-				echo "Updated/bigger .hr file hr-$bfname" 
-        		cp hr-$bfname $ARCHIVE
-    		fi
-		fi
-	else
-    	echo "curl - error downloading hr-$bfname"
-	fi
-	# don't appear to be too keen:-)
-	sleep 1
+    echo "Getting .hr url $fname into hr-$bfname" 
+    $CURL -L "$fname" --output hr-$bfname
+    if [[ $? == 0 ]]
+    then
+        if [ ! -s hr-$bfname ]
+        then
+            echo "Empty or non-existent downloaded Croatian file: hr-$bfname"
+        else
+            if [ ! -f $ARCHIVE/hr-$bfname ]
+            then
+                echo "New .hr file hr-$bfname" 
+                cp hr-$bfname $ARCHIVE
+            elif ((`stat -c%s "hr-$bfname"`>`stat -c%s "$ARCHIVE/hr-$bfname"`));then
+                # if the new one is bigger than archived, then archive new one
+                echo "Updated/bigger .hr file hr-$bfname" 
+                cp hr-$bfname $ARCHIVE
+            fi
+        fi
+    else
+        echo "curl - error downloading hr-$bfname"
+    fi
+    # don't appear to be too keen:-)
+    sleep 1
 done
 
 
@@ -2461,12 +2467,12 @@ $TEK_TIMES -F
 res=$?
 if [[ "$res" == "18" ]]
 then
-	echo "$TEK_TIMES exited as >1 running, so I'll also exit"
-	echo "Finished $0 at $END, got $chunks_down chunks, totalling $total_keys"
-	echo "======================"
-	echo "======================"
-	echo "======================"
-	exit 0
+    echo "$TEK_TIMES exited as >1 running, so I'll also exit"
+    echo "Finished $0 at $END, got $chunks_down chunks, totalling $total_keys"
+    echo "======================"
+    echo "======================"
+    echo "======================"
+    exit 0
 fi
 if [ -d  $DOCROOT ]
 then
