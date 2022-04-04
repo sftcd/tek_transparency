@@ -266,6 +266,9 @@ have changed since we started so I'll need to check that out.</li>
 2021. Never did think it'd last that long when we started;-( </li>
     <li>20220403: a lot of the services (incl. Ireland) seem to be turning off now (finally;-) Changed the header here
 to reflect that.</li>
+    <li>20220404: Since things are starting to turn off, I captured an <a href="us-states.png">image of the US states</a>
+currently participating in their US national server (according to 
+<a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">this web page</a>). That's just in case of future link rot.</li>
 
 </ul>
 
