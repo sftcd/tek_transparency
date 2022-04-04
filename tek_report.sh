@@ -63,7 +63,7 @@ greenstr=' style="color:Green;"'
 for country in $COUNTRY_LIST
 do
     colstr=$redstr
-    lastzip=`ls -rt data/all-zips/$country-*.zip | tail -1`
+    lastzip=`ls -rt $ARCHIVE/$country-*.zip | tail -1`
     if [[ "$lastzip" != "" ]]
     then
         lasttime=`stat -c %Z $lastzip`
