@@ -88,9 +88,12 @@ cat >>$TARGET <<EOF
 </ol>
 
 <p>That's a total of $stillworking still seemingly working and
-$turnedoff apparently turned off. (That said, Portugal is counted
+$turnedoff apparently turned off. That said, Portugal is counted
 here as "working" even though they've basically posted one key
-per day since March 2021, so one could quiblle on that one.)</p>
+per day since March 2021, so one could quibble on that one. The
+2021-12-15 date above is also an artefact and really means
+"earlier than that" (that was the date I migrated the machine
+running this).</p>
 
 <p>Starting in mid-2020 we expanded the list of countries over
 time as more public health authorities adopted the Google/Apple
