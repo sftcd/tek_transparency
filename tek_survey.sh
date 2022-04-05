@@ -2054,6 +2054,11 @@ cz_index=`$CURL -L "$CZ_BASE/erouska/index.txt"`
 echo "CZ index at $NOW: $cz_index"
 for fno in $cz_index
 do
+    if [ "$fno" != "*.zip" ]
+    then
+        echo "Skipping .cz non-file $fno" 
+        continue
+    fi
     echo "Doing .cz file $fno" 
     bfno=`basename $fno`
     $CURL -L "$CZ_BASE/$fno" --output cz-$bfno
