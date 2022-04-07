@@ -297,6 +297,22 @@ for country in $COUNTRY_LIST
 do
     targfile=$OUTDIR/$country-$TARGET
 
+    # If the most recent zip file for a counter is older than
+    # the most recent csv file then we can skip that one as we
+    # have no new data (to force re-generation just move/delete
+    # the csv file)
+    lastzip=`ls -rt $OUTDIR/$country-*.zip | tail -1`
+    lasttimet=`stat -c %Z $lastzip`
+    cvstimet=`stat -c %Z $targfile`
+    if (( cvstimet > lasttimet ))
+    then
+        echo "Skipping $country as $lastzip is older than $targfile"
+        continue
+    else
+        echo "Not skipping $country as $lastzip is not older than $targfile"
+        echo "CVS time: $cvstimet, Zip time: $lasttimet"
+    fi
+
     # did I do all zips or just the last few weeks worth? If the
     # latter I'll need to splice things together at the end so I
     # need to remember that
