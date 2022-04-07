@@ -95,6 +95,12 @@ per day since March 2021, so one could quibble on that one. The
 "earlier than that" (that was the date I migrated the machine
 running this).</p>
 
+<p>This file is updated twice a day, we query services once per hour. This
+update is from $NOW UTC. If you manage one of these systems and would prefer we
+query less often please feel free to get in touch.</p> 
+
+<h2>Background</h2>
+
 <p>Starting in mid-2020 we expanded the list of countries over
 time as more public health authorities adopted the Google/Apple
 Exposure Notification (GAEN) API. The code that produces this is
@@ -124,6 +130,8 @@ data set.
 <p>Comparing the TEKs and Cases columns, it is clear that some more explanation
 for those numbers is required. We are trying to find good answers for that.
 (And welcome inputs!)
+
+<h2>Change log</h2>
 
 <ul>
 	<li>On 20200702 we learned (from Paul-Olivier Dehaye <paulolivier@personaldata.io>) that the Swiss 
@@ -272,18 +280,19 @@ to reflect that.</li>
     <li>20220404: Since things are starting to turn off, I captured an <a href="us-states.png">image of the US states</a>
 currently participating in their US national server (according to 
 <a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">this web page</a>). That's just in case of future link rot.</li>
+    <li>20220407: reversed the presentation order of the daily values (below), and adopted colour-coding as
+at the top, to make it easier to see latest data</li>
 
 </ul>
 
 </p>
 
-<p>This file is updated once a day while we figure out the behaviour. This update is from $NOW UTC. If
-you manage one of these systems and would prefer we query less often please feel free to get in
-touch.</p> 
-
 <p>For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/survey10.pdf">this</a>. (Please also use that report if referencing this data.)</p>
 
+<h2>Daily values</h2>
+
 EOF
+
 
 # Check for canaries, these get dropped if bad happens
 for canary in $ARCHIVE/*-canary
@@ -291,17 +300,39 @@ do
     cat $canary >>$TARGET
 done
 
+TMPF=`mktemp`
+
 # table of tables with 1 row only 
 echo '<table ><tr>' >>$TARGET
 for country in $COUNTRY_LIST
 do
+
+    # colour red/green as above 
+    nowtimet=`date +%s`
+    redstr=' style="background-color:Red;"'
+    greenstr=' style="background-color:Green;"'
+    colstr=$redstr
+    lastzip=`ls -rt $ARCHIVE/$country-*.zip | tail -1`
+    if [[ "$lastzip" != "" ]]
+    then
+        lasttime=`stat -c %Z $lastzip`
+        lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
+        if (( (nowtimet-lasttime)<(24*60*60) ))
+        then
+            colstr=$greenstr
+        fi
+    fi
 	cfile="$ARCHIVE/$country-tek-times.csv"
+    # reverse the lines in the CSV
+    head -1 $cfile >$TMPF
+    tail -n +2 $cfile | tac >>$TMPF
 	echo '<td valign="top">' >>$TARGET
 	echo '<p>'${COUNTRY_NAMES[$country]} '<a href="'$country'-tek-times.csv">csv file</a></p>' >>$TARGET
-	echo '<table border="1">' >>$TARGET
-	awk -F, '{print "<TR>"; for(i=1;i<=NF;i++) {print "<TD>"$i"</TD>"} print "</TR>"}' $cfile >>$TARGET
+	echo '<table '$colstr'border="1">' >>$TARGET
+	awk -F, '{print "<TR>"; for(i=1;i<=NF;i++) {print "<TD>"$i"</TD>"} print "</TR>"}' $TMPF >>$TARGET
 	echo '</table>' >>$TARGET
 	echo '</td>' >>$TARGET
+    rm -f $TMPF
 done
 echo "</tr></table>" >>$TARGET
 

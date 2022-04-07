@@ -2343,7 +2343,7 @@ then
     si_index=`$CURL -L "$SI_BASE"`
     if [[ "$?" == "0" ]]
     then
-        echo "Slovenian index: $si_index"
+        echo "Slovenian index at $NOW: $si_index"
         batches=`echo $si_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
         for batch in $batches
         do
