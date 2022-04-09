@@ -47,7 +47,7 @@ that are visible on the Internet, to allow for comparisons for each day.
 Now that these services are being turned off, we note the last time we
 saw new key files published for each service. 
 Those are coloured <strong><span style="color:red";">Red</span></strong>
-if we haven't seen any new keys for more than 24 hours, 
+if we haven't seen any new keys for more than 36 hours, 
 <strong><span style="bold;color:green;">Green</span></strong> if we have:
 </p>  
 <ol> 
@@ -68,7 +68,7 @@ do
     then
         lasttime=`stat -c %Z $lastzip`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
-        if (( (nowtimet-lasttime)<(24*60*60) ))
+        if (( (nowtimet-lasttime)<(36*60*60) ))
         then
             colstr=$greenstr
             stillworking=$(( stillworking+1 ))
@@ -282,6 +282,7 @@ currently participating in their US national server (according to
 <a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">this web page</a>). That's just in case of future link rot.</li>
     <li>20220407: reversed the presentation order of the daily values (below), and adopted colour-coding as
 at the top, to make it easier to see latest data</li>
+    <li>20220409: changed red/green rule to 36 hours as we were getting some edge-conditions</li>
 
 </ul>
 
@@ -317,7 +318,7 @@ do
     then
         lasttime=`stat -c %Z $lastzip`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
-        if (( (nowtimet-lasttime)<(24*60*60) ))
+        if (( (nowtimet-lasttime)<(36*60*60) ))
         then
             colstr=$greenstr
         fi
