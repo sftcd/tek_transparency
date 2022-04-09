@@ -44,7 +44,9 @@ vlink="#000080" alink="#FF0000">
 
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day. 
-Now that these services are being turned off, we note the last time we
+For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/survey10.pdf">this</a>. (Please also use that report if referencing this data.)</p>
+
+<p>Now that these services are being turned off, we note the last time we
 saw new key files published for each service. 
 Those are coloured <strong><span style="color:red";">Red</span></strong>
 if we haven't seen any new keys for more than 36 hours, 
@@ -288,7 +290,6 @@ at the top, to make it easier to see latest data</li>
 
 </p>
 
-<p>For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/survey10.pdf">this</a>. (Please also use that report if referencing this data.)</p>
 
 <h2>Daily values</h2>
 
