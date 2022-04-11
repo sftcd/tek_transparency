@@ -28,6 +28,9 @@ then
     echo "Can't see $TARGET_DIR, writing to $TARGET"
 fi
 
+FRESHHOURS=36
+WORKINGSIZE=600
+
 # do the file header
 cat >$TARGET <<EOF
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -49,8 +52,12 @@ For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/
 <p>Now that these services are being turned off, we note the last time we
 saw new key files published for each service. 
 Those are coloured <strong><span style="color:red";">Red</span></strong>
-if we haven't seen any new keys for more than 36 hours, 
-<strong><span style="bold;color:green;">Green</span></strong> if we have:
+if we haven't seen any new keys for more than $FRESHHOURS hours, 
+<strong><span style="bold;color:#ffbf00;">Amber</span></strong> if we have
+but the most recent zip file size is less than $WORKINGSIZE bytes (indicating a lack of activity),
+or 
+<strong><span style="bold;color:green;">Green</span></strong> if things
+look more operational:
 </p>  
 <ol> 
 <strong>
@@ -58,9 +65,11 @@ EOF
 
 # time_t for now
 stillworking=0
+amberstate=0
 turnedoff=0
 nowtimet=`date +%s`
 redstr=' style="color:Red;"'
+amberstr=' style="color:#ffbf00;"'
 greenstr=' style="color:Green;"'
 for country in $COUNTRY_LIST
 do
@@ -69,11 +78,18 @@ do
     if [[ "$lastzip" != "" ]]
     then
         lasttime=`stat -c %Z $lastzip`
+        lastsize=`stat -c %s $lastzip`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
-        if (( (nowtimet-lasttime)<(36*60*60) ))
+        if (( (nowtimet-lasttime)<(FRESHHOURS*60*60) ))
         then
-            colstr=$greenstr
-            stillworking=$(( stillworking+1 ))
+            if (( lastsize < WORKINGSIZE ))
+            then
+                colstr=$amberstr
+                amberstate=$(( amberstate+1 ))
+            else
+                colstr=$greenstr
+                stillworking=$(( stillworking+1 ))
+            fi
         else
             turnedoff=$(( turnedoff+1 ))
         fi
@@ -89,10 +105,12 @@ cat >>$TARGET <<EOF
 </strong>
 </ol>
 
-<p>That's a total of $stillworking still seemingly working and
-$turnedoff apparently turned off. That said, Portugal is counted
-here as "working" even though they've basically posted one key
-per day since March 2021, so one could quibble on that one. The
+<p>That's a total of $stillworking still seemingly working, $amberstate
+in the "Amber" state, and
+$turnedoff apparently turned off. Portugal for example is counted
+here as amber as they've basically posted one key
+per day since March 2021. Since 2022-04-06 Croatian key files
+have contained no keys, so it's also amber. The
 2021-12-15 date above is also an artefact and really means
 "earlier than that" (that was the date I migrated the machine
 running this).</p>
@@ -285,6 +303,13 @@ currently participating in their US national server (according to
     <li>20220407: reversed the presentation order of the daily values (below), and adopted colour-coding as
 at the top, to make it easier to see latest data</li>
     <li>20220409: changed red/green rule to 36 hours as we were getting some edge-conditions</li>
+    <li>20220411: added "amber" state for services still serving fresh zip files that are smaller than 600 
+bytes and so have only zero or a couple of keys</li>
+    <li>20220411: it turns out we added Hungary (.hu) in error back in Oct 2020 using Croatian (.hr) URLs. As far
+as we know that hasn't affected anything published. We did add Croatia properly in Dec 2020. We still have the 
+Oct 2020 to Dec 2020 data that's really Croatian in our archives but for now, we'll simply drop Hungary from
+our lists. It looks like Hungary perhaps never deployed a GAEN app but it's a hard to be sure at this remove.
+Apologies for our error.</li>
 
 </ul>
 
@@ -313,15 +338,22 @@ do
     nowtimet=`date +%s`
     redstr=' style="background-color:Red;"'
     greenstr=' style="background-color:Green;"'
+    amberstr=' style="background-color:#ffbf00;"'
     colstr=$redstr
     lastzip=`ls -rt $ARCHIVE/$country-*.zip | tail -1`
     if [[ "$lastzip" != "" ]]
     then
         lasttime=`stat -c %Z $lastzip`
+        lastsize=`stat -c %s $lastzip`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
-        if (( (nowtimet-lasttime)<(36*60*60) ))
+        if (( (nowtimet-lasttime)<(FRESHHOURS*60*60) ))
         then
-            colstr=$greenstr
+            if (( lastsize < WORKINGSIZE ))
+            then
+                colstr=$amberstr
+            else
+                colstr=$greenstr
+            fi
         fi
     fi
 	cfile="$ARCHIVE/$country-tek-times.csv"

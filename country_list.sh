@@ -1,6 +1,9 @@
 
 # countries to do by default, or just one if given on command line
 
+# 2022-04-11 removed hungary - turns out it was added in error
+# ["hu"]="Hungary" \
+
 declare -A COUNTRY_NAMES=(\
                ["at"]="Austria" \
                ["be"]="Belgium" \
@@ -16,7 +19,6 @@ declare -A COUNTRY_NAMES=(\
                ["fi"]="Finland" \
                ["gu"]="Guam" \
                ["hr"]="Croatia" \
-               ["hu"]="Hungary" \
                ["ie"]="Ireland" \
                ["it"]="Italy" \
                ["lv"]="Latvia" \
