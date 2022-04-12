@@ -2155,7 +2155,11 @@ do
     sleep 1
 done
 
-# Hungary
+# Hungary - oops, these are really Croation (.hr) so we'll start skipping 'em now
+
+DOHU="no"
+if [[ "$DOHU" != "no" ]]
+then
 
 HU_BASE="https://en.apis-it.hr/submission/diagnosis-key-file-urls"
 HU_BASE_EU="https://en.apis-it.hr/submission/diagnosis-key-file-urls?all=true"
@@ -2209,6 +2213,8 @@ do
     # don't appear to be too keen:-)
     sleep 1
 done
+
+fi
 
 # Netherlands
 

@@ -29,7 +29,7 @@ then
 fi
 
 FRESHHOURS=36
-WORKINGSIZE=600
+WORKINGSIZE=570
 
 # do the file header
 cat >$TARGET <<EOF
@@ -109,10 +109,10 @@ cat >>$TARGET <<EOF
 in the "Amber" state, and
 $turnedoff apparently turned off. Portugal for example is counted
 here as amber as they've basically posted one key
-per day since March 2021. Since 2022-04-06 Croatian key files
-have contained no keys, so it's also amber. The
+per day since March 2021. From 2022-04-06 to 2022-04-11 Croatian key files
+contained no keys, so were also amber (though then turned back "green"). The
 2021-12-15 date above is also an artefact and really means
-"earlier than that" (that was the date I migrated the machine
+"earlier than that" (that was the date we migrated the machine
 running this).</p>
 
 <p>This file is updated twice a day, we query services once per hour. This
