@@ -853,7 +853,7 @@ then
         for theurl in $urls2get
         do
             the_zip_name=$theurl
-            the_local_zip_name="lv-`basename $theurl`"
+            the_local_zip_name=$(sanitise_filename "lv-`basename $theurl`")
             $CURL -L $theurl -o $the_local_zip_name
             lvzip_res=$?
             if [[ "$lvzip_res" == "0" ]]
@@ -895,11 +895,13 @@ then
         done
     fi
 fi
+
+exit
+
 echo "======================"
+echo ".es TEKs"
 
 # Spain
-
-# This is still in test so we'll collect, but not yet report
 
 # a friend sent me the apk for the spanish app that's being tested just now (in
 # the canaries i think).  to get the config settings use GET
@@ -920,8 +922,6 @@ today_midnight="`date -d "00:00:00Z" +%s`000"
 # one day in milliseconds
 day=$((60*60*24*1000))
 
-echo "======================"
-echo ".es TEKs"
 for fno in {0..14}
 do
     echo "Doing .es file $fno" 
