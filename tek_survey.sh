@@ -30,14 +30,14 @@ UNZIP="/usr/bin/unzip"
 # consider what'd happen if a domain name were in future snagged
 # by a bad actor, or were just re-used for something that caused
 # us a problem. So we'll sanitise all file names we create down 
-# to just alphanumerics plus "-" and "." which seems to be all we 
+# to just alphanumerics plus "-", "_" and "." which seems to be all we 
 # need for the real services.
 # We should call this anytime we create a file based on a string
 # we've downloaded from a service.
 function sanitise_filename()
 {
     fname=$1
-    echo ${fname//[^a-zA-Z0-9\-.]/}
+    echo ${fname//[^a-zA-Z0-9_\-.]/}
 }
 
 # same for what we want to be a decimal number string
@@ -770,66 +770,69 @@ $CURL -L $AT_INDEX \
     -H "x-appid: at.roteskreuz.stopcorona" \
     -o at.index.json
 
-zipnames=`cat at.index.json | sed -e 's/\["/\n/g' | sed -e 's/"\].*//g' | grep exposure`
+if [ -f at.index.json ]
+then
 
-for zipname in $zipnames
-do
-    echo $zipname
-    zipurl=https://cdn.prod-rca-coronaapp-fd.net/$zipname
-    the_zip_name=`basename $zipname`
-    the_local_zip_name="at-$the_zip_name"
-    $CURL -L $zipurl \
-        -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
-        -H "x-appid: at.roteskreuz.stopcorona" \
-        -o $the_local_zip_name
-
-    atzip_res=$?
-    if [[ "$atzip_res" == "0" ]]
-    then
-        if [ ! -s $the_local_zip_name ]
+    zipnames=`cat at.index.json | sed -e 's/\["/\n/g' | sed -e 's/"\].*//g' | grep exposure`
+    for zipname in $zipnames
+    do
+        echo "Fetching .at $zipname"
+        zipurl=https://cdn.prod-rca-coronaapp-fd.net/$zipname
+        the_zip_name=`basename $zipname`
+        the_local_zip_name=$(sanitise_filename "at-$the_zip_name")
+        $CURL -L $zipurl \
+            -H "authorizationkey: 64165cfc5a984bb09e185b6258392ecb" \
+            -H "x-appid: at.roteskreuz.stopcorona" \
+            -o $the_local_zip_name
+    
+        atzip_res=$?
+        if [[ "$atzip_res" == "0" ]]
         then
-            echo "Got empty file for $the_zip_name" 
-            more_to_come=""
-        else
-            echo "Got $the_zip_name" 
-            at_chunk=$((at_chunk+1))
-            if [ ! -f $ARCHIVE/$the_local_zip_name ]
+            if [ ! -s $the_local_zip_name ]
             then
-                echo "New .at file $the_local_zip_name"
-                cp $the_local_zip_name $ARCHIVE
-            elif ((`stat -c%s "$the_local_zip_name"`>`stat -c%s "$ARCHIVE/$the_local_zip_name"`));then
-                # if the new one is bigger than archived, then archive new one
-                echo "Updated/bigger .at file $the_local_zip_name"
-                cp $the_local_zip_name $ARCHIVE
-            fi
-            # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "$the_local_zip_name" >/dev/null 2>&1
-                if [[ $? == 0 ]]
+                echo "Got empty file for $the_zip_name" 
+                more_to_come=""
+            else
+                echo "Got $the_zip_name" 
+                at_chunk=$((at_chunk+1))
+                if [ ! -f $ARCHIVE/$the_local_zip_name ]
                 then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
+                    echo "New .at file $the_local_zip_name"
+                    cp $the_local_zip_name $ARCHIVE
+                elif ((`stat -c%s "$the_local_zip_name"`>`stat -c%s "$ARCHIVE/$the_local_zip_name"`));then
+                    # if the new one is bigger than archived, then archive new one
+                    echo "Updated/bigger .at file $the_local_zip_name"
+                    cp $the_local_zip_name $ARCHIVE
                 fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
+                # try unzip and decode
+                if [[ "$DODECODE" == "yes" ]]
+                then
+                    $UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                    if [[ $? == 0 ]]
+                    then
+                        $TEK_DECODE >/dev/null
+                        new_keys=$?
+                        total_keys=$((total_keys+new_keys))
+                    fi
+                    rm -f export.bin export.sig
+                    chunks_down=$((chunks_down+1))
+                fi
             fi
+        else
+            echo "Didn't get a $the_zip_name" 
+            more_to_come=""
         fi
-    else
-        echo "Didn't get a $the_zip_name" 
-        more_to_come=""
-    fi
-    # let's not be too insistent
-    sleep 1
+        # let's not be too insistent
+        sleep 1
 
-done
+    done
+fi
 
-echo "======================"
-
-# Latvia
 echo "======================"
 echo ".lv Teks"
+
+# Latvia
+
 LV_BASE="https://apturicovid-files.spkc.gov.lv"
 LV_CONFIG="$LV_BASE/exposure_configurations/v1/android.json"
 LV_INDEX="$LV_BASE/dkfs/v1/index.txt"
