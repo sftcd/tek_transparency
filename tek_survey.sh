@@ -23,6 +23,23 @@ DE_CFG_DECODE="$TOP/de_tek_cfg_decode.py"
 CURL="/usr/bin/curl -s"
 UNZIP="/usr/bin/unzip"
 
+# The services here could generally be trusted to not provide (or
+# cause us to derive) "bad" file names (e.g. "/etc/passwd" or 
+# "../../tek_survey.sh") that might do damage. However, now that
+# a number of those services are being de-commissioned, we should
+# consider what'd happen if a domain name were in future snagged
+# by a bad actor, or were just re-used for something that caused
+# us a problem. So we'll sanitise all file names we create down 
+# to just alphanumerics plus "-" which seems to be all we need 
+# for the real services.
+# We should call this anytime we create a file based on a string
+# we've downloaded from a service.
+function sanitise_filename()
+{
+    fname=$1
+    echo ${fname//[^a-zA-Z0-9\-]/}
+}
+
 function whenisitagain()
 {
     date -u +%Y%m%d-%H%M%S
@@ -102,7 +119,8 @@ else
             for iefile in $iefiles
             do
                 echo "Getting $iefile"
-                iebname=`basename $iefile`
+                iebname_raw=`basename $iefile`
+                iebname=$(sanitise_filename $iebname_raw)
                 $CURL -s -L "$IE_BASE/data/$iefile" --output ie-$iebname -H "Authorization: Bearer $newtoken"
                 if [[ $? == 0 ]]
                 then
