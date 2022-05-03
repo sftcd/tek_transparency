@@ -1204,8 +1204,10 @@ else
     done
 fi
 
-# Estonia
+echo "======================"
+echo ".ee TEKs"
 
+# Estonia
 EE_BASE="https://enapi.sm.ee/authorization/v1/gaen/exposed"
 now=`date +%s`
 toay_midnight="`date -d "00:00:00Z" +%s`000"
@@ -1213,8 +1215,6 @@ toay_midnight="`date -d "00:00:00Z" +%s`000"
 # one day in milliseconds
 day=$((60*60*24*1000))
 
-echo "======================"
-echo ".ee TEKs"
 for fno in {0..14}
 do
     echo "Doing .ee file $fno" 
@@ -1240,18 +1240,18 @@ do
                 cp ee-$midnight.zip $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "ee-$midnight.zip" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                        total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "ee-$midnight.zip" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
         echo "curl - error downloading ee-$midnight.zip (file $fno)"
