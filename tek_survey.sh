@@ -40,6 +40,14 @@ function sanitise_filename()
     echo ${fname//[^a-zA-Z0-9\-.]/}
 }
 
+# same for what we want to be a decimal number string
+function sanitise_decimal()
+{
+    num=$1
+    echo ${num//[^0-9]/}
+}
+
+
 function whenisitagain()
 {
     date -u +%Y%m%d-%H%M%S
@@ -262,56 +270,63 @@ else
 fi
 
 # italy
+echo "======================"
+echo ".it TEKs"
 
 IT_BASE="https://get.immuni.gov.it/v1/keys"
 IT_INDEX="$IT_BASE/index"
 IT_CONFIG="https://get.immuni.gov.it/v1/settings?platform=android&build=1"
 
 index_str=`$CURL -L $IT_INDEX`
-bottom_chunk_no=`echo $index_str | awk '{print $2}' | sed -e 's/,//'`
-top_chunk_no=`echo $index_str | awk '{print $4}' | sed -e 's/}//'`
+raw_bottom_chunk_no=`echo $index_str | awk '{print $2}' | sed -e 's/,//'`
+raw_top_chunk_no=`echo $index_str | awk '{print $4}' | sed -e 's/}//'`
+
+bottom_chunk_no=$(sanitise_decimal $raw_bottom_chunk_no)
+top_chunk_no=$(sanitise_decimal $raw_top_chunk_no)
 
 echo "Bottom: $bottom_chunk_no, Top: $top_chunk_no"
 
-echo "======================"
-echo ".it TEKs"
-total_keys=0
-chunks_down=0
-chunk_no=$bottom_chunk_no
-while [ $chunk_no -le $top_chunk_no ]
-do
-    $CURL -L "$IT_BASE/{$chunk_no}" --output it-$chunk_no.zip
-    if [[ $? == 0 ]]
-    then
-        if [ ! -f $ARCHIVE/it-$chunk_no.zip ]
+if [[ "$bottom_chunk_no" != "" && "$top_chunk_no" != "" && $((top_chunk_no > bottom_chunk_no)) ]]
+then
+    total_keys=0
+    chunks_down=0
+    chunk_no=$bottom_chunk_no
+    while [ $chunk_no -le $top_chunk_no ]
+    do
+        echo "Getting it-$chunk_no.zip"
+        $CURL -L "$IT_BASE/{$chunk_no}" --output it-$chunk_no.zip
+        if [[ $? == 0 ]]
         then
-            cp it-$chunk_no.zip $ARCHIVE
-        fi
-        # try unzip and decode
-        if [[ "$DODECODE" == "yes" ]]
-        then
-            $UNZIP "it-$chunk_no.zip" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            if [ ! -f $ARCHIVE/it-$chunk_no.zip ]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                cp it-$chunk_no.zip $ARCHIVE
             fi
-            rm -f export.bin export.sig
+            # try unzip and decode
+            if [[ "$DODECODE" == "yes" ]]
+            then
+                $UNZIP "it-$chunk_no.zip" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+            fi
+        else
+            echo "Error decoding it-$chunk_no.zip"
         fi
-    else
-        echo "Error decoding it-$chunk_no.zip"
-    fi
-    chunk_no=$((chunk_no+1))
-    chunks_down=$((chunks_down+1))
-done
+        chunk_no=$((chunk_no+1))
+        chunks_down=$((chunks_down+1))
+    done
+else
+    echo "Skipping Italy TEKS due to malformed chunk nos"
+fi
+
 $CURL -L $IT_CONFIG --output it-cfg.json
-echo "======================"
-echo ".it config:"
-cat it-cfg.json
 
 echo "======================"
-echo "======================"
+echo ".de TEKs"
 # Germany 
 
 # not yet but, do stuff once this is non-empty 
@@ -320,10 +335,7 @@ echo "======================"
 DE_BASE="https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE"
 DE_INDEX="$DE_BASE/date"
 
-# .de index format so far: ["2020-06-23"]
-# let's home tomorrow will be ["2020-06-23","2020-06-24"]
-echo "======================"
-echo ".de TEKs"
+# .de index format is like: ["2020-06-23","2020-06-24"]
 index_str=`$CURL -L $DE_INDEX` 
 echo "German index string: $index_str"
 dedates=`echo $index_str \
