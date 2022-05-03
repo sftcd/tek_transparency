@@ -1333,9 +1333,11 @@ then
     done
 fi
 
+echo "======================"
+echo "Scotland TEKs"
+
 # Scotland
 
-CANARY="$ARCHIVE/uksc-canary"
 UKSC_INDEX="https://api-scot-prod.nearform-covid-services.com/api/exposures/?since=0&limit=1000"
 UKSC_BASE="https://api-scot-prod.nearform-covid-services.com/api/data"
 UKSC_REFRESH="https://api-scot-prod.nearform-covid-services.com/api/refresh"
@@ -1346,9 +1348,6 @@ UKSC_STATS="https://api-scot-prod.nearform-covid-services.com/api/stats"
 # used to notify us that something went wrong
 CANARY="$ARCHIVE/uksc-canary"
 UKSC_RTFILE="$HOME/uksc-refreshToken.txt"
-
-echo "======================"
-echo "Scotland TEKs"
 
 $CURL --output uksc-lang.json -L $UKSC_LANG
 
@@ -1376,35 +1375,34 @@ else
         then
             echo "No sign of an authToken, sorry - Skipping Scotland"
         else
-            # config now requires authz for some reason
             $CURL --output uksc-cfg.json -L $UKSC_CONFIG -H "Authorization: Bearer $newtoken"` 
             $CURL --output uksc-stats.json -L $UKSC_STATS -H "Authorization: Bearer $newtoken"` 
 
             index_str=`$CURL -L "$UKSC_INDEX" -H "Authorization: Bearer $newtoken"`  
+            ukscfiles=""
             if [[ $? != 0 ]]
             then
                 echo "Error getting index string: $index_str ($?)"
-                exit 1
+            else
+                echo "Scotland index string: $index_str"
+                for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
+                do
+                    check401=`echo ${row} | base64 --decode`
+                    if [[ "$check401" == "401" ]]
+                    then
+                        echo "401 detected in JSON answer - oops"
+                        break
+                    fi
+                    _jq() {
+                            echo ${row} | base64 --decode | jq -r ${1}
+                    }
+                    ukscfiles="$ukscfiles $(_jq '.path')"
+                done
             fi
-            echo "Scotland index string: $index_str"
-            ukscfiles=""
-            for row in $(echo "${index_str}" | jq -r '.[] | @base64'); 
-            do
-                check401=`echo ${row} | base64 --decode`
-                if [[ "$check401" == "401" ]]
-                then
-                    echo "401 detected in JSON answer - oops"
-                    break
-                fi
-                _jq() {
-                         echo ${row} | base64 --decode | jq -r ${1}
-                }
-                ukscfiles="$ukscfiles $(_jq '.path')"
-            done
             for ukscfile in $ukscfiles
             do
                 echo "Getting $ukscfile"
-                ukscname=`basename $ukscfile`
+                ukscname=$(sanitise_filename "`basename $ukscfile`")
                 $CURL -L "$UKSC_BASE/$ukscfile" --output uksc-$ukscname -H "Authorization: Bearer $newtoken"
                 if [[ $? == 0 ]]
                 then
@@ -1416,20 +1414,20 @@ else
                         cp uksc-$ukscname $ARCHIVE
                     fi
                     # try unzip and decode
-                    if [[ "$DODECODE" == "yes" ]]
-                    then
-                        $UNZIP "uksc-$ukscname" >/dev/null 2>&1
-                        if [[ $? == 0 ]]
-                        then
-                            $TEK_DECODE >/dev/null
-                            new_keys=$?
-                            total_keys=$((total_keys+new_keys))
-                        fi
-                        rm -f export.bin export.sig
-                        chunks_down=$((chunks_down+1))
-                    fi
+                    #if [[ "$DODECODE" == "yes" ]]
+                    #then
+                        #$UNZIP "uksc-$ukscname" >/dev/null 2>&1
+                        #if [[ $? == 0 ]]
+                        #then
+                            #$TEK_DECODE >/dev/null
+                            #new_keys=$?
+                            #total_keys=$((total_keys+new_keys))
+                        #fi
+                        #rm -f export.bin export.sig
+                        #chunks_down=$((chunks_down+1))
+                    #fi
                 else
-                    echo "Error decoding uksc-$ukscname"
+                    echo "Error downloading uksc-$ukscname"
                 fi
             done
 
@@ -1448,11 +1446,10 @@ USDE_LANG="https://api-dela-prod.nearform-covid-services.com/api/settings/langua
 USDE_STATS="https://api-dela-prod.nearform-covid-services.com/api/stats"
 
 # used to notify us that something went wrong
-CANARY="$ARCHIVE/usde-canary"
 USDE_RTFILE="$HOME/usde-refreshToken.txt"
 
 echo "======================"
-echo "Delaware TEKs"
+echo "US Delaware TEKs"
 
 $CURL --output usde-lang.json -L $USDE_LANG
 
@@ -1492,40 +1489,40 @@ index_str=`$CURL -s -L "$USDE_INDEX"`
 if [[ $? != 0 ]]
 then
     echo "Error getting index string: $index_str ($?)"
-    exit 1
-fi
-echo "Delaware index string: $index_str"
-for usdefile in $index_str
-do
-    echo "Getting $usdefile"
-    usdename=`basename $usdefile`
-    $CURL -s -L "$USDE_BASE/$usdefile" --output usde-$usdename 
-    if [[ $? == 0 ]]
-    then
-        # we should be good now, so remove canary
-        rm -f $CANARY
-        echo "Got usde-$usdename"
-        if [ ! -f $ARCHIVE/usde-$usdename ]
+else
+    echo "Delaware index string: $index_str"
+    for usdefile in $index_str
+    do
+        echo "Getting $usdefile"
+        usdename=$(sanitise_filename "`basename $usdefile`")
+        $CURL -s -L "$USDE_BASE/$usdefile" --output usde-$usdename 
+        if [[ $? == 0 ]]
         then
-            cp usde-$usdename $ARCHIVE
-        fi
-        # try unzip and decode
-        if [[ "$DODECODE" == "yes" ]]
-        then
-            $UNZIP "usde-$usdename" >/dev/null 2>&1
-            if [[ $? == 0 ]]
+            # we should be good now, so remove canary
+            rm -f $CANARY
+            echo "Got usde-$usdename"
+            if [ ! -f $ARCHIVE/usde-$usdename ]
             then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
+                cp usde-$usdename $ARCHIVE
             fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
+            # try unzip and decode
+            if [[ "$DODECODE" == "yes" ]]
+            then
+                $UNZIP "usde-$usdename" >/dev/null 2>&1
+                if [[ $? == 0 ]]
+                then
+                    $TEK_DECODE >/dev/null
+                    new_keys=$?
+                    total_keys=$((total_keys+new_keys))
+                fi
+                rm -f export.bin export.sig
+                chunks_down=$((chunks_down+1))
+            fi
+        else
+            echo "Error decoding usde-$usdename"
         fi
-    else
-        echo "Error decoding usde-$usdename"
-    fi
-done
+    done
+fi
 
 # Nevada
 
