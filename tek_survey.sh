@@ -1997,18 +1997,18 @@ do
                 cp ec-$midnight.zip $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "ec-$midnight.zip" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "ec-$midnight.zip" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
         echo "curl - error downloading ec-$midnight.zip (file $fno)"
@@ -2016,6 +2016,9 @@ do
     # don't appear to be too keen:-)
     sleep 1
 done
+
+echo "======================"
+echo ".be TEKs"
 
 # Belgium
 
@@ -2027,62 +2030,62 @@ BE_STATS="https://c19statcdn-prd.ixor.be/statistics/statistics.json"
 $CURL -L $BE_CONFIG --output be-cfg.json
 $CURL -L $BE_STATS --output be-stats.json
 
-if [ ! -f $CANARY ]
+be_index=`$CURL -L "$BE_BASE"`
+if [[ "$?" == "0" ]]
 then
-    be_index=`$CURL -L "$BE_BASE"`
-    if [[ "$?" == "0" ]]
-    then
-        echo "Belgian index: $be_index"
-        batches=`echo $be_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
-        for batch in $batches
-        do
-            $CURL -o be-$batch.zip -L "$BE_BASE/$batch"
-            if [[ $? == 0 ]]
+    echo "Belgian index: $be_index"
+    batches=`echo $be_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
+    for rbatch in $batches
+    do
+        batch=$(sanitise_filename $rbatch)
+        echo "Fetching be-$batch.zip"
+        $CURL -o be-$batch.zip -L "$BE_BASE/$rbatch"
+        if [[ $? == 0 ]]
+        then
+            # we do see zero sized files from .be sometimes
+            # which is odd but whatever (could be their f/w
+            # doing that but what'd be the effect on the 
+            # app?) 
+            if [ ! -s be-$batch.zip ]
             then
-                # we do see zero sized files from .es sometimes
-                # which is odd but whatever (could be their f/w
-                # doing that but what'd be the effect on the 
-                # app?) 
-                if [ ! -s be-$batch.zip ]
-                then
-                    echo "Empty or non-existent downloaded Belgian file: be-$batch.zip"
-                else
-                    if [ ! -f $ARCHIVE/be-$batch.zip ]
-                    then
-                        echo "New .be file be-$batch" 
-                        cp be-$batch.zip $ARCHIVE
-                    elif ((`stat -c%s "be-$batch.zip"`>`stat -c%s "$ARCHIVE/be-$batch.zip"`));then
-                        # if the new one is bigger than archived, then archive new one
-                        echo "Updated/bigger .be file be-$batch" 
-                        cp be-$batch.zip $ARCHIVE
-                    fi
-                    # try unzip and decode
-                    if [[ "$DODECODE" == "yes" ]]
-                    then
-                        $UNZIP "be-$batch.zip" >/dev/null 2>&1
-                        if [[ $? == 0 ]]
-                        then
-                            $TEK_DECODE >/dev/null
-                            new_keys=$?
-                            total_keys=$((total_keys+new_keys))
-                        fi
-                        rm -f export.bin export.sig
-                        chunks_down=$((chunks_down+1))
-                    fi
-                fi
+                echo "Empty or non-existent downloaded Belgian file: be-$batch.zip"
             else
-                echo "curl - error downloading be-$batch.zip (file $fno)"
+                if [ ! -f $ARCHIVE/be-$batch.zip ]
+                then
+                    echo "New .be file be-$batch" 
+                    cp be-$batch.zip $ARCHIVE
+                elif ((`stat -c%s "be-$batch.zip"`>`stat -c%s "$ARCHIVE/be-$batch.zip"`));then
+                    # if the new one is bigger than archived, then archive new one
+                    echo "Updated/bigger .be file be-$batch" 
+                    cp be-$batch.zip $ARCHIVE
+                fi
+                # try unzip and decode
+                #if [[ "$DODECODE" == "yes" ]]
+                #then
+                    #$UNZIP "be-$batch.zip" >/dev/null 2>&1
+                    #if [[ $? == 0 ]]
+                    #then
+                        #$TEK_DECODE >/dev/null
+                        #new_keys=$?
+                        #total_keys=$((total_keys+new_keys))
+                    #fi
+                    #rm -f export.bin export.sig
+                    #chunks_down=$((chunks_down+1))
+                #fi
             fi
-        done
-    fi
+        else
+            echo "curl - error downloading be-$batch.zip (file $fno)"
+        fi
+    done
 fi
+
+echo "======================"
+echo ".cz TEKs"
 
 # Czechia
 
 CZ_BASE="https://storage.googleapis.com/exposure-notification-export-qhqcx"
 
-echo "======================"
-echo ".cz TEKs"
 cz_index=`$CURL -L "$CZ_BASE/erouska/index.txt"`
 echo "CZ index at $NOW: $cz_index"
 for fno in $cz_index
@@ -2093,7 +2096,7 @@ do
         continue
     fi
     echo "Doing .cz file $fno" 
-    bfno=`basename $fno`
+    bfno=$(sanitise_filename "`basename $fno`")
     $CURL -L "$CZ_BASE/$fno" --output cz-$bfno
     if [[ $? == 0 ]]
     then
@@ -2115,18 +2118,18 @@ do
                 cp cz-$bfno $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "cz-$bfno" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "cz-$bfno" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
         echo "curl - error downloading cz-$bfno"
@@ -2135,18 +2138,19 @@ do
     sleep 1
 done
 
+echo "======================"
+echo ".za TEKs"
+
 # South Africa
 
 ZA_BASE="https://files.ens.connect.sacoronavirus.co.za"
 
-echo "======================"
-echo ".za TEKs"
 za_index=`$CURL -L "$ZA_BASE/exposureKeyExport-ZA/index.txt"`
 echo "ZA index at $NOW: $za_index"
 for fno in $za_index
 do
     echo "Doing .za file $fno" 
-    bfno=`basename $fno`
+    bfno=$(sanitise_filename "`basename $fno`")
     $CURL -L "$ZA_BASE/$fno" --output za-$bfno
     if [[ $? == 0 ]]
     then
@@ -2249,10 +2253,11 @@ done
 
 fi
 
-# Netherlands
-
 echo "======================"
 echo ".NL TEKs"
+
+# Netherlands
+
 # Change as per https://github.com/sftcd/tek_transparency/issues/16
 # NL_BASE="https://productie.coronamelder-dist.nl/v1"
 NL_BASE="https://productie.coronamelder-dist.nl/v2"
@@ -2270,10 +2275,11 @@ else
     $CURL -L "$NL_BASE/appconfig/$nl_cfg" -o nl-cfg.zip-but-dont-call-it-that
     $CURL -L "$NL_BASE/riskcalculationparameters/$nl_rcp" -o nl-rcp.zip-but-dont-call-it-that
 
-    for key in $nl_keys
+    for rkey in $nl_keys
     do
+        key=$(sanitise_filename $rkey)
         echo "Getting .nl file $key" 
-        $CURL -L "$NL_BASE/exposurekeyset/$key" --output nl-$key.zip
+        $CURL -L "$NL_BASE/exposurekeyset/$rkey" --output nl-$key.zip
         if [[ $? == 0 ]]
         then
             if [ ! -s nl-$key.zip ]
@@ -2290,19 +2296,19 @@ else
                     cp nl-$key.zip $ARCHIVE
                 fi
                 # try unzip and decode
-                if [[ "$DODECODE" == "yes" ]]
-                then
-                    rm -f content.bin content.sig export.bin export.sig
-                    $UNZIP "nl-$key.zip" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
-                    then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                        total_keys=$((total_keys+new_keys))
-                    fi
-                    rm -f content.bin content.sig export.bin export.sig
-                    chunks_down=$((chunks_down+1))
-                fi
+                #if [[ "$DODECODE" == "yes" ]]
+                #then
+                    #rm -f content.bin content.sig export.bin export.sig
+                    #$UNZIP "nl-$key.zip" >/dev/null 2>&1
+                    #if [[ $? == 0 ]]
+                    #then
+                        #$TEK_DECODE >/dev/null
+                        #new_keys=$?
+                        #total_keys=$((total_keys+new_keys))
+                    #fi
+                    #rm -f content.bin content.sig export.bin export.sig
+                    #chunks_down=$((chunks_down+1))
+                #fi
             fi
         else
             echo "error downloading nl-$key.zip"
@@ -2313,18 +2319,19 @@ else
     
 fi
 
+echo "======================"
+echo ".gu TEKs"
+
 # Guam
 
 GU_BASE="https://cdn.projectaurora.cloud"
 
-echo "======================"
-echo ".gu TEKs"
 gu_index=`$CURL -L "$GU_BASE/guam/teks/index.txt"`
 echo "GU index at $NOW: $gu_index"
 for fno in $gu_index
 do
     echo "Doing .gu file $fno" 
-    bfno=`basename $fno`
+    bfno=$(sanitise_filename "`basename $fno`")
     $CURL -L "$GU_BASE/$fno" --output gu-$bfno
     if [[ $? == 0 ]]
     then
@@ -2346,18 +2353,18 @@ do
                 cp gu-$bfno $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "gu-$bfno" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "gu-$bfno" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
         echo "curl - error downloading gu-$bfno"
@@ -2365,6 +2372,9 @@ do
     # don't appear to be too keen:-)
     sleep 1
 done
+
+echo "======================"
+echo ".si TEKs"
 
 # Slovenia
 
@@ -2377,56 +2387,58 @@ SI_CONFIG="https://svc90.cwa.gov.si/version/v1/configuration/country/SI/app_conf
 $CURL -L $SI_CONFIG --output si-cfg.json
 #$CURL -L $SI_STATS --output si-stats.json
 
-if [ ! -f $CANARY ]
+# use a 4s connection timeout as this isn't currently responsiive 
+si_index=`$CURL --connect-timeout 4 -L "$SI_BASE"`
+if [[ "$?" == "0" ]]
 then
-    si_index=`$CURL -L "$SI_BASE"`
-    if [[ "$?" == "0" ]]
-    then
-        echo "Slovenian index at $NOW: $si_index"
-        batches=`echo $si_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
-        for batch in $batches
-        do
-            $CURL -o si-$batch.zip -L "$SI_BASE/$batch"
-            if [[ $? == 0 ]]
+    echo "Slovenian index at $NOW: $si_index"
+    batches=`echo $si_index | sed -e 's/\[//' | sed -e 's/]//' | sed -e 's/"//g' | sed -e 's/,/ /g'`
+    for rbatch in $batches
+    do
+        batch=$(sanitise_filename "$rbatch")
+        echo "Fetching si-$batch.zip"
+        $CURL -o si-$batch.zip -L "$SI_BASE/$rbatch"
+        if [[ $? == 0 ]]
+        then
+            # we do see zero sized files from .es sometimes
+            # which is odd but whatever (could be their f/w
+            # doing that but what'd be the effect on the 
+            # app?) 
+            if [ ! -s si-$batch.zip ]
             then
-                # we do see zero sized files from .es sometimes
-                # which is odd but whatever (could be their f/w
-                # doing that but what'd be the effect on the 
-                # app?) 
-                if [ ! -s si-$batch.zip ]
-                then
-                    echo "Empty or non-existent downloaded Slovenian file: si-$batch.zip"
-                else
-                    if [ ! -f $ARCHIVE/si-$batch.zip ]
-                    then
-                        echo "New .si file si-$batch" 
-                        cp si-$batch.zip $ARCHIVE
-                    elif ((`stat -c%s "si-$batch.zip"`>`stat -c%s "$ARCHIVE/si-$batch.zip"`));then
-                        # if the new one is bigger than archived, then archive new one
-                        echo "Updated/bigger .si file si-$batch" 
-                        cp si-$batch.zip $ARCHIVE
-                    fi
-                    # try unzip and decode
-                    if [[ "$DODECODE" == "yes" ]]
-                    then
-                        $UNZIP "si-$batch.zip" >/dev/null 2>&1
-                        if [[ $? == 0 ]]
-                        then
-                            $TEK_DECODE >/dev/null
-                            new_keys=$?
-                            total_keys=$((total_keys+new_keys))
-                        fi
-                        rm -f export.bin export.sig
-                        chunks_down=$((chunks_down+1))
-                    fi
-                fi
+                echo "Empty or non-existent downloaded Slovenian file: si-$batch.zip"
             else
-                echo "curl - error downloading si-$batch.zip (file $fno)"
+                if [ ! -f $ARCHIVE/si-$batch.zip ]
+                then
+                    echo "New .si file si-$batch" 
+                    cp si-$batch.zip $ARCHIVE
+                elif ((`stat -c%s "si-$batch.zip"`>`stat -c%s "$ARCHIVE/si-$batch.zip"`));then
+                    # if the new one is bigger than archived, then archive new one
+                    echo "Updated/bigger .si file si-$batch" 
+                    cp si-$batch.zip $ARCHIVE
+                fi
+                # try unzip and decode
+                #if [[ "$DODECODE" == "yes" ]]
+                #then
+                    #$UNZIP "si-$batch.zip" >/dev/null 2>&1
+                    #if [[ $? == 0 ]]
+                    #then
+                        #$TEK_DECODE >/dev/null
+                        #new_keys=$?
+                        #total_keys=$((total_keys+new_keys))
+                    #fi
+                    #rm -f export.bin export.sig
+                    #chunks_down=$((chunks_down+1))
+                #fi
             fi
-        done
-    fi
+        else
+            echo "curl - error downloading si-$batch.zip (file $fno)"
+        fi
+    done
 fi
 
+echo "======================"
+echo ".fr stuff (not TEKs)"
 
 # France
 # France isn't a GAEN app, but they do produce some configs and stats we can grab
@@ -2451,23 +2463,24 @@ FR_PATHS=(
 
 for path in "${FR_PATHS[@]}"
 do
-    bn=`basename $path`
+    bn=$(sanitise_filename "`basename $path`")
     $CURL $FR_BASE/$path --output fr-$bn
 done
+
+echo "======================"
+echo ".hr TEKs"
 
 ## Croatia
 
 HR_INDEX="https://en.apis-it.hr/submission/diagnosis-key-file-urls"
 HR_INDEX_EU="https://en.apis-it.hr/submission/diagnosis-key-file-urls?all=true"
 
-echo "======================"
-echo ".hr TEKs"
 zips=`$CURL -L "$HR_INDEX" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
 zips_eu=`$CURL -L "$HR_INDEX_EU" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
 echo "HR index at $NOW: $zips $zips_eu"
 for fname in $zips $zips_eu
 do
-    bfname=`basename $fname`
+    bfname=$(sanitise_filename "`basename $fname`")
     echo "Getting .hr url $fname into hr-$bfname" 
     $CURL -L "$fname" --output hr-$bfname
     if [[ $? == 0 ]]
@@ -2492,9 +2505,6 @@ do
     # don't appear to be too keen:-)
     sleep 1
 done
-
-
-
 
 ## now count 'em and push to web DocRoot
 

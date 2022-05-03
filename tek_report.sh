@@ -310,6 +310,9 @@ as we know that hasn't affected anything published. We did add Croatia properly 
 Oct 2020 to Dec 2020 data that's really Croatian in our archives but for now, we'll simply drop Hungary from
 our lists. It looks like Hungary perhaps never deployed a GAEN app but it's a hard to be sure at this remove.
 Apologies for our error.</li>
+    <li>20220503: given the services are being turned off, the domain names involved might get re-used
+for other things, I therefore made a bunch of changes so the main survey script is more robust and we shouldn't
+try create a "bad" filename such as one starting with "../../" or similar.</li>
 
 </ul>
 
