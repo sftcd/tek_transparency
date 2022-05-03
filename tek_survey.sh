@@ -134,7 +134,6 @@ else
                 then
                     # we should be good now, so remove canary
                     rm -f $IE_CANARY
-                    echo "Got ie-$iebname"
                     if [ ! -f $ARCHIVE/ie-$iebname ]
                     then
                         cp ie-$iebname $ARCHIVE
@@ -242,7 +241,6 @@ else
                 then
                     # we should be good now, so remove canary
                     rm -f $NI_CANARY
-                    echo "Got ukni-$nibname"
                     if [ ! -f $ARCHIVE/ukni-$nibname ]
                     then
                         cp ukni-$nibname $ARCHIVE
@@ -1408,7 +1406,6 @@ else
                 then
                     # we should be good now, so remove canary
                     rm -f $CANARY
-                    echo "Got uksc-$ukscname"
                     if [ ! -f $ARCHIVE/uksc-$ukscname ]
                     then
                         cp uksc-$ukscname $ARCHIVE
@@ -1500,7 +1497,6 @@ else
         then
             # we should be good now, so remove canary
             rm -f $CANARY
-            echo "Got usde-$usdename"
             if [ ! -f $ARCHIVE/usde-$usdename ]
             then
                 cp usde-$usdename $ARCHIVE
@@ -1557,7 +1553,6 @@ do
     then
         # we should be good now, so remove canary
         rm -f $CANARY
-        echo "Got usnv-$usnvname"
         if [ ! -f $ARCHIVE/usnv-$usnvname ]
         then
             cp usnv-$usnvname $ARCHIVE
@@ -1612,7 +1607,6 @@ do
     then
         # we should be good now, so remove canary
         rm -f $CANARY
-        echo "Got uswy-$uswyname"
         if [ ! -f $ARCHIVE/uswy-$uswyname ]
         then
             cp uswy-$uswyname $ARCHIVE
@@ -1658,34 +1652,36 @@ echo "Brazil index string: $index_str"
 for brfile in $index_str
 do
     echo "Getting $brfile"
-    brname=`basename $brfile`
+    brname=$(sanitise_filename "`basename $brfile`")
     $CURL -s -L "$BR_BASE/$brfile" --output br-$brname 
     if [[ $? == 0 ]]
     then
         # we should be good now, so remove canary
         rm -f $CANARY
-        echo "Got br-$brname"
         if [ ! -f $ARCHIVE/br-$brname ]
         then
             cp br-$brname $ARCHIVE
         fi
         # try unzip and decode
-        if [[ "$DODECODE" == "yes" ]]
-        then
-            $UNZIP "br-$brname" >/dev/null 2>&1
-            if [[ $? == 0 ]]
-            then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
-            fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
-        fi
+        #if [[ "$DODECODE" == "yes" ]]
+        #then
+            #$UNZIP "br-$brname" >/dev/null 2>&1
+            #if [[ $? == 0 ]]
+            #then
+                #$TEK_DECODE >/dev/null
+                #new_keys=$?
+                #total_keys=$((total_keys+new_keys))
+            #fi
+            #rm -f export.bin export.sig
+            ##chunks_down=$((chunks_down+1))
+        #fi
     else
         echo "Error decoding br-$brname"
     fi
 done
+
+echo "======================"
+echo "UK England and Wales TEKs"
 
 CANARY="$ARCHIVE/ukenw-canary"
 # There is also an hourly endpoint but we don't really need that I guess
@@ -1709,11 +1705,11 @@ dlist="$nowd $nowdm1 $nowdm2 $nowdm3"
 echo "Downloading UK (England/Wales) files for: $dlist"
 for batch in $dlist
 do
-
+    echo "trying ukenw-$batch.zip"
     $CURL -o ukenw-$batch.zip -L "$UKEN_BASE/$batch.zip"
     if [[ $? == 0 ]]
     then
-        # we do see zero sized files from .es sometimes
+        # we do see zero sized files sometimes
         # which is odd but whatever (could be their f/w
         # doing that but what'd be the effect on the 
         # app?) 
@@ -1731,25 +1727,28 @@ do
                 cp ukenw-$batch.zip $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "ukenw-$batch.zip" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "ukenw-$batch.zip" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
-        echo "curl - error downloading ukenw-$batch.zip (file $fno)"
+        echo "curl - error downloading ukenw-$batch.zip"
     fi
 
 done
 
+
+echo "======================"
+echo "UK Gibraltar TEKs"
 
 # Gibraltar
 
@@ -1760,9 +1759,6 @@ GI_BASE="https://app.beatcovid19.gov.gi/api"
 GI_CONFIG="$GI_BASE/settings/"
 
 $CURL --output ukgi-cfg.json -L $GI_CONFIG
-
-echo "======================"
-echo "Gibraltar TEKs"
 
 if [ ! -f $GI_RTFILE ]
 then
@@ -1807,38 +1803,40 @@ else
             for gifile in $gifiles
             do
                 echo "Getting $gifile"
-                gibname=`basename $gifile`
+                gibname=$(sanitise_filename "`basename $gifile`")
                 $CURL -s -L "$GI_BASE/data/$gifile" --output ukgi-$gibname -H "Authorization: Bearer $newtoken"
                 if [[ $? == 0 ]]
                 then
                     # we should be good now, so remove canary
                     rm -f $CANARY
-                    echo "Got ukgi-$gibname"
                     if [ ! -f $ARCHIVE/ukgi-$gibname ]
                     then
                         cp ukgi-$gibname $ARCHIVE
                     fi
                     # try unzip and decode
-                    if [[ "$DODECODE" == "yes" ]]
-                    then
-                        $UNZIP "ukgi-$gibname" >/dev/null 2>&1
-                        if [[ $? == 0 ]]
-                        then
-                            $TEK_DECODE >/dev/null
-                            new_keys=$?
-                            total_keys=$((total_keys+new_keys))
-                        fi
-                        rm -f export.bin export.sig
-                        chunks_down=$((chunks_down+1))
-                    fi
+                    #if [[ "$DODECODE" == "yes" ]]
+                    #then
+                        #$UNZIP "ukgi-$gibname" >/dev/null 2>&1
+                        #if [[ $? == 0 ]]
+                        #then
+                            #$TEK_DECODE >/dev/null
+                            #new_keys=$?
+                            #total_keys=$((total_keys+new_keys))
+                        #fi
+                        #rm -f export.bin export.sig
+                        #chunks_down=$((chunks_down+1))
+                    #fi
                 else
-                    echo "Error decoding ukgi-$gibname"
+                    echo "Error downloading ukgi-$gibname"
                 fi
             done
     
         fi
     fi
 fi
+
+echo "======================"
+echo ".mt TEKs"
 
 # Malta
 
@@ -1852,8 +1850,6 @@ today_midnight="`date -d "00:00:00Z" +%s`000"
 # one day in milliseconds
 day=$((60*60*24*1000))
 
-echo "======================"
-echo ".mt TEKs"
 for fno in {0..14}
 do
     echo "Doing .mt file $fno" 
@@ -1879,18 +1875,18 @@ do
                 cp mt-$midnight.zip $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "mt-$midnight.zip" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "mt-$midnight.zip" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
         echo "curl - error downloading mt-$midnight.zip (file $fno)"
@@ -1898,6 +1894,9 @@ do
     # don't appear to be too keen:-)
     sleep 1
 done
+
+echo "======================"
+echo ".pt TEKs"
 
 # Portugal
 
@@ -1912,8 +1911,6 @@ today_midnight="`date -d "00:00:00Z" +%s`000"
 # one day in milliseconds
 day=$((60*60*24*1000))
 
-echo "======================"
-echo ".pt TEKs"
 for fno in {0..14}
 do
     echo "Doing .pt file $fno" 
@@ -1939,18 +1936,18 @@ do
                 cp pt-$midnight.zip $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "pt-$midnight.zip" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "pt-$midnight.zip" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
         echo "curl - error downloading pt-$midnight.zip (file $fno)"
@@ -1958,6 +1955,9 @@ do
     # don't appear to be too keen:-)
     sleep 1
 done
+
+echo "======================"
+echo ".ec TEKs"
 
 # Ecuador
 
@@ -1972,8 +1972,6 @@ today_midnight="`date -d "00:00:00Z" +%s`000"
 # one day in milliseconds
 day=$((60*60*24*1000))
 
-echo "======================"
-echo ".ec TEKs"
 for fno in {0..14}
 do
     echo "Doing .ec file $fno" 
