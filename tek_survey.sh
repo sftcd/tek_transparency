@@ -717,18 +717,18 @@ do
                     cp $the_local_zip_name $ARCHIVE
                 fi
                 # try unzip and decode
-                if [[ "$DODECODE" == "yes" ]]
-                then
-                    $UNZIP "$the_local_zip_name" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
-                    then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                            total_keys=$((total_keys+new_keys))
-                    fi
-                    rm -f export.bin export.sig
-                    chunks_down=$((chunks_down+1))
-                fi
+                #if [[ "$DODECODE" == "yes" ]]
+                #then
+                    #$UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                    #if [[ $? == 0 ]]
+                    #then
+                        #$TEK_DECODE >/dev/null
+                        #new_keys=$?
+                        #total_keys=$((total_keys+new_keys))
+                    #fi
+                    #rm -f export.bin export.sig
+                    #chunks_down=$((chunks_down+1))
+                #fi
             fi
         else
             echo "Didn't get a $the_zip_name" 
@@ -741,7 +741,6 @@ do
 done
 
 fi
-echo "======================"
 
 echo "======================"
 echo ".at Teks"
