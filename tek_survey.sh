@@ -971,8 +971,8 @@ ES_CCAA="https://radarcovid.covid19.gob.es/configuration/masterData/ccaa?locale=
 $CURL -L $ES_CONFIG --output es-cfg.json
 $CURL -L $ES_LOCALES --output es-locales.json
 $CURL -L $ES_CCAA --output es-ccaa.json
-echo ".es config:"
-cat es-cfg.json
+#echo ".es config:"
+#cat es-cfg.json
 
 echo "======================"
 echo "US Virginia TEKs"
@@ -1001,8 +1001,8 @@ else
     do
         sleep 1
         zname=`echo $path | sed -e 's/.*\///'`
-        lpath=usva-$zname
-        $CURL -D - -o $lpath -L "$USVA_BASE/$path" 
+        lpath=$(sanitise_filename "usva-$zname")
+        $CURL -o $lpath -L "$USVA_BASE/$path" 
         if [ -f $lpath ]
         then
             # we should be good now, so remove canary
@@ -1019,18 +1019,18 @@ else
                 echo "A smaller or same $lpath already archived"
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "$lpath" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "$lpath" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         else
             echo "Failed to download $lpath"
             echo "Failed to download $lpath at $NOW" >$USVA_CANARY
