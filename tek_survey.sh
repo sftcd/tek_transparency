@@ -1435,6 +1435,9 @@ else
     fi
 fi
 
+echo "======================"
+echo "US Delaware TEKs"
+
 # Delaware
 
 CANARY="$ARCHIVE/usde-canary"
@@ -1447,9 +1450,6 @@ USDE_STATS="https://api-dela-prod.nearform-covid-services.com/api/stats"
 
 # used to notify us that something went wrong
 USDE_RTFILE="$HOME/usde-refreshToken.txt"
-
-echo "======================"
-echo "US Delaware TEKs"
 
 $CURL --output usde-lang.json -L $USDE_LANG
 
@@ -1506,37 +1506,37 @@ else
                 cp usde-$usdename $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "usde-$usdename" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "usde-$usdename" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         else
             echo "Error decoding usde-$usdename"
         fi
     done
 fi
 
+echo "======================"
+echo "Nevada TEKs"
+
 # Nevada
 
-# 20210204: looks like this has migrated to US national server
-# TODO: update the output page to reflect which US states do the same, there's a map at:
+# 20210204: this migrated to US national server
+# I updated the output page to record which US states do the same, there's a map at:
 # https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx
 
 USNV_INDEX="https://exposure-notification-export-cpmxr.storage.googleapis.com/exposure-keys/index.txt"
 USNV_BASE="https://exposure-notification-export-cpmxr.storage.googleapis.com"
 USNV_CONFIG="https://static.nvcovidtrace.com/remote.json"
 CANARY="$ARCHIVE/usnv-canary"
-
-echo "======================"
-echo "Nevada TEKs"
 
 $CURL --output usnv-cfg.json -L $USNV_CONFIG 
 
@@ -1551,7 +1551,7 @@ echo "Nevada index string: $index_str"
 for usnvfile in $index_str
 do
     echo "Getting $usnvfile"
-    usnvname=`basename $usnvfile`
+    usnvname=$(sanitise_filename "`basename $usnvfile`")
     $CURL -s -L "$USNV_BASE/$usnvfile" --output usnv-$usnvname 
     if [[ $? == 0 ]]
     then
@@ -1563,23 +1563,26 @@ do
             cp usnv-$usnvname $ARCHIVE
         fi
         # try unzip and decode
-        if [[ "$DODECODE" == "yes" ]]
-        then
-            $UNZIP "usnv-$usnvname" >/dev/null 2>&1
-            if [[ $? == 0 ]]
-            then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
-            fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
-        fi
+        #if [[ "$DODECODE" == "yes" ]]
+        #then
+            #$UNZIP "usnv-$usnvname" >/dev/null 2>&1
+            #if [[ $? == 0 ]]
+            #then
+                #$TEK_DECODE >/dev/null
+                #new_keys=$?
+                #total_keys=$((total_keys+new_keys))
+            #fi
+            #rm -f export.bin export.sig
+            #chunks_down=$((chunks_down+1))
+        #fi
     else
         echo "Error decoding usnv-$usnvname"
         echo "Error decoding usnv-$usnvname at $NOW" >$CANARY
     fi
 done
+
+echo "======================"
+echo "Wyoming TEKs"
 
 # Wyoming
 
@@ -1590,9 +1593,6 @@ USWY_CONFIG="https://exposureapi.care19.app/api/v1/apps/2/devices/b640737e-aada-
 
 # used to notify us that something went wrong
 CANARY="$ARCHIVE/uswy-canary"
-
-echo "======================"
-echo "Wyoming TEKs"
 
 $CURL --output uswy-cfg.json -L $USWY_CONFIG 
 
@@ -1606,7 +1606,7 @@ echo "Wyoming index string: $index_str"
 for uswyfile in $index_str
 do
     echo "Getting $uswyfile"
-    uswyname=`basename $uswyfile`
+    uswyname=$(sanitise_filename "`basename $uswyfile`")
     $CURL -s -L "$USWY_BASE/$uswyfile" --output uswy-$uswyname 
     if [[ $? == 0 ]]
     then
@@ -1618,22 +1618,25 @@ do
             cp uswy-$uswyname $ARCHIVE
         fi
         # try unzip and decode
-        if [[ "$DODECODE" == "yes" ]]
-        then
-            $UNZIP "uswy-$uswyname" >/dev/null 2>&1
-            if [[ $? == 0 ]]
-            then
-                $TEK_DECODE >/dev/null
-                new_keys=$?
-                total_keys=$((total_keys+new_keys))
-            fi
-            rm -f export.bin export.sig
-            chunks_down=$((chunks_down+1))
-        fi
+        #if [[ "$DODECODE" == "yes" ]]
+        #then
+            #$UNZIP "uswy-$uswyname" >/dev/null 2>&1
+            #if [[ $? == 0 ]]
+            #then
+                #$TEK_DECODE >/dev/null
+                #new_keys=$?
+                #total_keys=$((total_keys+new_keys))
+            #fi
+            #rm -f export.bin export.sig
+            #chunks_down=$((chunks_down+1))
+        #fi
     else
         echo "Error decoding uswy-$uswyname"
     fi
 done
+
+echo "======================"
+echo "Brazil TEKs"
 
 # Brasil
 
@@ -1643,9 +1646,6 @@ BR_BASE="https://exposure-notification.saude.gov.br"
 
 # used to notify us that something went wrong
 CANARY="$ARCHIVE/br-canary"
-
-echo "======================"
-echo "Brazil TEKs"
 
 bad_brazil="no"
 index_str=`$CURL -s -L "$BR_INDEX"` 
