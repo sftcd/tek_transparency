@@ -1078,12 +1078,12 @@ periodStr="00000"
 # URL at approx 20200819-140000Z
 # https://retrieval.covid-notification.alpha.canada.ca/retrieve/302/00000/cc0b17155fe1d642495dfc1dd0230c33573def6c35a33b61260306d797637e33
 # And to re-calc...
-#THEN=`date -d "2020-08-19T14:00:00" +%s`
-#timeStr=$((THEN/3600))
-#MESSAGE="$MCC_CODE:$periodStr:$timeStr"
-#THENCODE=`echo -n $MESSAGE | openssl sha256 -hmac "$HMAC_KEY" | awk '{print $2}'`
-#CA_INDEX="$CA_BASE/retrieve/MCC_CODE/$periodStr/$THENCODE"
-#echo "want cc0b17155fe1d642495dfc1dd0230c33573def6c35a33b61260306d797637e33"
+# THEN=`date -d "2020-08-19T14:00:00" +%s`
+# timeStr=$((THEN/3600))
+# MESSAGE="$MCC_CODE:$periodStr:$timeStr"
+# THENCODE=`echo -n $MESSAGE | openssl sha256 -hmac "$HMAC_KEY" | awk '{print $2}'`
+# CA_INDEX="$CA_BASE/retrieve/MCC_CODE/$periodStr/$THENCODE"
+# echo "want cc0b17155fe1d642495dfc1dd0230c33573def6c35a33b61260306d797637e33"
 
 # Try for various top of the hour values and keep those that work
 # It looks like the server actually only offers files named for
@@ -1120,18 +1120,18 @@ do
                 echo "A smaller or same $lpath already archived"
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "$lpath" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "$lpath" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         else
             echo "Failed to download $lpath"
             echo "Failed to download $lpath at $NOW" >$CA_CANARY
@@ -1143,22 +1143,21 @@ do
     sleep 1
 done
 
-
 # US Alabama
+
+echo "======================"
+echo "US Alabama TEKs"
 
 USAL_CANARY="$ARCHIVE/usal-canary"
 USAL_BASE="https://covidexposure-files-store.azureedge.net"
 USAL_INDEX="$USAL_BASE/index.txt"
 USAL_CONFIG="$USAL_BASE/settings/"
 
-echo "======================"
-echo "US Alabama TEKs"
-
 response_headers=`$CURL -D - -o usal-index-headers.txt -L "$USAL_INDEX" -i`
 clzero=`echo $response_headers | grep -ic "Content-Length: 0"`
 if [[ "$clzero" != "0" ]]
 then
-    echo "Skipping US Alabama because content length still zero at $NOW." 
+    echo "Skipping US Alabama because content length is zero at $NOW." 
 else
     # download again, without headers
     sleep 1
