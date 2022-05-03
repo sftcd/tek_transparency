@@ -1167,8 +1167,8 @@ else
     do
         sleep 1
         zname=`basename $url`
-        lpath=usal-$zname
-        $CURL -D - -o $lpath -L "$url"
+        lpath=$(sanitise_filename "usal-$zname")
+        $CURL -o $lpath -L "$url"
         if [ -f $lpath ]
         then
             # we should be good now, so remove canary
@@ -1185,18 +1185,18 @@ else
                 echo "A smaller or same $lpath already archived"
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "$lpath" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                    total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "$lpath" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         else
             echo "Failed to download $lpath"
             echo "Failed to download $lpath at $NOW" >$USAL_CANARY
