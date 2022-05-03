@@ -5,8 +5,8 @@
 # but only if the files are identical
 
 SRCDIR=$HOME/code/tek_transparency/
-DATADIR=$SRCDIR/data
-ARCHDIR=$SRCDIR/data/all-zips
+: ${DATADIR:=$SRCDIR/data}
+ARCHDIR=$DATADIR/all-zips
 
 for hdir in $DATADIR/202201*
 do

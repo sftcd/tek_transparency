@@ -30,14 +30,14 @@ UNZIP="/usr/bin/unzip"
 # consider what'd happen if a domain name were in future snagged
 # by a bad actor, or were just re-used for something that caused
 # us a problem. So we'll sanitise all file names we create down 
-# to just alphanumerics plus "-" which seems to be all we need 
-# for the real services.
+# to just alphanumerics plus "-" and "." which seems to be all we 
+# need for the real services.
 # We should call this anytime we create a file based on a string
 # we've downloaded from a service.
 function sanitise_filename()
 {
     fname=$1
-    echo ${fname//[^a-zA-Z0-9\-]/}
+    echo ${fname//[^a-zA-Z0-9\-.]/}
 }
 
 function whenisitagain()
@@ -164,9 +164,7 @@ fi
 
 # Same setup as Ireland app-wise
 
-# NI is a region of the UK, so for now, we'll use the
-# prefix "uk-ni" and I don't yet have a source for the
-# numbers of cases for the region, which is TBD
+# NI is a region of the UK, so we'll use the prefix "ukni-" 
 
 NI_BASE="https://app.stopcovidni.hscni.net/api"
 NI_CONFIG="$NI_BASE/settings/"
@@ -229,7 +227,8 @@ else
             for nifile in $nifiles
             do
                 echo "Getting $nifile"
-                nibname=`basename $nifile`
+                nibname_raw=`basename $nifile`
+                nibname=$(sanitise_filename $nibname_raw)
                 $CURL -s -L "$NI_BASE/data/$nifile" --output ukni-$nibname -H "Authorization: Bearer $newtoken"
                 if [[ $? == 0 ]]
                 then
