@@ -805,18 +805,18 @@ then
                     cp $the_local_zip_name $ARCHIVE
                 fi
                 # try unzip and decode
-                if [[ "$DODECODE" == "yes" ]]
-                then
-                    $UNZIP "$the_local_zip_name" >/dev/null 2>&1
-                    if [[ $? == 0 ]]
-                    then
-                        $TEK_DECODE >/dev/null
-                        new_keys=$?
-                        total_keys=$((total_keys+new_keys))
-                    fi
-                    rm -f export.bin export.sig
-                    chunks_down=$((chunks_down+1))
-                fi
+                #if [[ "$DODECODE" == "yes" ]]
+                #then
+                    #$UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                    #if [[ $? == 0 ]]
+                    #then
+                        #$TEK_DECODE >/dev/null
+                        #new_keys=$?
+                        #total_keys=$((total_keys+new_keys))
+                    #fi
+                    #rm -f export.bin export.sig
+                    #chunks_down=$((chunks_down+1))
+                #fi
             fi
         else
             echo "Didn't get a $the_zip_name" 
@@ -874,18 +874,18 @@ then
                         cp $the_local_zip_name $ARCHIVE
                     fi
                     # try unzip and decode
-                    if [[ "$DODECODE" == "yes" ]]
-                    then
-                        $UNZIP "$the_local_zip_name" >/dev/null 2>&1
-                        if [[ $? == 0 ]]
-                        then
-                            $TEK_DECODE >/dev/null
-                            new_keys=$?
-                            total_keys=$((total_keys+new_keys))
-                        fi
-                        rm -f export.bin export.sig
-                        chunks_down=$((chunks_down+1))
-                    fi
+                    #if [[ "$DODECODE" == "yes" ]]
+                    #then
+                        #$UNZIP "$the_local_zip_name" >/dev/null 2>&1
+                        #if [[ $? == 0 ]]
+                        #then
+                            #$TEK_DECODE >/dev/null
+                            #new_keys=$?
+                            #total_keys=$((total_keys+new_keys))
+                        #fi
+                        #rm -f export.bin export.sig
+                        #chunks_down=$((chunks_down+1))
+                    #fi
                 fi
             else
                 echo "Didn't get a $the_zip_name" 
@@ -895,8 +895,6 @@ then
         done
     fi
 fi
-
-exit
 
 echo "======================"
 echo ".es TEKs"
@@ -947,18 +945,18 @@ do
                 cp es-$midnight.zip $ARCHIVE
             fi
             # try unzip and decode
-            if [[ "$DODECODE" == "yes" ]]
-            then
-                $UNZIP "es-$midnight.zip" >/dev/null 2>&1
-                if [[ $? == 0 ]]
-                then
-                    $TEK_DECODE >/dev/null
-                    new_keys=$?
-                        total_keys=$((total_keys+new_keys))
-                fi
-                rm -f export.bin export.sig
-                chunks_down=$((chunks_down+1))
-            fi
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "es-$midnight.zip" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                        #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
+            #fi
         fi
     else
         echo "curl - error downloading es-$midnight.zip (file $fno)"
@@ -976,6 +974,9 @@ $CURL -L $ES_CCAA --output es-ccaa.json
 echo ".es config:"
 cat es-cfg.json
 
+echo "======================"
+echo "US Virginia TEKs"
+
 # US Virginia
 
 USVA_CANARY="$ARCHIVE/usva-canary"
@@ -986,14 +987,11 @@ USVA_CONFIG="$USVA_BASE/settings/"
 # USVA config is hardcoded in the app apparently (for now)
 # $CURL --output usva-cfg.json -L $USVA_CONFIG
 
-echo "======================"
-echo "US Virginia TEKs"
-
 response_headers=`$CURL -D - -o usva-index-headers.txt -L "$USVA_INDEX" -i`
 clzero=`echo $response_headers | grep -ic "Content-Length: 0"`
 if [[ "$clzero" != "0" ]]
 then
-    echo "Skipping US Virginia because content length still zero at $NOW." 
+    echo "Skipping US Virginia because content length is zero at $NOW." 
 else
     # download again, without headers
     sleep 1
