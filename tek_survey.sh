@@ -640,27 +640,38 @@ echo ".dk TEKs"
 
 # Denmark
 
-DK_BASE="https://app.smittestop.dk/API/v1/diagnostickeys"
+DK_HOST="app.smittedtop.dk"
+DK_BASE="https://$DK_HOST/API/v1/diagnostickeys"
 DK_CONFIG="$DK_BASE/exposureconfiguration"
 
-# the DK config needs a weird authorization header
-$CURL -o dk-cfg.json -D - -L $DK_CONFIG -H "Authorization_Mobile: 68iXQyxZOy"
-dkcfg_res=$?
-if [[ "$dkcfg_res" != "0" ]]
+try_dk="yes"
+# The DK_HOST for now gives NXDOMAIN so check for that
+nxd=`dig $DK_HOST | grep status | grep NXDOMAIN`
+if [[ "$nxd" != "" ]]
 then
-    # since there's a version number in the DK_BASE that'll
-    # presumably change sometime so check to see if that or
-    # some other failure happened
-    # my guess is I might notice this easier than the
-    # absence of the config file
-    echo "Failed to get DK config - curl returned $dkcfg_res"
-    # we only do the zip files if the above worked - in fact they've
-    # turned this one off now (20220403)
+    echo "$DK_HOST gives NXDOMAIN now"
+    try_dk="no"
+else
+    # the DK config needs a weird authorization header
+    $CURL -o dk-cfg.json -D - -L $DK_CONFIG -H "Authorization_Mobile: 68iXQyxZOy"
+    dkcfg_res=$?
+    if [[ "$dkcfg_res" != "0" ]]
+    then
+        # since there's a version number in the DK_BASE that'll
+        # presumably change sometime so check to see if that or
+        # some other failure happened
+        # my guess is I might notice this easier than the
+        # absence of the config file
+        echo "Failed to get DK config - curl returned $dkcfg_res"
+        # we only do the zip files if the above worked - in fact they've
+        # turned this one off now (20220403)
+        try_dk="no"
+    fi
 fi
 
-if [ ! -f dk-cfg.json ]
+if [[ "$try_dk" == "no" ]]
 then
-    echo "No sign of dk-cfg so won't go for TEKs - seems to time out"
+    echo "No sign of dk-cfg so won't go for TEKs"
 else
 
 # For DK, we grab $DK_Base/<date>.0.zip and there's an HTTP header
