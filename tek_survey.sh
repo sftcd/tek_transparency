@@ -479,7 +479,7 @@ DE_KEYS="https://github.com/micb25/dka/raw/master/data_CWA/diagnosis_keys_statis
 $CURL -L $DE_KEYS --output de-keys.csv
 
 echo "======================"
-echo "======================"
+echo ".ch TEKs"
 
 # Switzerland
 
@@ -512,8 +512,6 @@ CH_WEEKLY_CODES="https://www.bfs.admin.ch/bfsstatic/dam/assets/orderNr:ds-q-14.0
 # one day in milliseconds
 day=$((60*60*24*1000))
 
-echo "======================"
-echo ".ch TEKs"
 for fno in {0..15}
 do
     echo "Doing .ch file $fno" 
@@ -573,6 +571,9 @@ $CURL -L $ACTIVES_URL -o ch-actives.json
 CODES_URL="https://www.experimental.bfs.admin.ch/expstat/en/home/innovative-methods/swisscovid-app-monitoring.html"
 $CURL --insecure -L $CODES_URL -o ch-codes.html
 
+echo "======================"
+echo ".pl TEKs"
+
 # Poland
 
 # yes - we end up with two slashes between hostname and path for some reason!
@@ -580,8 +581,6 @@ PL_BASE="https://exp.safesafe.app/"
 PL_CONFIG="dunno; get later"
 
 
-echo "======================"
-echo ".pl TEKs"
 plzips=`$CURL -L "$PL_BASE/index.txt" | sed -e 's/\///g'`
 plhttpcode=`$CURL -L "$PL_BASE/index.txt -s -w "{%http_code}" -o pl-index.txt`
 if [[ "$plhttpcode" != "200" ]]
