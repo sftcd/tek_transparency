@@ -26,7 +26,7 @@ UNZIP="/usr/bin/unzip"
 # The services here could generally be trusted to not provide (or
 # cause us to derive) "bad" file names (e.g. "/etc/passwd" or 
 # "../../tek_survey.sh") that might do damage. However, now that
-# a number of those services are being de-commissioned, we should
+# a number of those services are being decommissioned, we should
 # consider what'd happen if a domain name were in future snagged
 # by a bad actor, or were just re-used for something that caused
 # us a problem. So we'll sanitise all file names we create down 
@@ -329,9 +329,6 @@ echo "======================"
 echo ".de TEKs"
 # Germany 
 
-# not yet but, do stuff once this is non-empty 
-# $CURL -L https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE/date -i
-
 DE_BASE="https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE"
 DE_INDEX="$DE_BASE/date"
 
@@ -345,19 +342,19 @@ dedates=`echo $index_str \
                 | sed -e 's/,/ /g' `
 for dedate in $dedates
 do
-
-    $CURL -L "$DE_BASE/date/$dedate" --output de-$dedate.zip
+    sane_dedate=$(sanitise_filename $dedate)
+    $CURL -L "$DE_BASE/date/$dedate" --output de-$sane_dedate.zip
     if [[ $? == 0 ]]
     then
-        echo "Got de-$dedate.zip"
-        if [ ! -f $ARCHIVE/de-$dedate.zip ]
+        echo "Got de-$sane_dedate.zip"
+        if [ ! -f $ARCHIVE/de-$sane_dedate.zip ]
         then
-            cp de-$dedate.zip $ARCHIVE
+            cp de-$sane_dedate.zip $ARCHIVE
         fi
         # try unzip and decode
         if [[ "$DODECODE" == "yes" ]]
         then
-            $UNZIP "de-$dedate.zip" >/dev/null 2>&1
+            $UNZIP "de-$sane_dedate.zip" >/dev/null 2>&1
             if [[ $? == 0 ]]
             then
                 $TEK_DECODE >/dev/null
@@ -368,7 +365,7 @@ do
             chunks_down=$((chunks_down+1))
         fi
     else
-        echo "Error decoding de-$dedate.zip"
+        echo "Error decoding de-$sane_dedate.zip"
     fi
 
     # Now check for hourly zips - it's ok that we have dups as we 
@@ -386,18 +383,19 @@ do
     fi
     for dehour in $dehours
     do
-        $CURL -L "$DE_BASE/date/$dedate/hour/$dehour" --output de-$dedate-$dehour.zip
+        sane_dehour=$(sanitise_filename $dehour)
+        $CURL -L "$DE_BASE/date/$dedate/hour/$dehour" --output de-$sane_dedate-$sane_dehour.zip
         if [[ $? == 0 ]]
         then
-            echo "Got de-$dedate-$dehour.zip"
-            if [ ! -f $ARCHIVE/de-$dedate-$dehour.zip ]
+            echo "Got de-$sane_dedate-$sane_dehour.zip"
+            if [ ! -f $ARCHIVE/de-$sane_dedate-$sane_dehour.zip ]
             then
-                cp de-$dedate-$dehour.zip $ARCHIVE
+                cp de-$sane_dedate-$sane_dehour.zip $ARCHIVE
             fi
             # try unzip and decode
             if [[ "$DODECODE" == "yes" ]]
             then
-                $UNZIP "de-$dedate-$dehour.zip" >/dev/null 2>&1
+                $UNZIP "de-$sane_dedate-$sane_dehour.zip" >/dev/null 2>&1
                 if [[ $? == 0 ]]
                 then
                     $TEK_DECODE >/dev/null
@@ -408,11 +406,11 @@ do
                 chunks_down=$((chunks_down+1))
             fi
         else
-            echo "Error decoding de-$dedate-$dehour.zip"
+            echo "Error decoding de-$sane_dedate-$sane_dehour.zip"
         fi
     done
-
 done
+
 # lastly, check for today in case there are hourlies already
 # that are not in the date index
 # when is today? that's in UTC, so I may be a TZ off for an hour 
@@ -435,18 +433,19 @@ then
 fi
 for dehour in $dehours
 do
-    $CURL -L "$DE_BASE/date/$today/hour/$dehour" --output de-$today-$dehour.zip
+    sane_dehour=$(sanitise_filename $dehour)
+    $CURL -L "$DE_BASE/date/$today/hour/$dehour" --output de-$today-$sane_dehour.zip
     if [[ $? == 0 ]]
     then
-        echo "Got de-$today-$dehour.zip"
-        if [ ! -f $ARCHIVE/de-$today-$dehour.zip ]
+        echo "Got de-$today-$sane_dehour.zip"
+        if [ ! -f $ARCHIVE/de-$today-$sane_dehour.zip ]
         then
-            cp de-$today-$dehour.zip $ARCHIVE
+            cp de-$today-$sane_dehour.zip $ARCHIVE
         fi
         # try unzip and decode
         if [[ "$DODECODE" == "yes" ]]
         then
-            $UNZIP "de-$today-$dehour.zip" >/dev/null 2>&1
+            $UNZIP "de-$today-$sane_dehour.zip" >/dev/null 2>&1
             if [[ $? == 0 ]]
             then
                 $TEK_DECODE >/dev/null
@@ -457,23 +456,25 @@ do
             chunks_down=$((chunks_down+1))
         fi
     else
-        echo "Error decoding de-$today-$dehour.zip"
+        echo "Error decoding de-$today-$sane_dehour.zip"
     fi
 done
 
 
 DE_CONFIG="https://svc90.main.px.t-online.de/version/v1/configuration/country/DE/app_config"
 $CURL -L $DE_CONFIG --output de-cfg.zip
-if [ -f de-cfg.zip ]
-then
-    $UNZIP de-cfg.zip
-    if [[ $? == 0 ]]
-    then
-        echo ".de config:"
-        $DE_CFG_DECODE 
-        rm -f export.bin export.sig
-    fi 
-fi
+
+# not that interesting to decode these each time now
+#if [ -f de-cfg.zip ]
+#then
+    #$UNZIP de-cfg.zip
+    #if [[ $? == 0 ]]
+    #then
+        #echo ".de config:"
+        #$DE_CFG_DECODE 
+        #rm -f export.bin export.sig
+    #fi 
+#fi
 DE_KEYS="https://github.com/micb25/dka/raw/master/data_CWA/diagnosis_keys_statistics.csv"
 $CURL -L $DE_KEYS --output de-keys.csv
 
