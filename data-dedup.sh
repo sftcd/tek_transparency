@@ -7,8 +7,9 @@
 SRCDIR=$HOME/code/tek_transparency/
 : ${DATADIR:=$SRCDIR/data}
 ARCHDIR=$DATADIR/all-zips
+: ${MONTH="02"}
 
-for hdir in $DATADIR/202201*
+for hdir in $DATADIR/2022$MONTH*
 do
     bsize=`du -sh $hdir`
     echo "De-duping $hdir - started at $bsize"
