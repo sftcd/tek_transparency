@@ -313,6 +313,9 @@ Apologies for our error.</li>
     <li>20220503: given the services are being turned off, the domain names involved might get re-used
 for other things, I therefore made a bunch of changes so the main survey script is more robust and we shouldn't
 try create a "bad" filename such as one starting with "../../" or similar.</li>
+    <li>20220506: we're now getting non-zip files as the Estonian app (HOIA) has been <a href="https://hoia.me/en/discontinued/">shut down</a>
+so I tweaked the download to not assume the response was a zip file (doing so is no harm as we won't get confused as to what's a TEK or not, but
+it will confuse the red/amber/green setting stuff.</li>
 
 </ul>
 
