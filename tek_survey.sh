@@ -1229,39 +1229,50 @@ do
             break
         fi
     else
-        $CURL -L "$EE_BASE/$midnight" --output ee-$midnight.zip
-        if [[ $? == 0 ]]
+        # estonia changed to returning HTML with a 200 reponse on June 1st 2022
+        # so we'll check if the relevant file is a zip or not - looks like it's
+        # a 302 redirect to https://tekik.ee sending back generic HTML likely
+        # for a hoster or similar (there's no English button visible)
+        iszip=`file ee-$midnight.txt | grep Zip`
+        if [[ "$iszip" == "" ]]
         then
-            # we do see zero sized files from .ee sometimes
-            # which is odd but whatever (could be their f/w
-            # doing that but what'd be the effect on the 
-            # app?) 
-            if [ ! -s ee-$midnight.zip ]
+            echo "Estonia fail: not a zip ee-$midnight.txt"
+            break
+        else
+            $CURL -L "$EE_BASE/$midnight" --output ee-$midnight.zip
+            if [[ $? == 0 ]]
             then
-                echo "Empty or non-existent downloaded Estonian file: ee-$midnight.zip ($fno)"
-            else
-                if [ ! -f $ARCHIVE/ee-$midnight.zip ]
+                # we do see zero sized files from .ee sometimes
+                # which is odd but whatever (could be their f/w
+                # doing that but what'd be the effect on the 
+                # app?) 
+                if [ ! -s ee-$midnight.zip ]
                 then
-                    echo "New .ee file $fno ee-$midnight" 
-                    cp ee-$midnight.zip $ARCHIVE
-                elif ((`stat -c%s "ee-$midnight.zip"`>`stat -c%s "$ARCHIVE/ee-$midnight.zip"`));then
-                    # if the new one is bigger than archived, then archive new one
-                    echo "Updated/bigger .ee file $fno ee-$midnight" 
-                    cp ee-$midnight.zip $ARCHIVE
-                fi
-                # try unzip and decode
-                #if [[ "$DODECODE" == "yes" ]]
-                #then
-                    #$UNZIP "ee-$midnight.zip" >/dev/null 2>&1
-                    #if [[ $? == 0 ]]
+                    echo "Empty or non-existent downloaded Estonian file: ee-$midnight.zip ($fno)"
+                else
+                    if [ ! -f $ARCHIVE/ee-$midnight.zip ]
+                    then
+                        echo "New .ee file $fno ee-$midnight" 
+                        cp ee-$midnight.zip $ARCHIVE
+                    elif ((`stat -c%s "ee-$midnight.zip"`>`stat -c%s "$ARCHIVE/ee-$midnight.zip"`));then
+                        # if the new one is bigger than archived, then archive new one
+                        echo "Updated/bigger .ee file $fno ee-$midnight" 
+                        cp ee-$midnight.zip $ARCHIVE
+                    fi
+                    # try unzip and decode
+                    #if [[ "$DODECODE" == "yes" ]]
                     #then
-                        #$TEK_DECODE >/dev/null
-                        #new_keys=$?
-                        #total_keys=$((total_keys+new_keys))
+                        #$UNZIP "ee-$midnight.zip" >/dev/null 2>&1
+                        #if [[ $? == 0 ]]
+                        #then
+                            #$TEK_DECODE >/dev/null
+                            #new_keys=$?
+                            #total_keys=$((total_keys+new_keys))
+                        #fi
+                        #rm -f export.bin export.sig
+                        #chunks_down=$((chunks_down+1))
                     #fi
-                    #rm -f export.bin export.sig
-                    #chunks_down=$((chunks_down+1))
-                #fi
+                fi
             fi
         else
             echo "curl - error downloading ee-$midnight.zip (file $fno)"
