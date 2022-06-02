@@ -316,6 +316,8 @@ try create a "bad" filename such as one starting with "../../" or similar.</li>
     <li>20220506: we're now getting non-zip files as the Estonian app (HOIA) has been <a href="https://hoia.me/en/discontinued/">shut down</a>
 so I tweaked the download to not assume the response was a zip file (doing so is no harm as we won't get confused as to what's a TEK or not, but
 it will confuse the red/amber/green setting stuff.</li>
+    <li>20220602: Estonian URLs now re-directing (302) to https://tehik.ee/ which is returning HTML, so added a check that the content
+we're getting is a zip file. We'll see if that works.</li>
 
 </ul>
 
