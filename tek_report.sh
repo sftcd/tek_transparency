@@ -318,6 +318,13 @@ so I tweaked the download to not assume the response was a zip file (doing so is
 it will confuse the red/amber/green setting stuff.</li>
     <li>20220602: Estonian URLs now re-directing (302) to https://tehik.ee/ which is returning HTML, so added a check that the content
 we're getting is a zip file. We'll see if that works.</li>
+    <li>20220603: Finland app now shut down says <a href="https://koronavilkku.fi/en/">https://koronavilkku.fi/en/</a>. 
+Quoting some text from what's on that page now: "At most, Koronavilkku had 2.5 million users. Koronavilkku was one of the most widely used COVID-19 apps in relation to the population of the country. 64,000 users reported their infection with the app. 23 % of Koronavilkku users reported having received an alert of potential exposure."</li>
+    <li>20220603: The Croatian API server's certificate expired on May 31st so that one's not working, though there do
+appear to be new zip files there if one ignores the certificate (which I won't be doing:-). Presumably they'll fix
+that and it'll re-appear as an amber or green service. It's interesting though that that hasn't been fixed in 3 days - it'd
+seem to imply that either nobody's noticing that the service is down (i.e. no users?) or else that the client app isn't
+checking server certificates properly. Neither would seem good news for the GAEN approach.</li>
 
 </ul>
 
