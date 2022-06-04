@@ -514,6 +514,13 @@ for fno in {0..15}
 do
     echo "Doing .ch file $fno" 
     midnight=$((today_midnight-fno*day))
+    # CH started returning ascii errors on 2022-06-04
+    chhttpcode=`$CURL -L "$CH_BASE/$midnight" -s -w "%{http_code}" -o ch-$midnight.txt`
+    if [[ "$http_code" != "200" ]]
+    then
+        echo "CH error http response code: $http_code for ch-$midnight"
+        continue;
+    fi
     $CURL -L "$CH_BASE/$midnight" --output ch-$midnight.zip
     if [[ $? == 0 ]]
     then
