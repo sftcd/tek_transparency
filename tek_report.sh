@@ -326,7 +326,8 @@ that and it'll re-appear as an amber or green service. It's interesting though t
 seem to imply that either nobody's noticing that the service is down (i.e. no users?) or else that the client app isn't
 checking server certificates properly. Neither would seem good news for the GAEN approach.</li>
     <li>20220604: Another certificate expiry! The server certificate the Gibraltar API server expired on June 4th 2022 (being instantiated on June 4th 2020 and valid for 
-two years). We'll see if that gets fixed or not I guess.</li>
+two years). We'll see if that gets fixed or not I guess. For the record expired cert can be seen in CT logs here: 
+<a href="https://crt.sh/?q=app.beatcovid19.gov.gi">https://crt.sh/?q=app.beatcovid19.gov.gi</a>.</li>
 
 </ul>
 
