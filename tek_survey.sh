@@ -1110,6 +1110,15 @@ do
         # try get actual zip
         $CURL -o ca-$thenStr.zip -L "$CA_INDEX"
         lpath=ca-$thenStr.zip
+        # canada turned off on 2022-06-22 (or so) so we'll check if we're
+        # really getting a zip or not (since they turned off we get some 
+        # XML with an error message)
+        iszip=`file $lpath | grep Zip`
+        if [[ "$iszip" == "" ]]
+        then
+            echo "Canada fail: not a zip $lpath"
+            continue
+        fi
         if [ -f $lpath ]
         then
             # we should be good now, so remove canary

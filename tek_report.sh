@@ -107,9 +107,10 @@ cat >>$TARGET <<EOF
 
 <p>That's a total of $stillworking still seemingly working, $amberstate
 in the "Amber" state, and
-$turnedoff apparently turned off. Portugal for example is counted
-here as amber as they've basically posted one key
-per day since March 2021. From 2022-04-06 to 2022-04-11 Croatian key files
+$turnedoff apparently turned off. Portugal for example was counted
+here as amber as they basically posted one key
+per day from March 2021 until 2022-06-10, after which they turned
+"red." From 2022-04-06 to 2022-04-11 Croatian key files
 contained no keys, so were also amber (though then turned back "green"). The
 2021-12-15 date above is also an artefact and really means
 "earlier than that" (that was the date we migrated the machine
@@ -329,6 +330,14 @@ at <a href="https://crt.sh/?q=en.apis-it.hr">https://crt.sh/?q=en.apis-it.hr</a>
     <li>20220604: Another certificate expiry! The server certificate the Gibraltar API server expired on June 4th 2022 (being instantiated on June 4th 2020 and valid for 
 two years). We'll see if that gets fixed or not I guess. For the record expired cert can be seen in CT logs here: 
 <a href="https://crt.sh/?q=app.beatcovid19.gov.gi">https://crt.sh/?q=app.beatcovid19.gov.gi</a>.</li>
+    <li>20220626: couple of delayed notes below - delay due to vacationing:-)</li>
+    <li>20220626: Canadian app is "now retired" says <a href="https://www.canada.ca/en/public-health/services/diseases/coronavirus-disease-covid-19/covid-alert.html">https://www.canada.ca/en/public-health/services/diseases/coronavirus-disease-covid-19/covid-alert.html</a>. The date on that web page is 2022-06-02 but the last "real" zip I saw was on 2022-06-17.</li>
+    <li>20220626: Portugal now also has a certificate validation error since
+2022-06-10 - it's not an expired cert in this case but something in the offered
+certificate path is s no longer liked by curl. If one ignores the certificate
+error (I don't), there are still "amber" zip files being offered containing,
+I guess from the size, one key, as has been done since March 2021, but for now,
+Portugal is showing "red" and no longer "amber."</li>
 
 </ul>
 
