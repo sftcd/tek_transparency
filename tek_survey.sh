@@ -1904,6 +1904,12 @@ do
         then
             echo "Empty or non-existent downloaded Maltese file: mt-$midnight.zip ($fno)"
         else
+            iszip=`file mt-$midnight.txt | grep Zip`
+            if [[ "$iszip" == "" ]]
+            then
+                echo "Malta fail: not a zip mt-$midnight.txt"
+                continue
+            fi
             if [ ! -f $ARCHIVE/mt-$midnight.zip ]
             then
                 echo "New .mt file $fno mt-$midnight" 

@@ -111,7 +111,8 @@ $turnedoff apparently turned off. Portugal for example was counted
 here as amber as they basically posted one key
 per day from March 2021 until 2022-06-10, after which they turned
 "red." From 2022-04-06 to 2022-04-11 Croatian key files
-contained no keys, so were also amber (though then turned back "green"). The
+contained no keys, so were also amber (though then turned back green, before
+finally going red again). The
 2021-12-15 date above is also an artefact and really means
 "earlier than that" (that was the date we migrated the machine
 running this).</p>
@@ -338,6 +339,10 @@ certificate path is s no longer liked by curl. If one ignores the certificate
 error (I don't), there are still "amber" zip files being offered containing,
 I guess from the size, one key, as has been done since March 2021, but for now,
 Portugal is showing "red" and no longer "amber."</li>
+    <li>20220715: Looks like Malta is no longer operational as we're now getting
+errors accessing their server. Didn't find an official announcement, but it's
+discontued according to <a href="https://ec.europa.eu/info/live-work-travel-eu/coronavirus-response/travel-during-coronavirus-pandemic/mobile-contact-tracing-apps-eu-member-states_en">
+https://ec.europa.eu/info/live-work-travel-eu/coronavirus-response/travel-during-coronavirus-pandemic/mobile-contact-tracing-apps-eu-member-states_en</a>.</li> 
 
 </ul>
 
