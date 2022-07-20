@@ -344,10 +344,12 @@ errors accessing their server. Didn't find an official announcement, but it's
 discontued according to <a href="https://ec.europa.eu/info/live-work-travel-eu/coronavirus-response/travel-during-coronavirus-pandemic/mobile-contact-tracing-apps-eu-member-states_en">
 https://ec.europa.eu/info/live-work-travel-eu/coronavirus-response/travel-during-coronavirus-pandemic/mobile-contact-tracing-apps-eu-member-states_en</a>.</li> 
     <li>20220719: the last of our US servers seem to have stopped serving new
-zip files over the last few days and have hence turned red. There were also some
-local n/w issues over that time so need to check more, but manual checking
-does seem to show only old zip files at those servers. I've not seen any
-announcement that services are being disabled so far though. </li>
+zip files over the last few days and hence turned red. There were also some
+local n/w issues (at my measurement vantage point) over that time so need to check more, but manual checking
+does (around noon UTC on Jul 19) seemed to show only old zip files at those servers. I've not seen any
+announcement that services are being disabled though. Whatever was
+happening seem to rectify itself around 1900 UTC on Jul 19, so it seems
+like it was a roughly 2 day "gap." (Having started on Jul 17 around 2000 UTC.)</li>
 
 </ul>
 
