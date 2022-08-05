@@ -352,6 +352,16 @@ that time. I've not seen any
 announcement that services are being disabled though. Whatever was
 happening seems to have rectified itself around 1900 UTC on Jul 19, so it seems
 like it was a roughly 2 day "gap." (Having started on Jul 17 around 2000 UTC.)</li>
+    <li>20220730: Croatia re-appeared on July 27th after it's cert expired almost two months before. 
+We didn't see any key files from May 31 until July 27 because of those cert failures. 
+On July 27 we downloaded what look like backdated key files that (from their names) appear to cover 
+days from June 1 to July 27.</li>
+    <li>20220805: The measurement machine was down for a day or so. We shouldn't have missed any TEKs
+as those should be visible for ~14 days, but there are gaps in the hourly scans. I setup a secondary 
+measurement cronjob on another machine on the 4th that collected TEKs until the main box was back 
+so the hourly scans that were missed in the end was from 20220803-120001 to 20220804-163459. 
+There were a few oddities remaining (some services change file content but not name over time)
+that are noted in an all-zips/odd-zips directory.</li>
 
 </ul>
 
