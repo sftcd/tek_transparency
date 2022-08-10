@@ -362,6 +362,8 @@ measurement cronjob on another machine on the 4th that collected TEKs until the 
 so the hourly scans that were missed in the end was from 20220803-120001 to 20220804-163459. 
 There were a few oddities remaining (some services change file content but not name over time)
 that are noted in an all-zips/odd-zips directory.</li>
+    <li>20220810: The Australian app isn't one we tracked as it didn't use the Google/Apple scheme,
+so just to note it's being turned off too (<a href="https://www.theguardian.com/australia-news/2022/aug/10/australia-retires-covidsafe-contact-tracing-app-that-was-barely-used">https://www.theguardian.com/australia-news/2022/aug/10/australia-retires-covidsafe-contact-tracing-app-that-was-barely-used</a>).</li>
 
 </ul>
 
