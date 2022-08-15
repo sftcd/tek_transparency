@@ -29,7 +29,7 @@ then
 fi
 
 FRESHHOURS=36
-WORKINGSIZE=570
+WORKINGSIZE=1024
 
 # do the file header
 cat >$TARGET <<EOF
@@ -52,9 +52,9 @@ For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/
 <p>Now that these services are being turned off, we note the last time we
 saw new key files published for each service. 
 Those are coloured <strong><span style="color:red";">Red</span></strong>
-if we haven't seen any new keys for more than $FRESHHOURS hours, 
+if we haven't seen any new key files for more than $FRESHHOURS hours, 
 <strong><span style="bold;color:#ffbf00;">Amber</span></strong> if we have
-but the most recent zip file size is less than $WORKINGSIZE bytes (indicating a lack of activity),
+but the total size of zip files seen in the last 24 hours is less than $WORKINGSIZE bytes (indicating a lack of activity),
 or 
 <strong><span style="bold;color:green;">Green</span></strong> if things
 look more operational:
@@ -78,7 +78,8 @@ do
     if [[ "$lastzip" != "" ]]
     then
         lasttime=`stat -c %Z $lastzip`
-        lastsize=`stat -c %s $lastzip`
+        lastsize=`find data/all-zips -name de*.zip -mtime -1 -ls | awk 'BEGIN{sum=0} {sum += $7} END {print sum}'`
+        #lastsize=`stat -c %s $lastzip`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
         if (( (nowtimet-lasttime)<(FRESHHOURS*60*60) ))
         then
@@ -364,6 +365,8 @@ There were a few oddities remaining (some services change file content but not n
 that are noted in an all-zips/odd-zips directory.</li>
     <li>20220810: The Australian app isn't one we tracked as it didn't use the Google/Apple scheme,
 so just to note it's being turned off too (<a href="https://www.theguardian.com/australia-news/2022/aug/10/australia-retires-covidsafe-contact-tracing-app-that-was-barely-used">https://www.theguardian.com/australia-news/2022/aug/10/australia-retires-covidsafe-contact-tracing-app-that-was-barely-used</a>).</li>
+    <li>20220815: changed definition of "amber" to: total size of files seen in last 24 hours < 1024 bytes as
+we were getting occasional false positives.</li>
 
 </ul>
 
@@ -398,7 +401,8 @@ do
     if [[ "$lastzip" != "" ]]
     then
         lasttime=`stat -c %Z $lastzip`
-        lastsize=`stat -c %s $lastzip`
+        #lastsize=`stat -c %s $lastzip`
+        lastsize=`find data/all-zips -name de*.zip -mtime -1 -ls | awk 'BEGIN{sum=0} {sum += $7} END {print sum}'`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
         if (( (nowtimet-lasttime)<(FRESHHOURS*60*60) ))
         then
