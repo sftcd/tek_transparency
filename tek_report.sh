@@ -78,7 +78,8 @@ do
     if [[ "$lastzip" != "" ]]
     then
         lasttime=`stat -c %Z $lastzip`
-        lastsize=`find data/all-zips -name de*.zip -mtime -1 -ls | awk 'BEGIN{sum=0} {sum += $7} END {print sum}'`
+        lastsize=`find $ARCHIVE -name $country*.zip -mtime -1 -ls | \
+            awk 'BEGIN{sum=0} {sum += $7} END {print sum}'`
         #lastsize=`stat -c %s $lastzip`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
         if (( (nowtimet-lasttime)<(FRESHHOURS*60*60) ))
@@ -402,7 +403,8 @@ do
     then
         lasttime=`stat -c %Z $lastzip`
         #lastsize=`stat -c %s $lastzip`
-        lastsize=`find data/all-zips -name de*.zip -mtime -1 -ls | awk 'BEGIN{sum=0} {sum += $7} END {print sum}'`
+        lastsize=`find $ARCHIVE -name $country*.zip -mtime -1 -ls | \
+            awk 'BEGIN{sum=0} {sum += $7} END {print sum}'`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
         if (( (nowtimet-lasttime)<(FRESHHOURS*60*60) ))
         then
