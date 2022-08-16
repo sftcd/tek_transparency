@@ -77,13 +77,11 @@ do
     lastzip=`ls -rt $ARCHIVE/$country-*.zip | tail -1`
     if [[ "$lastzip" != "" ]]
     then
-        set -x
         lasttime=`stat -c %Z $lastzip`
         lastsize=`find $ARCHIVE -name "$country-*.zip" -mtime -1 -ls | \
             awk 'BEGIN{sum=0} {sum += $7} END {print sum}'`
         #lastsize=`stat -c %s $lastzip`
         lastkeys=`date +"%Y-%m-%d" -d @$lasttime`
-        set +x
         if (( (nowtimet-lasttime)<(FRESHHOURS*60*60) ))
         then
             if (( lastsize < WORKINGSIZE ))
