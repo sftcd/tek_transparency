@@ -7,7 +7,7 @@
 SRCDIR=$HOME/code/tek_transparency/
 : ${DATADIR:=$SRCDIR/data}
 ARCHDIR=$DATADIR/all-zips
-: ${MONTH="02"}
+: ${MONTH="03"}
 
 for hdir in $DATADIR/2022$MONTH*
 do
