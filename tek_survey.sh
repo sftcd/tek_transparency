@@ -2371,6 +2371,14 @@ echo ".gu TEKs"
 
 GU_BASE="https://cdn.projectaurora.cloud"
 
+# seeing an NXDOMAIN for that name on 20220919 so
+# only bother if that's not the case
+# Maybe I should check for AAAA too but hey...
+GUB_ADDR=`dig +short cdn.projectaurora.cloud`
+if [[ "$GUB_ADDR" == "" ]]
+then
+    echo "No sign of A record for cdn.projectaurora.cloud - skipping"
+else
 gu_index=`$CURL -L "$GU_BASE/guam/teks/index.txt"`
 echo "GU index at $NOW: $gu_index"
 for fno in $gu_index
@@ -2417,6 +2425,8 @@ do
     # don't appear to be too keen:-)
     sleep 1
 done
+# end of no A record check
+fi
 
 echo "======================"
 echo ".si TEKs"
