@@ -368,9 +368,11 @@ that are noted in an all-zips/odd-zips directory.</li>
 so just to note it's being turned off too (<a href="https://www.theguardian.com/australia-news/2022/aug/10/australia-retires-covidsafe-contact-tracing-app-that-was-barely-used">https://www.theguardian.com/australia-news/2022/aug/10/australia-retires-covidsafe-contact-tracing-app-that-was-barely-used</a>).</li>
     <li>20220815: changed definition of "amber" to: total size of files seen in last 24 hours < 1024 bytes as
 we were getting occasional false positives.</li>
-    <li>20220919: noticed that I'm now getting an NXDOMAIN for cdn.projectaurora.cloud which was used by .gu, so added 
-a bit of script to skip .gu when there's no A record for that. No idea when that started, nor if it'll continue. A 
+    <li>20220919: noticed that I now get an NXDOMAIN for cdn.projectaurora.cloud which was used by .gu, so added 
+a bit of script to skip .gu when there is no A record for that. No idea when that started, nor if it will continue. A 
 check using whois seems to indicate that projectaurora.cloud is in the pendingDelete state. </li>
+    <li>20220922: Latvia servers seem to be sorta-down, not sure if temporarily or not. The TLS session is 
+    being setup, but the web server seems broken perhaps.</li>
 
 </ul>
 
