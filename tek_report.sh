@@ -373,6 +373,9 @@ a bit of script to skip .gu when there is no A record for that. No idea when tha
 check using whois seems to indicate that projectaurora.cloud is in the pendingDelete state. </li>
     <li>20220922: Latvia servers seem to be sorta-down, not sure if temporarily or not. The TLS session is 
     being setup, but the web server seems broken perhaps.</li>
+    <li>20220923: Northern Ireland server returning no new keys for a couple of days. Not sure
+    if broken or turned off. The iccky HTTP bearer-token authentication stuff still seems to
+    be working.</li>
 
 </ul>
 
