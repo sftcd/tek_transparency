@@ -376,6 +376,9 @@ check using whois seems to indicate that projectaurora.cloud is in the pendingDe
     <li>20220923: Northern Ireland server returning no new keys for a couple of days. Not sure
     if broken or turned off. The iccky HTTP bearer-token authentication stuff still seems to
     be working.</li>
+    <li>20220926: I checked the Northern Ireland config file (which is still beign served) and found that 
+    it has a new setting saying: "The HSC StopCOVID NI app will no longer be available as of 20th September 2022"
+    So I guess that one has been turned off.</li>
 
 </ul>
 
