@@ -376,9 +376,13 @@ check using whois seems to indicate that projectaurora.cloud is in the pendingDe
     <li>20220923: Northern Ireland server returning no new keys for a couple of days. Not sure
     if broken or turned off. The iccky HTTP bearer-token authentication stuff still seems to
     be working.</li>
-    <li>20220926: I checked the Northern Ireland config file (which is still beign served) and found that 
+    <li>20220926: I checked the Northern Ireland config file (which is still being served) and found that 
     it has a new setting saying: "The HSC StopCOVID NI app will no longer be available as of 20th September 2022"
     So I guess that one has been turned off.</li>
+    <li>20220928: Latvian service back since afternoon of 27th. That was a one week gap in key files, 
+from the 20th to 27th. Seems an interesting aspect of these systems, that they can go down for days and
+apparently nobody notices!</li>
+    <li>20221011: Spanish app seems to have been shut down as of Oct 9th: <a href="https://radarcovid.gob.es/home">https://radarcovid.gob.es/home</a>.</li>
 
 </ul>
 
