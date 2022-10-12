@@ -932,6 +932,15 @@ do
     $CURL -L "$ES_BASE/$midnight" --output es-$midnight.zip
     if [[ $? == 0 ]]
     then
+        # spain turned off on 2022-10-09 (or so) so we'll check if we're
+        # really getting a zip or not (since they turned off we get some 
+        # HTML with a 5xx message)
+        iszip=`file es-$midnight.zip | grep Zip`
+        if [[ "$iszip" == "" ]]
+        then
+            echo "Spain fail: not a zip es-$midnight.zip"
+            continue
+        fi
         # we do see zero sized files from .es sometimes
         # which is odd but whatever (could be their f/w
         # doing that but what'd be the effect on the 
