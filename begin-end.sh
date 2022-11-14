@@ -84,7 +84,7 @@ if [ -f $OUTCSVFILE ]
 then
     mv $OUTCSVFILE $OUTCSVFILE.backup-$NOW.csv
 fi
-echo "country,start,end" >$OUTCSVFILE
+echo "country,name,start,end" >$OUTCSVFILE
 
 for country in $COUNTRY_LIST
 do
@@ -117,7 +117,8 @@ do
     then
         echo "$country: first: `basename $first_file`, $first_tstr; last: `basename $last_file`, $last_tstr"
     fi
-    echo "$country,$first_day,$last_day" >>$OUTCSVFILE
+    cstring="${COUNTRY_NAMES[$country]}"
+    echo "$country,$cstring,$first_day,$last_day" >>$OUTCSVFILE
 
 done
 
