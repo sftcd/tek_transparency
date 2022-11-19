@@ -383,6 +383,11 @@ check using whois seems to indicate that projectaurora.cloud is in the pendingDe
 from the 20th to 27th. Seems an interesting aspect of these systems, that they can go down for days and
 apparently nobody notices!</li>
     <li>20221011: Spanish app seems to have been shut down as of Oct 9th: <a href="https://radarcovid.gob.es/home">https://radarcovid.gob.es/home</a>.</li>
+    <li>20221119: It looks like the Belgian app may be going away. Not sure when this was posted but <a href="https://coronalert.be/en/">https://coronalert.be/en/</a>
+    now says: "Important information Considering the improved sanitary situation, the Coronalert app is no longer being updated, and will be removed from
+    the play store and app store.  Please delete the application.  The Coronalert team" From the numbers it may have been turned off on Nov 16th or 17th 
+    though a Nov 9th <a href="https://www.brusselstimes.com/health/319414/delete-it-belgiums-covid-tracing-coronalert-app-no-longer-active">news article</a>
+    reports the decision to retire this deployment.</li>
 
 </ul>
 
