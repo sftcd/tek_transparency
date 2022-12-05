@@ -388,6 +388,7 @@ apparently nobody notices!</li>
     the play store and app store.  Please delete the application.  The Coronalert team" From the numbers it may have been turned off on Nov 16th or 17th 
     though a Nov 9th <a href="https://www.brusselstimes.com/health/319414/delete-it-belgiums-covid-tracing-coronalert-app-no-longer-active">news article</a>
     reports the decision to retire this deployment.</li>
+    <li>20221205: It looks like the DNS name for the Belgian server (c19distcdn-prd.ixor.be) went away on Dec 3rd.</li>
 
 </ul>
 
