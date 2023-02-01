@@ -389,6 +389,14 @@ apparently nobody notices!</li>
     though a Nov 9th <a href="https://www.brusselstimes.com/health/319414/delete-it-belgiums-covid-tracing-coronalert-app-no-longer-active">news article</a>
     reports the decision to retire this deployment.</li>
     <li>20221205: It looks like the DNS name for the Belgian server (c19distcdn-prd.ixor.be) went away on Dec 3rd.</li>
+    <li>20221228: According to their site <a href="https://www.immuni.italia.it/">https://www.immuni.italia.it/</a>, the Italian Immuni app will be turned off 
+    on Dec 31st. (It hasn't really been that active for quite a while.)</li>
+    <li>20230105: Latvian servers still operating but no new key files since Jan 3rd and number of posted keys declined
+    sharply starting Dec 29th, so could be the Latvian service is being turned off, though I've not found any reporting
+    saying apturicovid is going away, so it could be a transient service outage.</li>
+    <li>20230106: new Latvian key file seen, I guess they just had a new year break.</li>
+    <li>20230201: noticed I was no longer seeing case numbers from JHU data - turns out there was another bit of script
+    that assumed it would all be over in 2022, so changed that. We'll see if the change is correct.</li>
 
 </ul>
 
