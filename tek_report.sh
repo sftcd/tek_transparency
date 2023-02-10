@@ -397,6 +397,13 @@ apparently nobody notices!</li>
     <li>20230106: new Latvian key file seen, I guess they just had a new year break.</li>
     <li>20230201: noticed I was no longer seeing case numbers from JHU data - turns out there was another bit of script
     that assumed it would all be over in 2022, so changed that. We'll see if the change is correct.</li>
+    <li>20230210: It's been <a href="https://www.npr.org/sections/health-shots/2023/02/10/1155790201/as-the-pandemic-ebbs-an-influential-covid-tracker-shuts-down">reported</a> that
+    the JHU dashboard will be shut down on March 10th. Not sure if/how that'll affect the
+    case number data we take from their git repo but we'll see.</li>
+    <li>20230210: we haven't seen any new Latvian key files since Feb 6th but I've not
+    seen anything announcing a shutdown so I guess we'll see if it starts up again.
+    Similarly, we've only seen empty Croatian key files since the 6th, though new empty
+    files are being produced each day since so far..</li>
 
 </ul>
 
