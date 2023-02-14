@@ -401,7 +401,8 @@ apparently nobody notices!</li>
     the JHU dashboard will be shut down on March 10th. Not sure if/how that'll affect the
     case number data we take from their git repo but we'll see.</li>
     <li>20230210: we haven't seen any new Latvian key files since Feb 6th but I've not
-    seen anything announcing a shutdown so I guess we'll see if it starts up again.
+    seen anything announcing a shutdown so I guess we'll see if it starts up again. (Oddly, the last Latvian
+    key file we've seen is the 1000th one, but that's almost certainly a co-indicence.)
     Similarly, we've only seen empty Croatian key files since the 6th, though new empty
     files are being produced each day since so far..</li>
 
