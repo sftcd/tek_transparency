@@ -405,6 +405,13 @@ apparently nobody notices!</li>
     key file we've seen is the 1000th one, but that's almost certainly a co-indicence.)
     Similarly, we've only seen empty Croatian key files since the 6th, though new empty
     files are being produced each day since so far..</li>
+    <li>20230315: the Irish Times
+    <a href="https://www.irishtimes.com/ireland/2023/03/14/covid-app-to-be-decommissioned-despite-thousands-checking-statistics/">reports</a>
+    that the Irish covidtracker app is going to be decommissioned shortly, but without saying
+    when. The app stopped doing GAEN stuff about a year ago, but continued to
+    provide statistics and a place to store vaccination certs afterwards. At the time of writing,
+    we still pull the statistics file each hour, and there is nothing about a shutdown on
+    <a href="https://www.covidtracker.ie/">the app website</a>.</li>
 
 </ul>
 
