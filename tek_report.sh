@@ -413,6 +413,9 @@ apparently nobody notices!</li>
     we still pull the statistics file each hour, and there is nothing about a shutdown on
     <a href="https://www.covidtracker.ie/">the app website</a>.</li>
     <li>20230502: Looks like the German app was turned off on April 30th - <a href="https://www.coronawarn.app/en/faq/results/#ramp_down">their faq</a></li>
+    <li>20230502: It also looks like the NHS England and Wales app will be going away soon, 
+    <a href="https://www.gov.uk/government/collections/nhs-covid-19-app">this page<a> (currently) says the app was "withdrawn" on April 27th 2023, 
+    so I guess we should see that one turn red or amber soon.</li>
 
 </ul>
 
