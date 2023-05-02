@@ -412,6 +412,7 @@ apparently nobody notices!</li>
     provide statistics and a place to store vaccination certs afterwards. At the time of writing,
     we still pull the statistics file each hour, and there is nothing about a shutdown on
     <a href="https://www.covidtracker.ie/">the app website</a>.</li>
+    <li>20230502: Looks like the German app was turned off on April 30th - <a href="https://www.coronawarn.app/en/faq/results/#ramp_down">their faq</a></li>
 
 </ul>
 
