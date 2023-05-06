@@ -416,6 +416,10 @@ apparently nobody notices!</li>
     <li>20230502: It also looks like the NHS England and Wales app will be going away soon, 
     <a href="https://www.gov.uk/government/collections/nhs-covid-19-app">this page<a> (currently) says the app was "withdrawn" on April 27th 2023, 
     so I guess we should see that one turn red or amber soon.</li>
+    <li>20230505: For the record: World Health Organisation declares the 
+    <a href="https://www.who.int/news/item/05-05-2023-statement-on-the-fifteenth-meeting-of-the-international-health-regulations-(2005)-emergency-committee-regarding-the-coronavirus-disease-(covid-19)-pandemic">end of the "public health emergency of international concern"</a> (yay!)</li>
+    <li>20230506: US Alabama has gone amber then red. Have yet to find any official statement on the <a href="https://www.guidesafe.org/">guide-safe</a>
+    web site or elsewhere. Of course it could be some ops glitch too.</li>
 
 </ul>
 
