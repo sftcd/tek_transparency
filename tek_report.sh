@@ -420,6 +420,8 @@ apparently nobody notices!</li>
     <a href="https://www.who.int/news/item/05-05-2023-statement-on-the-fifteenth-meeting-of-the-international-health-regulations-(2005)-emergency-committee-regarding-the-coronavirus-disease-(covid-19)-pandemic">end of the "public health emergency of international concern"</a> (yay!)</li>
     <li>20230506: US Alabama has gone amber then red. Have yet to find any official statement on the <a href="https://www.guidesafe.org/">guide-safe</a>
     web site or elsewhere. Of course it could be some ops glitch too.</li>
+    <li>20230514: Some more US services seem turned off, but that broke my scripts for a day (had an exit on error rather than continue). Fixed exit
+    problem, so we'll see what's still alive shortly.</li>
 
 </ul>
 

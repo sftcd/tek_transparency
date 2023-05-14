@@ -1589,43 +1589,43 @@ if [[ $? != 0 ]]
 then
     echo "Error getting index string: $index_str ($?)"
     echo "Error getting index string: $index_str ($?) at $NOW" >$CANARY
-    exit 1
-fi
-echo "Nevada index string: $index_str"
-for usnvfile in $index_str
-do
-    echo "Getting $usnvfile"
-    usnvname=$(sanitise_filename "`basename $usnvfile`")
-    $CURL -s -L "$USNV_BASE/$usnvfile" --output usnv-$usnvname 
-    if [[ $? == 0 ]]
-    then
-        # we should be good now, so remove canary
-        rm -f $CANARY
-        if [ ! -f $ARCHIVE/usnv-$usnvname ]
+else
+    echo "Nevada index string: $index_str"
+    for usnvfile in $index_str
+    do
+        echo "Getting $usnvfile"
+        usnvname=$(sanitise_filename "`basename $usnvfile`")
+        $CURL -s -L "$USNV_BASE/$usnvfile" --output usnv-$usnvname 
+        if [[ $? == 0 ]]
         then
-            cp usnv-$usnvname $ARCHIVE
-        fi
-        # try unzip and decode
-        #if [[ "$DODECODE" == "yes" ]]
-        #then
-            #$UNZIP "usnv-$usnvname" >/dev/null 2>&1
-            #if [[ $? == 0 ]]
+            # we should be good now, so remove canary
+            rm -f $CANARY
+            if [ ! -f $ARCHIVE/usnv-$usnvname ]
+            then
+                cp usnv-$usnvname $ARCHIVE
+            fi
+            # try unzip and decode
+            #if [[ "$DODECODE" == "yes" ]]
             #then
-                #$TEK_DECODE >/dev/null
-                #new_keys=$?
-                #total_keys=$((total_keys+new_keys))
+                #$UNZIP "usnv-$usnvname" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
+                #then
+                    #$TEK_DECODE >/dev/null
+                    #new_keys=$?
+                    #total_keys=$((total_keys+new_keys))
+                #fi
+                #rm -f export.bin export.sig
+                #chunks_down=$((chunks_down+1))
             #fi
-            #rm -f export.bin export.sig
-            #chunks_down=$((chunks_down+1))
-        #fi
-    else
+        else
         echo "Error decoding usnv-$usnvname"
-        echo "Error decoding usnv-$usnvname at $NOW" >$CANARY
-    fi
-done
+            echo "Error decoding usnv-$usnvname at $NOW" >$CANARY
+        fi
+    done
+fi
 
 echo "======================"
-echo "Wyoming TEKs"
+echo "  Wyoming TEKs"
 
 # Wyoming
 
@@ -1643,27 +1643,26 @@ index_str=`$CURL -s -L "$USWY_INDEX"`
 if [[ $? != 0 ]]
 then
     echo "Error getting index string: $index_str ($?)"
-    exit 1
-fi
-echo "Wyoming index string: $index_str"
-for uswyfile in $index_str
-do
-    echo "Getting $uswyfile"
-    uswyname=$(sanitise_filename "`basename $uswyfile`")
-    $CURL -s -L "$USWY_BASE/$uswyfile" --output uswy-$uswyname 
-    if [[ $? == 0 ]]
-    then
-        # we should be good now, so remove canary
-        rm -f $CANARY
-        if [ ! -f $ARCHIVE/uswy-$uswyname ]
+else
+    echo "Wyoming index string: $index_str"
+    for uswyfile in $index_str
+    do
+        echo "Getting $uswyfile"
+        uswyname=$(sanitise_filename "`basename $uswyfile`")
+        $CURL -s -L "$USWY_BASE/$uswyfile" --output uswy-$uswyname 
+        if [[ $? == 0 ]]
         then
-            cp uswy-$uswyname $ARCHIVE
-        fi
-        # try unzip and decode
-        #if [[ "$DODECODE" == "yes" ]]
-        #then
-            #$UNZIP "uswy-$uswyname" >/dev/null 2>&1
-            #if [[ $? == 0 ]]
+            # we should be good now, so remove canary
+            rm -f $CANARY
+            if [ ! -f $ARCHIVE/uswy-$uswyname ]
+            then
+                cp uswy-$uswyname $ARCHIVE
+            fi
+            # try unzip and decode
+            #if [[ "$DODECODE" == "yes" ]]
+            #then
+                #$UNZIP "uswy-$uswyname" >/dev/null 2>&1
+                #if [[ $? == 0 ]]
             #then
                 #$TEK_DECODE >/dev/null
                 #new_keys=$?
@@ -1671,11 +1670,12 @@ do
             #fi
             #rm -f export.bin export.sig
             #chunks_down=$((chunks_down+1))
-        #fi
-    else
-        echo "Error decoding uswy-$uswyname"
-    fi
-done
+            #fi
+        else
+            echo "Error decoding uswy-$uswyname"
+        fi
+    done
+fi
 
 echo "======================"
 echo "Brazil TEKs"
@@ -2445,10 +2445,10 @@ echo ".si TEKs"
 CANARY="$ARCHIVE/si-canary"
 SI_BASE="https://svc90.cwa.gov.si/version/v1/diagnosis-keys/country/SI/date"
 SI_CONFIG="https://svc90.cwa.gov.si/version/v1/configuration/country/SI/app_config"
-# endpoing doesn't seem to exist in .si
+# endpoint doesn't seem to exist in .si
 #SI_STATS=""
 
-$CURL -L $SI_CONFIG --output si-cfg.json
+$CURL --connect-timeout 4 20 -L $SI_CONFIG --output si-cfg.json
 #$CURL -L $SI_STATS --output si-stats.json
 
 # use a 4s connection timeout as this isn't currently responsiive 
@@ -2528,7 +2528,7 @@ FR_PATHS=(
 for path in "${FR_PATHS[@]}"
 do
     bn=$(sanitise_filename "`basename $path`")
-    $CURL $FR_BASE/$path --output fr-$bn
+    $CURL $FR_BASE/$path --connect-timeout 4 --output fr-$bn
 done
 
 echo "======================"
