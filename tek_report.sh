@@ -422,6 +422,8 @@ apparently nobody notices!</li>
     web site or elsewhere. Of course it could be some ops glitch too.</li>
     <li>20230514: Some more US services seem turned off, but that broke my scripts for a day (had an exit on error rather than continue). Fixed exit
     problem, so we'll see what's still alive shortly.</li>
+    <li>20230515: Just to note that the US APHL server as shut down on May 11 
+    according to the AHPL <a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">project web page<a>.</li>
 
 </ul>
 
