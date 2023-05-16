@@ -424,6 +424,9 @@ apparently nobody notices!</li>
     problem, so we'll see what's still alive shortly.</li>
     <li>20230515: Just to note that the US APHL server as shut down on May 11 
     according to the AHPL <a href="https://www.aphl.org/programs/preparedness/Crisis-Management/COVID-19-Response/Pages/exposure-notifications.aspx">project web page<a>.</li>
+    <li>20230516: As of now, all of the TEK servers seem to have been shut down, or are not publishing new keys. (The UK and Croatia are
+    still producing empty key files for now.) We'll leave the script running for a while more to see if anything else happens but this
+    looks like the end for COVID tracking apps, at least as far as our surveying goes. That's good news!</li>
 
 </ul>
 
