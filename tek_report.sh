@@ -29,7 +29,7 @@ then
 fi
 
 FRESHHOURS=36
-WORKINGSIZE=1024
+WORKINGSIZE=1536
 
 # do the file header
 cat >$TARGET <<EOF
@@ -427,6 +427,8 @@ apparently nobody notices!</li>
     <li>20230516: As of now, all of the TEK servers seem to have been shut down, or are not publishing new keys. (The UK and Croatia are
     still producing empty key files for now.) We'll leave the script running for a while more to see if anything else happens but this
     looks like the end for COVID tracking apps, at least as far as our surveying goes. That's good news!</li>
+    <li>20230523: increased the limit for amber status to 1536 (from 1024) as UK is still producing 2-3 files per day
+    that contain no new keys (each containing about 490 octets).</li>
 
 </ul>
 
