@@ -467,7 +467,7 @@ done
 
 
 DE_CONFIG="https://svc90.main.px.t-online.de/version/v1/configuration/country/DE/app_config"
-$CURL -L $DE_CONFIG --output de-cfg.zip
+$CURL -f -L $DE_CONFIG --output de-cfg.zip
 
 # not that interesting to decode these each time now
 #if [ -f de-cfg.zip ]
