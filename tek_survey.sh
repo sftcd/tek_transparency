@@ -331,69 +331,30 @@ DE_BASE="https://svc90.main.px.t-online.de/version/v1/diagnosis-keys/country/DE"
 DE_INDEX="$DE_BASE/date"
 
 # .de index format is like: ["2020-06-23","2020-06-24"]
-index_str=`$CURL -L $DE_INDEX` 
+index_str=`$CURL -f -L $DE_INDEX` 
 echo "German index string: $index_str"
-dedates=`echo $index_str \
+if [[ "$index_str" != "" ]]
+then
+    dedates=`echo $index_str \
                 | sed -e 's/\[//' \
                 | sed -e 's/]//' \
                 | sed -e 's/"//g' \
                 | sed -e 's/,/ /g' `
-for dedate in $dedates
-do
-    sane_dedate=$(sanitise_filename $dedate)
-    $CURL -L "$DE_BASE/date/$dedate" --output de-$sane_dedate.zip
-    if [[ $? == 0 ]]
-    then
-        echo "Got de-$sane_dedate.zip"
-        if [ ! -f $ARCHIVE/de-$sane_dedate.zip ]
-        then
-            cp de-$sane_dedate.zip $ARCHIVE
-        fi
-        # try unzip and decode
-        #if [[ "$DODECODE" == "yes" ]]
-        #then
-            #$UNZIP "de-$sane_dedate.zip" >/dev/null 2>&1
-            #if [[ $? == 0 ]]
-            #then
-                #$TEK_DECODE >/dev/null
-                #new_keys=$?
-                #total_keys=$((total_keys+new_keys))
-            #fi
-            #rm -f export.bin export.sig
-            #chunks_down=$((chunks_down+1))
-        #fi
-    else
-        echo "Error fetching de-$sane_dedate.zip"
-    fi
-
-    # Now check for hourly zips - it's ok that we have dups as we 
-    # will use "sort|uniq" before counting and it's nice to have
-    # all the zips even if we have >1 copy
-    hours_str=`$CURL -L "$DE_BASE/date/$dedate/hour"`
-    dehours=`echo $hours_str \
-                    | sed -e 's/\[//' \
-                    | sed -e 's/]//' \
-                    | sed -e 's/"//g' \
-                    | sed -e 's/,/ /g' `
-    if [[ "$dehours" != "" ]]
-    then
-        echo ".de on $dedate has hours: $dehours"
-    fi
-    for dehour in $dehours
+    for dedate in $dedates
     do
-        sane_dehour=$(sanitise_filename $dehour)
-        $CURL -L "$DE_BASE/date/$dedate/hour/$dehour" --output de-$sane_dedate-$sane_dehour.zip
+        sane_dedate=$(sanitise_filename $dedate)
+        $CURL -L "$DE_BASE/date/$dedate" --output de-$sane_dedate.zip
         if [[ $? == 0 ]]
         then
-            echo "Got de-$sane_dedate-$sane_dehour.zip"
-            if [ ! -f $ARCHIVE/de-$sane_dedate-$sane_dehour.zip ]
+            echo "Got de-$sane_dedate.zip"
+            if [ ! -f $ARCHIVE/de-$sane_dedate.zip ]
             then
-                cp de-$sane_dedate-$sane_dehour.zip $ARCHIVE
+                cp de-$sane_dedate.zip $ARCHIVE
             fi
             # try unzip and decode
             #if [[ "$DODECODE" == "yes" ]]
             #then
-                #$UNZIP "de-$sane_dedate-$sane_dehour.zip" >/dev/null 2>&1
+                #$UNZIP "de-$sane_dedate.zip" >/dev/null 2>&1
                 #if [[ $? == 0 ]]
                 #then
                     #$TEK_DECODE >/dev/null
@@ -404,11 +365,53 @@ do
                 #chunks_down=$((chunks_down+1))
             #fi
         else
-            echo "Error fetching de-$sane_dedate-$sane_dehour.zip"
+            echo "Error fetching de-$sane_dedate.zip"
         fi
+    
+        # Now check for hourly zips - it's ok that we have dups as we 
+        # will use "sort|uniq" before counting and it's nice to have
+        # all the zips even if we have >1 copy
+        hours_str=`$CURL -L "$DE_BASE/date/$dedate/hour"`
+        dehours=`echo $hours_str \
+                        | sed -e 's/\[//' \
+                        | sed -e 's/]//' \
+                        | sed -e 's/"//g' \
+                        | sed -e 's/,/ /g' `
+        if [[ "$dehours" != "" ]]
+        then
+            echo ".de on $dedate has hours: $dehours"
+        fi
+        for dehour in $dehours
+        do
+            sane_dehour=$(sanitise_filename $dehour)
+            $CURL -L "$DE_BASE/date/$dedate/hour/$dehour" --output de-$sane_dedate-$sane_dehour.zip
+            if [[ $? == 0 ]]
+            then
+                echo "Got de-$sane_dedate-$sane_dehour.zip"
+                if [ ! -f $ARCHIVE/de-$sane_dedate-$sane_dehour.zip ]
+                then
+                    cp de-$sane_dedate-$sane_dehour.zip $ARCHIVE
+                fi
+                # try unzip and decode
+                #if [[ "$DODECODE" == "yes" ]]
+                #then
+                    #$UNZIP "de-$sane_dedate-$sane_dehour.zip" >/dev/null 2>&1
+                    #if [[ $? == 0 ]]
+                    #then
+                        #$TEK_DECODE >/dev/null
+                        #new_keys=$?
+                        #total_keys=$((total_keys+new_keys))
+                    #fi
+                    #rm -f export.bin export.sig
+                    #chunks_down=$((chunks_down+1))
+                #fi
+            else
+                echo "Error fetching de-$sane_dedate-$sane_dehour.zip"
+            fi
+        done
     done
-done
-
+fi
+    
 # lastly, check for today in case there are hourlies already
 # that are not in the date index
 # when is today? that's in UTC, so I may be a TZ off for an hour 
@@ -418,16 +421,20 @@ echo "today: Checking .de for today's hourlies $today"
 # Now check for hourly zips - it's ok that we have dups as we 
 # will use "sort|uniq" before counting and it's nice to have
 # all the zips even if we have >1 copy
-hours_str=`$CURL -L "$DE_BASE/date/$today/hour"`
-dehours=`echo $hours_str \
+hours_str=`$CURL -f -L "$DE_BASE/date/$today/hour"`
+dehours=""
+if [[ "$hours_str" != "" ]]
+then
+    dehours=`echo $hours_str \
                 | sed -e 's/\[//' \
                 | sed -e 's/]//' \
                 | sed -e 's/"//g' \
                 | sed -e 's/,/ /g' `
-echo "today: Checking .de for today's hourlies dehours: $dehours"
-if [[ "$dehours" != "" ]]
-then
-    echo ".de on $today has hours: $dehours"
+    echo "today: Checking .de for today's hourlies dehours: $dehours"
+    if [[ "$dehours" != "" ]]
+    then
+        echo ".de on $today has hours: $dehours"
+    fi
 fi
 for dehour in $dehours
 do
@@ -2539,8 +2546,8 @@ echo ".hr TEKs"
 HR_INDEX="https://en.apis-it.hr/submission/diagnosis-key-file-urls"
 HR_INDEX_EU="https://en.apis-it.hr/submission/diagnosis-key-file-urls?all=true"
 
-zips=`$CURL -L "$HR_INDEX" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
-zips_eu=`$CURL -L "$HR_INDEX_EU" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+zips=`$CURL -f -L "$HR_INDEX" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
+zips_eu=`$CURL -f -L "$HR_INDEX_EU" | jq ".urlList" | grep \" | sed -e 's/"//g' | sed -e 's/,//g'` 
 echo "HR index at $NOW: $zips $zips_eu"
 for fname in $zips $zips_eu
 do
