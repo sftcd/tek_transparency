@@ -1591,7 +1591,7 @@ CANARY="$ARCHIVE/usnv-canary"
 
 $CURL --output usnv-cfg.json -L $USNV_CONFIG 
 
-index_str=`$CURL -s -L "$USNV_INDEX"` 
+index_str=`$CURL -f -s -L "$USNV_INDEX"` 
 if [[ $? != 0 ]]
 then
     echo "Error getting index string: $index_str ($?)"
