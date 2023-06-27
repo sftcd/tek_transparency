@@ -429,8 +429,12 @@ apparently nobody notices!</li>
     looks like the end for COVID tracking apps, at least as far as our surveying goes. That's good news!</li>
     <li>20230523: increased the limit for amber status to 1536 (from 1024) as UK is still producing 2-3 files per day
     that contain no new keys (each containing about 490 octets).</li>
-    <li>20350526: German server now returning  a 404 page instead of an index string as before, so probably turned off as opposed to being inactive. 
+    <li>20230526: German server now returning  a 404 page instead of an index string as before, so probably turned off as opposed to being inactive. 
     DNS name and web server still working though, just no index string. First saw the new behaviour at 1000 UTC today.</li>
+    <li>20230627: looks like the UK England &amp Wales server's DNS name went
+    bad (SERVFAIL for distribution-te-prod.prod.svc-test-trace.nhs.uk) about
+    20230626-100001, so that will likely turn red soon unless that's a
+    glitch.</li>
 
 </ul>
 
