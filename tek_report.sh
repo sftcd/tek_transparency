@@ -435,6 +435,13 @@ apparently nobody notices!</li>
     bad (SERVFAIL for distribution-te-prod.prod.svc-test-trace.nhs.uk) about
     20230626-100001, so that will likely turn red soon unless that's a
     glitch.</li>
+    <li>20230801: The certificate for the Croatian server (en.apis-it.hr)
+    expired on July 27th (again, there was a similar cert snafu in 2022 - see
+    https://crt.sh/?q=en.apis-it.hr ;-) so we're no longer seeing new empty key
+    files from there.  As before, if one ignored certificate status it looks
+    like new (presumably empty) key files are being produced, but my scripts
+    won't ignore that. If the certificate isn't renewed in a week or two we may
+    turn off our scripts.</li>
 
 </ul>
 
