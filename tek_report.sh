@@ -45,6 +45,8 @@ cat >$TARGET <<EOF
 vlink="#000080" alink="#FF0000">
 <h1>Testing Apps for COVID-19 Tracing (TACT) - TEK Survey </h1>
 
+<p><strong>As of September 3rd 2023, we have turned off this survey code.</strong></p>
+
 <p>This page displays the current counts of Temporary Exposure Keys (TEKs)
 that are visible on the Internet, to allow for comparisons for each day. 
 For an explanation of what this means, read <a href="https://down.dsg.cs.tcd.ie/tact/survey10.pdf">this</a>. (Please also use that report if referencing this data.)</p>
