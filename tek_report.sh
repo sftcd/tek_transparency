@@ -444,6 +444,9 @@ apparently nobody notices!</li>
     like new (presumably empty) key files are being produced, but my scripts
     won't ignore that. If the certificate isn't renewed in a week or two we may
     turn off our scripts.</li>
+    <li>20230903: I finally turned off the cronjob that was collecting TEKS.</li>
+    <li>20240205: Singapore turned off their trace together stuff, says their <a href="https://www.smartnation.gov.sg/media-hub/press-releases/20240105/">announcement</a>. That announcement includes: "As of 1 February 2024, all COVID-19 related personal contact tracing data derived from TT and SE has been deleted except the TT data pertaining to a murder case in May 2020 which will be retained by the Singapore Police Force (SPF) indefinitely." which
+    goes to show that if data is available, then it will be used.</li>
 
 </ul>
 
